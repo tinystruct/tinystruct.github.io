@@ -17,7 +17,9 @@
 
         /* Navigation Bar */
         nav {
-            background-color: #986ce8; /* Inspired by the purple in the logo */
+            position: sticky;
+            top: 0;
+            background-color: #986ce8;
             color: #fff;
             padding: 1rem;
             display: flex;
@@ -40,6 +42,11 @@
             width: 40px;
         }
 
+        nav .menu {
+            display: flex;
+            align-items: center;
+        }
+
         nav a {
             color: #fff;
             text-decoration: none;
@@ -49,6 +56,14 @@
 
         nav a:hover {
             text-decoration: underline;
+        }
+
+        .language-select {
+            margin-left: 1.5rem;
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
         }
 
         /* Container Styles */
@@ -152,6 +167,58 @@
         .copy-btn:hover {
             background: #3a2d58;
         }
+
+        /* Hamburger Menu */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .hamburger div {
+            background-color: #fff;
+            height: 3px;
+            width: 25px;
+            margin: 3px 0;
+        }
+
+        .menu {
+            display: flex;
+        }
+
+        .menu a, .menu .language-select {
+            display: inline-block;
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            nav .menu {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 70px;
+                right: 10px;
+                background: #986ce8;
+                padding: 1rem;
+                border-radius: 5px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+
+            .menu.active {
+                display: flex;
+            }
+
+            .menu a {
+                margin: 0.5rem 0;
+            }
+
+            .language-select {
+                margin: 0.5rem 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -160,7 +227,12 @@
         <img src="https://avatars.githubusercontent.com/u/3723144?s=48&v=4" alt="tinystruct logo">
         tinystruct
     </h1>
-    <div>
+    <div class="hamburger" onclick="toggleMenu()">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <div class="menu">
         <a href="#about" class="lang" data-en="What is tinystruct?" data-fr="Qu'est-ce que tinystruct?" data-de="Was ist tinystruct?" data-zh="什么是 tinystruct?">What is tinystruct?</a>
         <a href="#features" class="lang" data-en="Features" data-fr="Caractéristiques" data-de="Funktionen" data-zh="特点">Features</a>
         <a href="#use-cases" class="lang" data-en="Use Cases" data-fr="Cas d'utilisation" data-de="Anwendungsfälle" data-zh="用例">Use Cases</a>
@@ -174,7 +246,6 @@
         </select>
     </div>
 </nav>
-
 <div class="container" id="about">
     <h2 class="lang" data-en="What is tinystruct?" data-fr="Qu'est-ce que tinystruct?" data-de="Was ist tinystruct?" data-zh="什么是 tinystruct?">What is tinystruct?</h2>
     <p class="lang" data-en="tinystruct is a lightweight Java framework designed to simplify application development by emphasizing simplicity and performance. Its core philosophy is encapsulated in the motto: 'Simplicity is difficult, while complexity is easy. Better thinking leads to better design.'" data-fr="tinystruct est un framework Java léger conçu pour simplifier le développement d'applications en mettant l'accent sur la simplicité et les performances. Sa philosophie centrale est résumée dans la devise : 'La simplicité est difficile, tandis que la complexité est facile. Une meilleure réflexion conduit à une meilleure conception.'" data-de="tinystruct ist ein leichtgewichtiges Java-Framework, das entwickelt wurde, um die Anwendungsentwicklung durch Betonung von Einfachheit und Leistung zu vereinfachen. Die zentrale Philosophie ist im Motto zusammengefasst: 'Einfachheit ist schwierig, während Komplexität einfach ist. Besseres Denken führt zu besserem Design.'" data-zh="tinystruct 是一个轻量级的 Java 框架，旨在通过强调简单性和性能来简化应用程序开发。其核心理念总结在座右铭中：‘简单是困难的，而复杂是容易的。更好的思考带来更好的设计。’">tinystruct is a lightweight Java framework designed to simplify application development by emphasizing simplicity and performance. Its core philosophy is encapsulated in the motto: 'Simplicity is difficult, while complexity is easy. Better thinking leads to better design.'</p>
@@ -257,6 +328,12 @@ public class example extends AbstractApplication {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
 <script>
+    // Toggle Menu
+    function toggleMenu() {
+        const menu = document.querySelector('.menu');
+        menu.classList.toggle('active');
+    }
+
     // Language Change Function
     function changeLanguage(lang) {
         document.querySelectorAll('.lang').forEach(element => {
