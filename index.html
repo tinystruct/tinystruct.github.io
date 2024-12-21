@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tinystruct Framework</title>
+    <title>tinystruct framework</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -26,7 +26,10 @@
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-        h1, h2, h3 {
+        h1 {
+            color: #FFF;
+        }
+        h2, h3 {
             color: #333;
         }
         ul {
@@ -62,52 +65,81 @@
     </style>
 </head>
 <body>
-    <header>
-        <h1>Tinystruct Framework</h1>
-        <p>A Lightweight Java Framework for Modern Applications</p>
-    </header>
-    <div class="container">
-        <h2>What is Tinystruct?</h2>
-        <p>
-            Tinystruct is a lightweight Java framework designed to simplify application development by emphasizing simplicity and performance.
-            Its core philosophy is encapsulated in the motto: 
-            <em>"Simplicity is difficult, while complexity is easy. Better thinking leads to better design."</em>
-        </p>
-        
-        <h2>Key Features</h2>
-        <ul>
-            <li><strong>Modular Design:</strong> Include only the components you need for efficiency.</li>
-            <li><strong>Command-Line Interface (CLI) Support:</strong> Simplifies tasks like executing commands and managing packages.</li>
-            <li><strong>Netty Integration:</strong> Operates as an HTTP server for high-performance web applications.</li>
-            <li><strong>Annotation-Based Actions:</strong> Streamlines application logic with improved readability.</li>
-        </ul>
+<header>
+    <h1>tinystruct framework</h1>
+    <p>A Lightweight Java Framework for Modern Applications</p>
+</header>
+<div class="container">
+    <h2>What is tinystruct?</h2>
+    <p>
+        tinystruct is a lightweight Java framework designed to simplify application development by emphasizing simplicity and performance.
+        Its core philosophy is encapsulated in the motto:
+        <em>"Simplicity is difficult, while complexity is easy. Better thinking leads to better design."</em>
+    </p>
 
-        <h2>Best Use Cases</h2>
-        <p>Tinystruct is best suited for the following scenarios:</p>
-        <ul>
-            <li>Lightweight Web Applications</li>
-            <li>Command-Line Tools or Scripts</li>
-            <li>Microservices Architecture</li>
-            <li>Embedded Systems or IoT Backends</li>
-            <li>Rapid Prototyping</li>
-            <li>High-Performance Applications</li>
-            <li>Educational Projects</li>
-            <li>Small Business Applications</li>
-            <li>Replacement for Legacy Applications</li>
-            <li>API Gateways</li>
-        </ul>
+    <h2>Key Features</h2>
+    <ul>
+        <li><strong>Modular Design:</strong> Include only the components you need for efficiency.</li>
+        <li><strong>Command-Line Interface (CLI) Support:</strong> Simplifies tasks like executing commands and managing packages.</li>
+        <li><strong>Netty Integration:</strong> Operates as an HTTP server for high-performance web applications.</li>
+        <li><strong>Annotation-Based Actions:</strong> Streamlines application logic with improved readability.</li>
+    </ul>
 
-        <h2>Advantages</h2>
-        <ul>
-            <li>Minimal setup and learning curve</li>
-            <li>Highly modular and customizable</li>
-            <li>Lightweight and suitable for resource-constrained environments</li>
-            <li>Built-in tools for CLI and Netty support</li>
-        </ul>
+    <h2>Best Use Cases and Their Benefits</h2>
+    <ul>
+        <li>
+            <strong>Lightweight Web Applications:</strong>
+            Ideal for small-scale websites and web tools where simplicity and speed are critical. tinystruct’s minimal dependencies ensure fast load times and easier deployment.
+        </li>
+        <li>
+            <strong>Command-Line Tools or Scripts:</strong>
+            Use tinystruct’s built-in CLI support for developing robust command-line utilities that can handle complex tasks with minimal overhead.
+        </li>
+        <li>
+            <strong>Microservices Architecture:</strong>
+            tinystruct’s modular design and lightweight nature make it perfect for building microservices that focus on specific tasks without unnecessary bloat.
+        </li>
+        <li>
+            <strong>Embedded Systems or IoT Backends:</strong>
+            tinystruct’s small memory footprint makes it an excellent choice for resource-constrained environments like IoT devices and embedded systems.
+        </li>
+        <li>
+            <strong>Rapid Prototyping:</strong>
+            With its easy setup and straightforward structure, tinystruct helps developers quickly prototype and iterate on new ideas.
+        </li>
+        <li>
+            <strong>High-Performance Applications:</strong>
+            Leverage tinystruct’s Netty integration for building applications requiring high throughput and low latency.
+        </li>
+        <li>
+            <strong>Educational Projects:</strong>
+            tinystruct is simple enough for students and educators, providing a great tool to teach Java and web application principles.
+        </li>
+        <li>
+            <strong>Small Business Applications:</strong>
+            Small businesses can use tinystruct to build cost-effective, easy-to-maintain applications tailored to their specific needs.
+        </li>
+        <li>
+            <strong>Replacement for Legacy Applications:</strong>
+            Upgrade aging systems with a modern, lightweight framework that improves performance and maintainability.
+        </li>
+        <li>
+            <strong>API Gateways:</strong>
+            Build fast, lightweight API gateways that integrate seamlessly with existing systems using tinystruct’s HTTP server capabilities.
+        </li>
+    </ul>
 
-        <h2>How to Get Started</h2>
-        <p>Add the following Maven dependency to your project:</p>
-        <pre>
+    <h2>Advantages</h2>
+    <ul>
+        <li>Minimal setup and learning curve</li>
+        <li>Highly modular and customizable</li>
+        <li>Lightweight and suitable for resource-constrained environments</li>
+        <li>Built-in tools for CLI and Netty support</li>
+    </ul>
+
+    <h2>How to Get Started</h2>
+    <p>Add the following Maven dependency to your project:</p>
+    <pre>
 &lt;dependency&gt;
   &lt;groupId&gt;org.tinystruct&lt;/groupId&gt;
   &lt;artifactId&gt;tinystruct&lt;/artifactId&gt;
@@ -116,20 +148,20 @@
 &lt;/dependency&gt;
         </pre>
 
-        <h2>Additional Resources</h2>
-        <ul>
-            <li><a href="https://github.com/tinystruct/tinystruct" target="_blank">Tinystruct GitHub Repository</a></li>
-            <li><a href="https://mvnrepository.com/artifact/org.tinystruct/tinystruct" target="_blank">Maven Repository</a></li>
-        </ul>
+    <h2>Additional Resources</h2>
+    <ul>
+        <li><a href="https://github.com/tinystruct/tinystruct" target="_blank">tinystruct GitHub Repository</a></li>
+        <li><a href="https://mvnrepository.com/artifact/org.tinystruct/tinystruct" target="_blank">Maven Repository</a></li>
+    </ul>
 
-        <h2>Why Choose Tinystruct?</h2>
-        <p>
-            Tinystruct focuses on reducing unnecessary complexity in application development. 
-            Its lightweight, modular nature makes it an excellent choice for developers looking for a straightforward, efficient framework for various Java-based projects.
-        </p>
-    </div>
-    <footer>
-        <p>Created with ❤️ by [Your Name]</p>
-    </footer>
+    <h2>Why Choose tinystruct?</h2>
+    <p>
+        tinystruct focuses on reducing unnecessary complexity in application development.
+        Its lightweight, modular nature makes it an excellent choice for developers looking for a straightforward, efficient framework for various Java-based projects.
+    </p>
+</div>
+<footer>
+    <p>Created with ❤️ by James ZHOU</p>
+</footer>
 </body>
 </html>
