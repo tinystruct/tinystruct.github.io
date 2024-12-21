@@ -120,6 +120,15 @@
         .btn:hover {
             background: #3a2d58;
         }
+
+        .language-select {
+            margin-left: 2rem;
+            background-color: #4b3c6e;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -129,55 +138,94 @@
         tinystruct
     </h1>
     <div>
-        <a href="#about">What is tinystruct?</a>
-        <a href="#features">Features</a>
-        <a href="#use-cases">Use Cases</a>
-        <a href="#resources">Resources</a>
+        <a href="#about" class="lang" data-en="What is tinystruct?" data-fr="Qu'est-ce que tinystruct?" data-de="Was ist tinystruct?" data-zh="什么是 tinystruct?">What is tinystruct?</a>
+        <a href="#features" class="lang" data-en="Features" data-fr="Caractéristiques" data-de="Funktionen" data-zh="特点">Features</a>
+        <a href="#use-cases" class="lang" data-en="Use Cases" data-fr="Cas d'utilisation" data-de="Anwendungsfälle" data-zh="用例">Use Cases</a>
+        <a href="#installation" class="lang" data-en="Installation" data-fr="Installation" data-de="Installation" data-zh="安装">Installation</a>
+        <a href="#resources" class="lang" data-en="Resources" data-fr="Ressources" data-de="Ressourcen" data-zh="资源">Resources</a>
+        <select class="language-select" onchange="changeLanguage(this.value)">
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+            <option value="de">Deutsch</option>
+            <option value="zh">中文</option>
+        </select>
     </div>
 </nav>
 
 <div class="container" id="about">
-    <h2>What is tinystruct?</h2>
-    <p>
-        tinystruct is a lightweight Java framework designed to simplify application development by emphasizing simplicity and performance.
-        Its core philosophy is encapsulated in the motto:
-        <em>"Simplicity is difficult, while complexity is easy. Better thinking leads to better design."</em>
-    </p>
+    <h2 class="lang" data-en="What is tinystruct?" data-fr="Qu'est-ce que tinystruct?" data-de="Was ist tinystruct?" data-zh="什么是 tinystruct?">What is tinystruct?</h2>
+    <p class="lang" data-en="tinystruct is a lightweight Java framework designed to simplify application development by emphasizing simplicity and performance. Its core philosophy is encapsulated in the motto: 'Simplicity is difficult, while complexity is easy. Better thinking leads to better design.'" data-fr="tinystruct est un framework Java léger conçu pour simplifier le développement d'applications en mettant l'accent sur la simplicité et les performances. Sa philosophie centrale est résumée dans la devise : 'La simplicité est difficile, tandis que la complexité est facile. Une meilleure réflexion conduit à une meilleure conception.'" data-de="tinystruct ist ein leichtgewichtiges Java-Framework, das entwickelt wurde, um die Anwendungsentwicklung durch Betonung von Einfachheit und Leistung zu vereinfachen. Die zentrale Philosophie ist im Motto zusammengefasst: 'Einfachheit ist schwierig, während Komplexität einfach ist. Besseres Denken führt zu besserem Design.'" data-zh="tinystruct 是一个轻量级的 Java 框架，旨在通过强调简单性和性能来简化应用程序开发。其核心理念总结在座右铭中：‘简单是困难的，而复杂是容易的。更好的思考带来更好的设计。’">tinystruct is a lightweight Java framework designed to simplify application development by emphasizing simplicity and performance. Its core philosophy is encapsulated in the motto: 'Simplicity is difficult, while complexity is easy. Better thinking leads to better design.'</p>
 
-    <h2 id="features">Key Features</h2>
+    <h2 id="features" class="lang" data-en="Key Features" data-fr="Caractéristiques principales" data-de="Hauptfunktionen" data-zh="主要特点">Key Features</h2>
     <ul>
-        <li><strong>Modular Design:</strong> Include only the components you need for efficiency.</li>
-        <li><strong>Command-Line Interface (CLI) Support:</strong> Simplifies tasks like executing commands and managing packages.</li>
-        <li><strong>Netty Integration:</strong> Operates as an HTTP server for high-performance web applications.</li>
-        <li><strong>Annotation-Based Actions:</strong> Streamlines application logic with improved readability.</li>
+        <li class="lang" data-en="Modular Design: Include only the components you need for efficiency." data-fr="Conception modulaire: Inclure uniquement les composants dont vous avez besoin pour plus d'efficacité." data-de="Modulares Design: Inklusive nur der Komponenten, die für Effizienz benötigt werden." data-zh="模块化设计：仅包含您需要的组件，提高效率。">Modular Design: Include only the components you need for efficiency.</li>
+        <li class="lang" data-en="Command-Line Interface (CLI) Support: Simplifies tasks like executing commands and managing packages." data-fr="Support de l'interface en ligne de commande (CLI): Simplifie les tâches comme l'exécution de commandes et la gestion des paquets." data-de="CLI-Unterstützung: Vereinfacht Aufgaben wie das Ausführen von Befehlen und das Verwalten von Paketen." data-zh="命令行界面 (CLI) 支持：简化执行命令和管理包的任务。">Command-Line Interface (CLI) Support: Simplifies tasks like executing commands and managing packages.</li>
+        <li class="lang" data-en="Netty Integration: Operates as an HTTP server for high-performance web applications." data-fr="Intégration de Netty: Fonctionne comme un serveur HTTP pour des applications web haute performance." data-de="Netty-Integration: Arbeitet als HTTP-Server für hochleistungsfähige Webanwendungen." data-zh="Netty 集成：作为高性能 Web 应用程序的 HTTP 服务器运行。">Netty Integration: Operates as an HTTP server for high-performance web applications.</li>
+        <li class="lang" data-en="Annotation-Based Actions: Streamlines application logic with improved readability." data-fr="Actions basées sur des annotations: Simplifie la logique d'application avec une meilleure lisibilité." data-de="Annotation-basierte Aktionen: Vereinfacht die Anwendungslogik mit besserer Lesbarkeit." data-zh="基于注解的操作：通过改进可读性简化应用程序逻辑。">Annotation-Based Actions: Streamlines application logic with improved readability.</li>
     </ul>
 
-    <h2 id="use-cases">Best Use Cases and Their Benefits</h2>
+    <h2 id="use-cases" class="lang" data-en="Best Use Cases and Their Benefits" data-fr="Meilleurs cas d'utilisation et leurs avantages" data-de="Beste Anwendungsfälle und deren Vorteile" data-zh="最佳用例及其优势">Best Use Cases and Their Benefits</h2>
     <ul>
-        <li><strong>Lightweight Web Applications:</strong> Perfect for small-scale websites needing speed and simplicity.</li>
-        <li><strong>Command-Line Tools:</strong> Develop robust utilities with minimal overhead.</li>
-        <li><strong>Microservices:</strong> Modular design makes it ideal for specific, lightweight services.</li>
-        <li><strong>Embedded Systems:</strong> Small memory footprint fits resource-constrained devices.</li>
-        <li><strong>Rapid Prototyping:</strong> Quickly iterate ideas with its simple setup.</li>
+        <li class="lang" data-en="Lightweight Web Applications: Perfect for small-scale websites needing speed and simplicity." data-fr="Applications web légères: Parfait pour les sites web à petite échelle nécessitant rapidité et simplicité." data-de="Leichte Webanwendungen: Ideal für kleine Websites, die Schnelligkeit und Einfachheit benötigen." data-zh="轻量级 Web 应用程序：非常适合需要速度和简单性的小型网站。">Lightweight Web Applications: Perfect for small-scale websites needing speed and simplicity.</li>
+        <li class="lang" data-en="Command-Line Tools: Develop robust utilities with minimal overhead." data-fr="Outils en ligne de commande: Développez des utilitaires robustes avec un minimum de surcharge." data-de="CLI-Tools: Entwickeln Sie robuste Dienstprogramme mit minimalem Aufwand." data-zh="命令行工具：使用最小的开销开发强大的工具。">Command-Line Tools: Develop robust utilities with minimal overhead.</li>
+        <li class="lang" data-en="Microservices: Modular design makes it ideal for specific, lightweight services." data-fr="Microservices: La conception modulaire le rend idéal pour des services spécifiques et légers." data-de="Mikrodienste: Modulares Design eignet sich hervorragend für spezifische, leichte Dienste." data-zh="微服务：模块化设计使其成为特定轻量服务的理想选择。">Microservices: Modular design makes it ideal for specific, lightweight services.</li>
+        <li class="lang" data-en="Embedded Systems: Small memory footprint fits resource-constrained devices." data-fr="Systèmes embarqués: La petite empreinte mémoire convient aux appareils à ressources limitées." data-de="Eingebettete Systeme: Kleine Speichernutzung passt zu ressourcenbegrenzten Geräten." data-zh="嵌入式系统：小内存占用非常适合资源有限的设备。">Embedded Systems: Small memory footprint fits resource-constrained devices.</li>
+        <li class="lang" data-en="Rapid Prototyping: Quickly iterate ideas with its simple setup." data-fr="Prototypage rapide: Itérez rapidement des idées avec une configuration simple." data-de="Schnelles Prototyping: Schnell Ideen mit einer einfachen Einrichtung iterieren." data-zh="快速原型开发：通过简单的设置快速迭代想法。">Rapid Prototyping: Quickly iterate ideas with its simple setup.</li>
     </ul>
 
-    <h2>How to Get Started</h2>
-    <p>Add the following Maven dependency to your project:</p>
-    <pre>
-&lt;dependency&gt;
+    <h2 id="installation" class="lang" data-en="Installation and Getting Started" data-fr="Installation et démarrage" data-de="Installation und Einstieg" data-zh="安装和入门">Installation and Getting Started</h2>
+    <p class="lang" data-en="Add the dependency into your pom.xml." data-fr="Ajoutez la dépendance dans votre fichier pom.xml." data-de="Fügen Sie die Abhängigkeit in Ihre pom.xml ein." data-zh="将以下 Maven 依赖项添加到您的项目中：">Add the dependency into your pom.xml.</p>
+    <pre><code>&lt;dependency&gt;
   &lt;groupId&gt;org.tinystruct&lt;/groupId&gt;
   &lt;artifactId&gt;tinystruct&lt;/artifactId&gt;
   &lt;version&gt;1.4.4&lt;/version&gt;
   &lt;classifier&gt;jar-with-dependencies&lt;/classifier&gt;
-&lt;/dependency&gt;
-        </pre>
+&lt;/dependency&gt;</code></pre>
 
-    <a href="https://github.com/tinystruct/tinystruct" class="btn" target="_blank">GitHub Repository</a>
-    <a href="https://mvnrepository.com/artifact/org.tinystruct/tinystruct" class="btn" target="_blank">Maven Repository</a>
+    <p class="lang" data-en="Extend the AbstractApplication in Java" data-fr="Étendez la classe AbstractApplication en Java" data-de="Erweitern Sie die AbstractApplication in Java" data-zh="在 Java 中扩展 AbstractApplication 类">Extend the AbstractApplication in Java</p>
+    <pre><code>package tinystruct.examples;
+
+import org.tinystruct.AbstractApplication;
+import org.tinystruct.ApplicationException;
+import org.tinystruct.system.annotation.Action;
+
+public class Example extends AbstractApplication {
+
+    @Override
+    public void init() {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public String version() {
+        return "1.0";
+    }
+
+    @Action("praise")
+    public String praise() {
+        return "Praise to the Lord!";
+    }
+
+    @Action("say")
+    public String say(String words) {
+        return words;
+    }
+}
+</code></pre>
 </div>
 
+<!-- Footer -->
 <footer>
-    <p>Created with ❤️ by James ZHOU</p>
+    <p class="lang" data-en="Created with ❤️ by James ZHOU" data-fr="Créé avec ❤️ par James ZHOU" data-de="Erstellt mit ❤️ von James ZHOU" data-zh="❤️ 创建者: James ZHOU">Created with ❤️ by James ZHOU</p>
 </footer>
+
+<script>
+    // Language Change Function
+    function changeLanguage(lang) {
+        document.querySelectorAll('.lang').forEach(element => {
+            element.innerText = element.getAttribute('data-' + lang);
+        });
+    }
+</script>
 </body>
 </html>
