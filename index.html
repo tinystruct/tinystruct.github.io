@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>tinystruct Framework</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         /* General Styles */
         body {
@@ -78,14 +79,6 @@
             border-radius: 5px;
         }
 
-        pre {
-            background: #ececec;
-            padding: 1rem;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            overflow-x: auto;
-        }
-
         a {
             color: #4b3c6e;
             text-decoration: none;
@@ -128,6 +121,36 @@
             padding: 0.5rem 1rem;
             border-radius: 5px;
             cursor: pointer;
+        }
+
+        pre {
+            position: relative;
+            background: #ececec;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+        }
+
+        pre code {
+            display: block;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #4b3c6e;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+
+        .copy-btn:hover {
+            background: #3a2d58;
         }
     </style>
 </head>
@@ -175,21 +198,23 @@
 
     <h2 id="installation" class="lang" data-en="Installation and Getting Started" data-fr="Installation et démarrage" data-de="Installation und Einstieg" data-zh="安装和入门">Installation and Getting Started</h2>
     <p class="lang" data-en="Add the dependency into your pom.xml." data-fr="Ajoutez la dépendance dans votre fichier pom.xml." data-de="Fügen Sie die Abhängigkeit in Ihre pom.xml ein." data-zh="将以下 Maven 依赖项添加到您的项目中：">Add the dependency into your pom.xml.</p>
-    <pre><code>&lt;dependency&gt;
+    <pre class="language-xml"><code>&lt;dependency&gt;
   &lt;groupId&gt;org.tinystruct&lt;/groupId&gt;
   &lt;artifactId&gt;tinystruct&lt;/artifactId&gt;
   &lt;version&gt;1.4.4&lt;/version&gt;
   &lt;classifier&gt;jar-with-dependencies&lt;/classifier&gt;
-&lt;/dependency&gt;</code></pre>
+&lt;/dependency&gt;</code><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+</pre>
 
     <p class="lang" data-en="Extend the AbstractApplication in Java" data-fr="Étendez la classe AbstractApplication en Java" data-de="Erweitern Sie die AbstractApplication in Java" data-zh="在 Java 中扩展 AbstractApplication 类">Extend the AbstractApplication in Java</p>
-    <pre><code>package tinystruct.examples;
+    <pre class="language-java"><code>package tinystruct.examples;
+
 
 import org.tinystruct.AbstractApplication;
 import org.tinystruct.ApplicationException;
 import org.tinystruct.system.annotation.Action;
 
-public class Example extends AbstractApplication {
+public class example extends AbstractApplication {
 
     @Override
     public void init() {
@@ -207,11 +232,21 @@ public class Example extends AbstractApplication {
     }
 
     @Action("say")
+    public String say() throws ApplicationException {
+        if (null != this.context.getAttribute("--words"))
+            return this.context.getAttribute("--words").toString();
+
+        throw new ApplicationException("Could not find the parameter <i>words</i>.");
+    }
+
+    @Action("say")
     public String say(String words) {
         return words;
     }
+
 }
-</code></pre>
+</code><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+</pre>
 </div>
 
 <!-- Footer -->
@@ -219,12 +254,29 @@ public class Example extends AbstractApplication {
     <p class="lang" data-en="Created with ❤️ by James ZHOU" data-fr="Créé avec ❤️ par James ZHOU" data-de="Erstellt mit ❤️ von James ZHOU" data-zh="❤️ 创建者: James ZHOU">Created with ❤️ by James ZHOU</p>
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
 <script>
     // Language Change Function
     function changeLanguage(lang) {
         document.querySelectorAll('.lang').forEach(element => {
             element.innerText = element.getAttribute('data-' + lang);
         });
+    }
+
+    // Copy Code Function
+    function copyCode(button) {
+        const codeBlock = button.previousElementSibling;
+        navigator.clipboard.writeText(codeBlock.innerText)
+            .then(() => {
+                button.innerText = 'Copied!';
+                setTimeout(() => {
+                    button.innerText = 'Copy';
+                }, 2000);
+            })
+            .catch(err => {
+                console.error('Failed to copy code:', err);
+            });
     }
 </script>
 </body>
