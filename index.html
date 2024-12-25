@@ -369,10 +369,17 @@ public class example extends AbstractApplication {
     <a href="https://github.com/tinystruct/tinystruct" class="btn" target="_blank">GitHub Repository</a>
     <a href="https://mvnrepository.com/artifact/org.tinystruct/tinystruct" class="btn" target="_blank">Maven Repository</a>
 
-    <h2>Why Choose Tinystruct?</h2>
-    <p>
-        tinystruct focuses on reducing unnecessary complexity in application development.
-        Its lightweight, modular nature makes it an excellent choice for developers looking for a straightforward, efficient framework for various Java-based projects.
+    <h2 class="lang"
+        data-en="Why Choose tinystruct?"
+        data-de="Warum tinystruct wählen?"
+        data-fr="Pourquoi choisir tinystruct?"
+        data-zh="为什么选择 tinystruct?">
+    </h2>
+    <p class="lang"
+       data-en="tinystruct focuses on reducing unnecessary complexity in application development. Its lightweight, modular nature makes it an excellent choice for developers looking for a straightforward, efficient framework for various Java-based projects."
+       data-de="tinystruct konzentriert sich darauf, unnötige Komplexität in der Anwendungsentwicklung zu reduzieren. Seine leichte, modulare Natur macht es zu einer ausgezeichneten Wahl für Entwickler, die nach einem einfachen, effizienten Framework für verschiedene Java-basierte Projekte suchen."
+       data-fr="tinystruct se concentre sur la réduction de la complexité inutile dans le développement d'applications. Sa nature légère et modulaire en fait un excellent choix pour les développeurs à la recherche d'un cadre simple et efficace pour divers projets basés sur Java."
+       data-zh="tinystruct 专注于减少应用程序开发中的不必要复杂性。其轻量级、模块化的特性使其成为开发人员在寻找简洁高效的 Java 项目框架时的理想选择。">
     </p>
 </div>
 
@@ -390,13 +397,34 @@ public class example extends AbstractApplication {
         menu.classList.toggle('active');
     }
 
-    // Language Change Function
+    // Change language based on user selection
     function changeLanguage(lang) {
-        document.querySelectorAll('.lang').forEach(element => {
-            element.innerText = element.getAttribute('data-' + lang);
+        const elements = document.querySelectorAll('.lang');
+        elements.forEach(element => {
+            const translation = element.dataset[lang];
+            if (translation) {
+                element.innerHTML = translation;
+            }
         });
+
+        // Update URL fragment with selected language
+        window.location.hash = lang;
     }
 
+    // Check URL fragment for language code and apply it
+    function applyLanguageFromURL() {
+        const hash = window.location.hash.substring(1); // Get language code from the URL fragment
+        const validLanguages = ['en', 'fr', 'de', 'zh']; // Define valid languages
+
+        if (validLanguages.includes(hash)) {
+            const select = document.querySelector('.language-select');
+            select.value = hash;
+            changeLanguage(hash); // Apply the language change
+        }
+    }
+
+    // Add event listener to load language on page load
+    window.addEventListener('DOMContentLoaded', applyLanguageFromURL);
     // Copy Code Function
     function copyCode(button) {
         const codeBlock = button.previousElementSibling;
