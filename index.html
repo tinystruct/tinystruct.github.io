@@ -219,6 +219,51 @@
                 margin: 0.5rem 0;
             }
         }
+
+        .terminal {
+            font-family: 'Courier New', monospace;
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+            font-size: 16px;
+            line-height: 1.5;
+            overflow: hidden;
+            color: #00ff00;
+            white-space: pre; /* Preserve spaces and tabs */
+        }
+        .output {
+            margin-top: 10px;
+        }
+        .command {
+            color: #ffffff;
+        }
+        .blink {
+            display: inline-block;
+            width: 10px;
+            background: #00ff00;
+            animation: blink 1s steps(2, start) infinite;
+        }
+        @keyframes blink {
+            50% { background: transparent; }
+        }
+        .highlight {
+            color: #ffcc00;
+        }
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        .urls a {
+            color: #4caf50;
+            text-decoration: none;
+        }
+        .urls a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -249,6 +294,8 @@
 <div class="container" id="about">
     <h2 class="lang" data-en="What is tinystruct?" data-fr="Qu'est-ce que tinystruct?" data-de="Was ist tinystruct?" data-zh="什么是 tinystruct?">What is tinystruct?</h2>
     <p class="lang" data-en="tinystruct is a lightweight Java framework designed to simplify application development by emphasizing simplicity and performance. Its core philosophy is encapsulated in the motto: 'Simplicity is difficult, while complexity is easy. Better thinking leads to better design.'" data-fr="tinystruct est un framework Java léger conçu pour simplifier le développement d'applications en mettant l'accent sur la simplicité et les performances. Sa philosophie centrale est résumée dans la devise : 'La simplicité est difficile, tandis que la complexité est facile. Une meilleure réflexion conduit à une meilleure conception.'" data-de="tinystruct ist ein leichtgewichtiges Java-Framework, das entwickelt wurde, um die Anwendungsentwicklung durch Betonung von Einfachheit und Leistung zu vereinfachen. Die zentrale Philosophie ist im Motto zusammengefasst: 'Einfachheit ist schwierig, während Komplexität einfach ist. Besseres Denken führt zu besserem Design.'" data-zh="tinystruct 是一个轻量级的 Java 框架，旨在通过强调简单性和性能来简化应用程序开发。其核心理念总结在座右铭中：‘简单是困难的，而复杂是容易的。更好的思考带来更好的设计。’">tinystruct is a lightweight Java framework designed to simplify application development by emphasizing simplicity and performance. Its core philosophy is encapsulated in the motto: 'Simplicity is difficult, while complexity is easy. Better thinking leads to better design.'</p>
+    <!-- Main Terminal -->
+    <div class="terminal" id="terminal-main"><div id="output-main"></div><div class="blink" id="cursor-main"></div></div>
 
     <h2 id="features" class="lang" data-en="Key Features" data-fr="Caractéristiques principales" data-de="Hauptfunktionen" data-zh="主要特点">Key Features</h2>
     <ul>
@@ -318,6 +365,7 @@ public class example extends AbstractApplication {
 }
 </code><button class="copy-btn" onclick="copyCode(this)">Copy</button>
 </pre>
+    <div class="terminal" id="terminal-secondary"><div id="output-secondary"></div><div class="blink" id="cursor-secondary"></div></div>
     <a href="https://github.com/tinystruct/tinystruct" class="btn" target="_blank">GitHub Repository</a>
     <a href="https://mvnrepository.com/artifact/org.tinystruct/tinystruct" class="btn" target="_blank">Maven Repository</a>
 
@@ -363,6 +411,87 @@ public class example extends AbstractApplication {
                 console.error('Failed to copy code:', err);
             });
     }
+
+    const mainCommands = [
+        "$ bin/dispatcher --version",
+        "  _/  '         _ _/  _     _ _/",
+        "  /  /  /) (/ _)  /  /  (/ (  /  1.4.5",
+        "           /",
+        " ",
+        "$ bin/dispatcher --help",
+        "Usage: bin/dispatcher COMMAND [OPTIONS]",
+        "Commands:",
+        "  download             \tDownload a resource from other servers",
+        "  exec                 \tTo execute native command(s)",
+        "  generate             \tPOJO object generator",
+        "  install              \tInstall a package",
+        "  open                 \tStart a default browser to open the specific URL",
+        "  say                  \tOutput words",
+        "  set                  \tSet system property",
+        "  sql-execute          \tExecutes the given SQL statement, which may be an INSERT, UPDATE, DELETE, or DDL statement",
+        "  sql-query            \tExecutes the given SQL statement, which returns a single ResultSet object",
+        "  update               \tUpdate for the latest version",
+        " ",
+        "Options:",
+        "  --allow-remote-access\tAllow to be accessed remotely",
+        "  --help               \tHelp command",
+        "  --host               \tHost name / IP",
+        "  --import             \tImport application",
+        "  --logo               \tPrint logo",
+        "  --settings           \tPrint settings",
+        "  --version            \tPrint version",
+        " ",
+        "Run 'bin/dispatcher COMMAND --help' for more information on a command."
+    ];
+
+    const secondaryCommands = [
+        "$ bin/dispatcher say --words Hello --import tinystruct.examples.example",
+        "Hello",
+        " ",
+        "# bin/dispatcher start --import org.tinystruct.system.NettyHttpServer",
+        "You can access the below URLs:",
+        "  http://localhost:8080/?q=say/Praise%20to%20the%20Lord!",
+        "  http://localhost:8080/?q=praise"
+    ];
+
+    const outputMain = document.getElementById('output-main');
+    const cursorMain = document.getElementById('cursor-main');
+    const outputSecondary = document.getElementById('output-secondary');
+    const cursorSecondary = document.getElementById('cursor-secondary');
+
+    let iMain = 0;
+    let iSecondary = 0;
+
+    function typeMainCommands() {
+        if (iMain < mainCommands.length) {
+            const line = mainCommands[iMain];
+            const textDiv = document.createElement('div');
+            textDiv.textContent = line;
+            textDiv.classList.add('fade-in');
+            outputMain.appendChild(textDiv);
+            iMain++;
+            setTimeout(typeMainCommands, 100);
+        } else {
+            cursorMain.style.display = 'none';
+            typeSecondaryCommands();
+        }
+    }
+
+    function typeSecondaryCommands() {
+        if (iSecondary < secondaryCommands.length) {
+            const line = secondaryCommands[iSecondary];
+            const textDiv = document.createElement('div');
+            textDiv.textContent = line;
+            textDiv.classList.add('fade-in');
+            outputSecondary.appendChild(textDiv);
+            iSecondary++;
+            setTimeout(typeSecondaryCommands, 100);
+        } else {
+            cursorSecondary.style.display = 'none';
+        }
+    }
+
+    typeMainCommands();
 </script>
 </body>
 </html>
