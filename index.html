@@ -541,9 +541,9 @@ public class example extends AbstractApplication {
                 const z = acceleration.z || 0;
 
                 // Normalize the acceleration values
-                const red = Math.min(Math.abs(x * 20), 255);
-                const green = Math.min(Math.abs(y * 20), 255);
-                const blue = Math.min(Math.abs(z * 20), 255);
+                const red = Math.min(Math.abs(x * 50), 255);
+                const green = Math.min(Math.abs(y * 50), 255);
+                const blue = Math.min(Math.abs(z * 50), 255);
 
                 // Create a dynamic RGB color
                 const backgroundColor = `rgb(${Math.floor(red)}, ${Math.floor(green)}, ${Math.floor(blue)})`;
