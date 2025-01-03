@@ -526,6 +526,55 @@ public class example extends AbstractApplication {
     }
 
     typeMainCommands();
+
+    // Check if DeviceMotion is supported
+    if (window.DeviceMotionEvent) {
+        console.log("DeviceMotion is supported on this device.");
+
+        // Add an event listener for device motion
+        window.addEventListener('devicemotion', function(event) {
+            const acceleration = event.accelerationIncludingGravity;
+
+            if (acceleration) {
+                const x = acceleration.x || 0;
+                const y = acceleration.y || 0;
+                const z = acceleration.z || 0;
+
+                // Normalize the acceleration values
+                const red = Math.min(Math.abs(x * 20), 255);
+                const green = Math.min(Math.abs(y * 20), 255);
+                const blue = Math.min(Math.abs(z * 20), 255);
+
+                // Create a dynamic RGB color
+                const backgroundColor = `rgb(${Math.floor(red)}, ${Math.floor(green)}, ${Math.floor(blue)})`;
+
+                // Apply the color to the website background
+                document.body.style.backgroundColor = backgroundColor;
+
+                // Optionally, display the RGB values on the page
+                if (!document.getElementById('motionInfo')) {
+                    const infoDiv = document.createElement('div');
+                    infoDiv.id = 'motionInfo';
+                    infoDiv.style.position = 'fixed';
+                    infoDiv.style.bottom = '10px';
+                    infoDiv.style.left = '10px';
+                    infoDiv.style.padding = '5px';
+                    infoDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+                    infoDiv.style.borderRadius = '5px';
+                    infoDiv.style.fontFamily = 'Arial, sans-serif';
+                    infoDiv.style.color = '#000';
+                    document.body.appendChild(infoDiv);
+                }
+
+                const infoDiv = document.getElementById('motionInfo');
+                infoDiv.textContent = `R: ${Math.floor(red)} G: ${Math.floor(green)} B: ${Math.floor(blue)}`;
+            }
+        });
+    } else {
+        console.log("DeviceMotion is not supported on this device.");
+        alert("Your device does not support DeviceMotion.");
+    }
+
 </script>
 </body>
 </html>
