@@ -402,22 +402,20 @@
 </nav>
 <div class="container" id="about">
     <h2 class="lang" data-en="What is tinystruct?" data-fr="Qu'est-ce que tinystruct?" data-de="Was ist tinystruct?" data-zh="什么是 tinystruct?">What is tinystruct?</h2>
-    <p class="lang"
-       data-en="tinystruct is a lightweight Java framework designed to simplify application development by emphasizing simplicity and performance. It seamlessly supports both command-line tools and APIs, enabling developers to create robust solutions with ease. Its core philosophy is encapsulated in the motto: 'Simplicity is difficult, while complexity is easy. Better thinking leads to better design.'"
-       data-fr="tinystruct est un framework Java léger conçu pour simplifier le développement d'applications en mettant l'accent sur la simplicité et les performances. Il prend en charge de manière transparente les outils en ligne de commande et les API, permettant aux développeurs de créer des solutions robustes en toute simplicité. Sa philosophie centrale est résumée dans la devise : 'La simplicité est difficile, tandis que la complexité est facile. Une meilleure réflexion conduit à une meilleure conception.'"
-       data-de="tinystruct ist ein leichtgewichtiges Java-Framework, das entwickelt wurde, um die Anwendungsentwicklung durch Betonung von Einfachheit und Leistung zu vereinfachen. Es unterstützt nahtlos sowohl Befehlszeilentools als auch APIs, sodass Entwickler robuste Lösungen mit Leichtigkeit erstellen können. Die zentrale Philosophie ist im Motto zusammengefasst: 'Einfachheit ist schwierig, während Komplexität einfach ist. Besseres Denken führt zu besserem Design.'"
-       data-zh="tinystruct 是一个轻量级的 Java 框架，旨在通过强调简单性和性能来简化应用程序开发。它无缝支持命令行工具和 API，使开发人员能够轻松创建强大的解决方案。其核心理念总结在座右铭中：‘简单是困难的，而复杂是容易的。更好的思考带来更好的设计。’">
-        tinystruct is a lightweight Java framework designed to simplify application development by emphasizing simplicity and performance. It seamlessly supports both command-line tools and APIs, enabling developers to create robust solutions with ease. Its core philosophy is encapsulated in the motto: 'Simplicity is difficult, while complexity is easy. Better thinking leads to better design.'
-    </p>
-    <!-- Main Terminal -->
-    <div class="terminal" id="terminal-main"><div id="output-main"></div><div class="blink" id="cursor-main"></div></div>
+    <div class="intro lang" data-en="tinystruct is a lightweight Java application framework designed for building applications from command-line tools to web applications. Its core concept is 'write once, run anywhere', achieving code reuse between command-line and web environments through a unified Action mechanism." data-fr="tinystruct est un framework Java léger conçu pour construire des applications allant des outils en ligne de commande aux applications Web. Son concept central est 'écrire une fois, exécuter partout', réalisant la réutilisation du code entre les environnements en ligne de commande et Web grâce à un mécanisme Action unifié." data-de="tinystruct ist ein leichtgewichtiges Java-Anwendungsframework, das für die Entwicklung von Anwendungen von Befehlszeilentools bis hin zu Webanwendungen konzipiert wurde. Sein Kernkonzept ist 'einmal schreiben, überall ausführen' und erreicht Code-Wiederverwendung zwischen Befehlszeilen- und Web-Umgebungen durch einen einheitlichen Action-Mechanismus." data-zh="tinystruct 是一个轻量级 Java 应用框架，设计用于构建从命令行工具到 Web 应用的各种应用程序。它的核心理念是'编写一次，随处运行'，通过统一的 Action 机制实现命令行和 Web 环境下的代码复用。">
+        tinystruct is a lightweight Java application framework designed for building applications from command-line tools to web applications. Its core concept is 'write once, run anywhere', achieving code reuse between command-line and web environments through a unified Action mechanism.
+    </div>
 
-    <h2 id="features" class="lang" data-en="Key Features" data-fr="Caractéristiques principales" data-de="Hauptfunktionen" data-zh="主要特点">Key Features</h2>
+    <div class="terminal" id="terminal-main"><div id="output-main"></div><div class="blink" id="cursor-main"></div></div>
+    <h2 class="lang" data-en="Why Choose tinystruct?" data-fr="Pourquoi choisir tinystruct?" data-de="Warum tinystruct wählen?" data-zh="为什么选择 tinystruct?">Why Choose tinystruct?</h2>
+    <p class="lang" data-en="tinystruct focuses on reducing unnecessary complexity in application development. Its lightweight, modular nature makes it an excellent choice for developers looking for a straightforward, efficient framework for various Java-based projects." data-fr="tinystruct se concentre sur la réduction de la complexité inutile dans le développement d'applications. Sa nature légère et modulaire en fait un excellent choix pour les développeurs à la recherche d'un cadre simple et efficace pour divers projets basés sur Java." data-de="tinystruct konzentriert sich darauf, unnötige Komplexität in der Anwendungsentwicklung zu reduzieren. Seine leichte, modulare Natur macht es zu einer ausgezeichneten Wahl für Entwickler, die nach einem einfachen, effizienten Framework für verschiedene Java-basierte Projekte suchen." data-zh="tinystruct 专注于减少应用程序开发中的不必要复杂性。其轻量级、模块化的特性使其成为开发人员在寻找简洁高效的 Java 项目框架时的理想选择。">tinystruct focuses on reducing unnecessary complexity in application development. Its lightweight, modular nature makes it an excellent choice for developers looking for a straightforward, efficient framework for various Java-based projects.</p>
+
+    <h2 id="features" class="lang" data-en="Key Features" data-fr="Caractéristiques principales" data-de="Kernfunktionen" data-zh="核心特性">Key Features</h2>
     <ul>
-        <li class="lang" data-en="Modular Design: Include only the components you need for efficiency." data-fr="Conception modulaire: Inclure uniquement les composants dont vous avez besoin pour plus d'efficacité." data-de="Modulares Design: Inklusive nur der Komponenten, die für Effizienz benötigt werden." data-zh="模块化设计：仅包含您需要的组件，提高效率。">Modular Design: Include only the components you need for efficiency.</li>
-        <li class="lang" data-en="Command-Line Interface (CLI) Support: Simplifies tasks like executing commands and managing packages." data-fr="Support de l'interface en ligne de commande (CLI): Simplifie les tâches comme l'exécution de commandes et la gestion des paquets." data-de="CLI-Unterstützung: Vereinfacht Aufgaben wie das Ausführen von Befehlen und das Verwalten von Paketen." data-zh="命令行界面 (CLI) 支持：简化执行命令和管理包的任务。">Command-Line Interface (CLI) Support: Simplifies tasks like executing commands and managing packages.</li>
-        <li class="lang" data-en="Netty Integration: Operates as an HTTP server for high-performance web applications." data-fr="Intégration de Netty: Fonctionne comme un serveur HTTP pour des applications web haute performance." data-de="Netty-Integration: Arbeitet als HTTP-Server für hochleistungsfähige Webanwendungen." data-zh="Netty 集成：作为高性能 Web 应用程序的 HTTP 服务器运行。">Netty Integration: Operates as an HTTP server for high-performance web applications.</li>
-        <li class="lang" data-en="Annotation-Based Actions: Streamlines application logic with improved readability." data-fr="Actions basées sur des annotations: Simplifie la logique d'application avec une meilleure lisibilité." data-de="Annotation-basierte Aktionen: Vereinfacht die Anwendungslogik mit besserer Lesbarkeit." data-zh="基于注解的操作：通过改进可读性简化应用程序逻辑。">Annotation-Based Actions: Streamlines application logic with improved readability.</li>
+        <li class="lang" data-en="Unified Method Call Mechanism: Support both command-line and web service calls through @Action annotation." data-fr="Mécanisme d'appel de méthode unifié : Support des appels en ligne de commande et des services Web via l'annotation @Action." data-de="Einheitlicher Methodenaufruf-Mechanismus: Unterstützung von Befehlszeilen- und Web-Service-Aufrufen durch @Action-Annotation." data-zh="统一的方法调用机制：通过 @Action 注解支持命令行和 Web 服务调用。">Unified Method Call Mechanism: Support both command-line and web service calls through @Action annotation.</li>
+        <li class="lang" data-en="Low Latency Service Call: Direct method invocation between services without network overhead." data-fr="Appel de service à faible latence : Invocation directe de méthodes entre services sans surcharge réseau." data-de="Niedrige Latenz-Serviceaufrufe: Direkte Methodenaufrufe zwischen Diensten ohne Netzwerkaufwand." data-zh="低延迟服务调用：服务间直接方法调用，无网络开销。">Low Latency Service Call: Direct method invocation between services without network overhead.</li>
+        <li class="lang" data-en="Lightweight Design: Small core library with minimal external dependencies." data-fr="Conception légère : Petite bibliothèque centrale avec des dépendances externes minimales." data-de="Leichtgewichtiges Design: Kleine Kernbibliothek mit minimalen externen Abhängigkeiten." data-zh="轻量级设计：核心库体积小，外部依赖少。">Lightweight Design: Small core library with minimal external dependencies.</li>
+        <li class="lang" data-en="Flexible Deployment Options: Support for monolithic, microservices, and hybrid deployment modes." data-fr="Options de déploiement flexibles : Support des modes de déploiement monolithique, microservices et hybride." data-de="Flexible Bereitstellungsoptionen: Unterstützung für monolithische, Microservices- und hybride Bereitstellungsmodi." data-zh="灵活的部署选项：支持单体、微服务和混合部署模式。">Flexible Deployment Options: Support for monolithic, microservices, and hybrid deployment modes.</li>
     </ul>
 
     <h2 id="use-cases" class="lang" data-en="Best Use Cases and Their Benefits" data-fr="Meilleurs cas d'utilisation et leurs avantages" data-de="Beste Anwendungsfälle und deren Vorteile" data-zh="最佳用例及其优势">Best Use Cases and Their Benefits</h2>
@@ -441,7 +439,6 @@
 
     <p class="lang" data-en="Extend the AbstractApplication in Java" data-fr="Étendez la classe AbstractApplication en Java" data-de="Erweitern Sie die AbstractApplication in Java" data-zh="在 Java 中扩展 AbstractApplication 类">Extend the AbstractApplication in Java</p>
     <pre class="language-java"><code>package tinystruct.examples;
-
 
 import org.tinystruct.AbstractApplication;
 import org.tinystruct.ApplicationException;
@@ -476,31 +473,120 @@ public class example extends AbstractApplication {
     public String say(String words) {
         return words;
     }
-
-}
-</code><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+}</code><button class="copy-btn" onclick="copyCode(this)">Copy</button>
 </pre>
-    <div class="terminal" id="terminal-secondary"><div id="output-secondary"></div><div class="blink" id="cursor-secondary"></div></div>
-    <a href="https://github.com/tinystruct/tinystruct" class="btn" target="_blank">GitHub Repository</a>
-    <a href="https://mvnrepository.com/artifact/org.tinystruct/tinystruct" class="btn" target="_blank">Maven Repository</a>
 
-    <h2>Projects</h2>
+
+    <h2 class="context lang" data-en="Context and Parameter Processing" data-fr="Contexte et traitement des paramètres" data-de="Kontext- und Parameterverarbeitung" data-zh="上下文与参数处理">Context and Parameter Processing</h2>
+    <pre><code class="language-java">@Action("process")
+public String process() throws ApplicationException {
+    // Get command line parameters from context
+    if (null != getContext().getAttribute("--data")) {
+        String data = getContext().getAttribute("--data").toString();
+        return processData(data);
+    }
+    throw new ApplicationException("Missing required parameter: --data");
+}</code></pre>
+
+    <h2 class="examples lang" data-en="Application Examples" data-fr="Exemples d'applications" data-de="Anwendungsbeispiele" data-zh="应用示例">Application Examples</h2>
+    <pre><code class="language-java">public class ExampleApp extends AbstractApplication {
+    private static final EventDispatcher dispatcher = EventDispatcher.getInstance();
+
+    static {
+        dispatcher.registerHandler(InitEvent.class, handler -> 
+            System.out.println(handler.getPayload()));
+    }
+
+    @Override
+    public void init() {
+        // Trigger event on initialization
+        dispatcher.dispatch(new InitEvent());
+    }
+
+    @Action("praise")
+    public String praise() {
+        return "Praise the Lord!";
+    }
+
+    @Action("say")
+    public String say() throws ApplicationException {
+        if (null != getContext().getAttribute("--words"))
+            return getContext().getAttribute("--words").toString();
+        throw new ApplicationException("Could not find the parameter <i>--words</i>.");
+    }
+
+    @Action("say")
+    public String say(String words) {
+        return words;
+    }
+
+    @Override
+    public String version() {
+        return "1.0";
+    }
+}</code></pre>
+
+    <h2 class="config lang" data-en="Configuration Reference" data-fr="Référence de configuration" data-de="Konfigurationsreferenz" data-zh="配置参考">Configuration Reference</h2>
+    <pre><code class="language-properties"># Database configuration
+driver=org.h2.Driver
+database.url=jdbc:h2:~/test
+database.user=
+database.password=
+database.connections.max=10
+
+# Default settings
+default.file.encoding=UTF-8
+default.home.page=say/Praise the Lord!
+default.reload.mode=true
+default.date.format=yyyy-MM-dd HH:mm:ss
+
+# Error handling
+default.error.process=false
+default.error.page=error
+
+# HTTP configuration
+default.http.max_content_length = 4194304
+
+# System directory
+system.directory=
+
+# Mail configuration
+mail.smtp.host=
+mail.pop3.host=
+mail.smtp.port=
+mail.pop3.port=
+mail.smtp.auth=
+mail.pop3.auth=
+smtp.auth.user=
+smtp.auth.pwd=
+
+# Logging configuration
+logging.override = !TRUE
+handlers = java.util.logging.ConsoleHandler
+java.util.logging.ConsoleHandler.level = FINE
+java.util.logging.ConsoleHandler.formatter = org.apache.juli.OneLineFormatter
+java.util.logging.ConsoleHandler.encoding = UTF-8
+org.tinystruct.valve.Watcher$LockEventListener.level=WARNING
+
+# MQTT configuration
+mqtt.server.host=tcp://192.168.0.101
+mqtt.server.port=1883
+
+# MCP configuration
+mcp.auth.token=123456</code></pre>
+
+    <div class="terminal" id="terminal-secondary"><div id="output-secondary"></div><div class="blink" id="cursor-secondary"></div></div>
+
+    <div class="links">
+        <a href="https://github.com/tinystruct/tinystruct" class="btn" target="_blank">GitHub Repository</a>
+        <a href="https://mvnrepository.com/artifact/org.tinystruct/tinystruct" class="btn" target="_blank">Maven Repository</a>
+    </div>
+
+    <h2 class="projects lang" data-en="Projects" data-fr="Projets" data-de="Projekte" data-zh="项目">Projects</h2>
     <ul>
-        <li><a href="https://github.com/tinystruct/smalltalk"> https://github.com/tinystruct/smalltalk</a></li>
-        <li><a href="https://github.com/m0ver/bible-online"> https://github.com/m0ver/bible-online</a></li>
+        <li><a href="https://github.com/tinystruct/smalltalk">https://github.com/tinystruct/smalltalk</a></li>
+        <li><a href="https://github.com/m0ver/bible-online">https://github.com/m0ver/bible-online</a></li>
     </ul>
-    <h2 class="lang"
-        data-en="Why Choose tinystruct?"
-        data-de="Warum tinystruct wählen?"
-        data-fr="Pourquoi choisir tinystruct?"
-        data-zh="为什么选择 tinystruct?">Why Choose tinystruct?
-    </h2>
-    <p class="lang"
-       data-en="tinystruct focuses on reducing unnecessary complexity in application development. Its lightweight, modular nature makes it an excellent choice for developers looking for a straightforward, efficient framework for various Java-based projects."
-       data-de="tinystruct konzentriert sich darauf, unnötige Komplexität in der Anwendungsentwicklung zu reduzieren. Seine leichte, modulare Natur macht es zu einer ausgezeichneten Wahl für Entwickler, die nach einem einfachen, effizienten Framework für verschiedene Java-basierte Projekte suchen."
-       data-fr="tinystruct se concentre sur la réduction de la complexité inutile dans le développement d'applications. Sa nature légère et modulaire en fait un excellent choix pour les développeurs à la recherche d'un cadre simple et efficace pour divers projets basés sur Java."
-       data-zh="tinystruct 专注于减少应用程序开发中的不必要复杂性。其轻量级、模块化的特性使其成为开发人员在寻找简洁高效的 Java 项目框架时的理想选择。">tinystruct focuses on reducing unnecessary complexity in application development. Its lightweight, modular nature makes it an excellent choice for developers looking for a straightforward, efficient framework for various Java-based projects.
-    </p>
 </div>
 
 <!-- Footer -->
@@ -705,6 +791,100 @@ public class example extends AbstractApplication {
         }
     });
 
+    const translations = {
+        en: {
+            title: "tinystruct framework",
+            intro: "tinystruct is a lightweight Java application framework designed for building applications from command-line tools to web applications. Its core concept is 'write once, run anywhere', achieving code reuse between command-line and web environments through a unified Action mechanism.",
+            features: "Core Features",
+            unifiedCall: "Unified Method Call Mechanism",
+            lowLatency: "Low Latency Service Call",
+            lightweight: "Lightweight Design",
+            deployment: "Flexible Deployment Options",
+            action: "Action Mechanism",
+            server: "Server Implementation",
+            modular: "Modular Design",
+            event: "Event-Driven Mechanism",
+            context: "Context and Parameter Processing",
+            examples: "Application Examples",
+            config: "Configuration Reference",
+            tomcatServer: "TomcatServer",
+            nettyServer: "NettyHttpServer",
+            serverGuide: "Server Selection Guide",
+            tomcatFeatures: "TomcatServer Features",
+            nettyFeatures: "NettyHttpServer Features",
+            tomcatScenarios: "TomcatServer Use Cases",
+            nettyScenarios: "NettyHttpServer Use Cases"
+        },
+        fr: {
+            title: "framework tinystruct",
+            intro: "tinystruct est un framework Java léger conçu pour construire des applications allant des outils en ligne de commande aux applications Web. Son concept central est 'écrire une fois, exécuter partout', réalisant la réutilisation du code entre les environnements en ligne de commande et Web grâce à un mécanisme Action unifié.",
+            features: "Caractéristiques principales",
+            unifiedCall: "Mécanisme d'appel de méthode unifié",
+            lowLatency: "Appel de service à faible latence",
+            lightweight: "Conception légère",
+            deployment: "Options de déploiement flexibles",
+            action: "Mécanisme Action",
+            server: "Implémentation du serveur",
+            modular: "Conception modulaire",
+            event: "Mécanisme piloté par événements",
+            context: "Contexte et traitement des paramètres",
+            examples: "Exemples d'applications",
+            config: "Référence de configuration",
+            tomcatServer: "TomcatServer",
+            nettyServer: "NettyHttpServer",
+            serverGuide: "Guide de sélection du serveur",
+            tomcatFeatures: "Caractéristiques de TomcatServer",
+            nettyFeatures: "Caractéristiques de NettyHttpServer",
+            tomcatScenarios: "Cas d'utilisation de TomcatServer",
+            nettyScenarios: "Cas d'utilisation de NettyHttpServer"
+        },
+        de: {
+            title: "tinystruct Framework",
+            intro: "tinystruct ist ein leichtgewichtiges Java-Anwendungsframework, das für die Entwicklung von Anwendungen von Befehlszeilentools bis hin zu Webanwendungen konzipiert wurde. Sein Kernkonzept ist 'einmal schreiben, überall ausführen' und erreicht Code-Wiederverwendung zwischen Befehlszeilen- und Web-Umgebungen durch einen einheitlichen Action-Mechanismus.",
+            features: "Kernfunktionen",
+            unifiedCall: "Einheitlicher Methodenaufruf-Mechanismus",
+            lowLatency: "Niedrige Latenz-Serviceaufrufe",
+            lightweight: "Leichtgewichtiges Design",
+            deployment: "Flexible Bereitstellungsoptionen",
+            action: "Action-Mechanismus",
+            server: "Server-Implementierung",
+            modular: "Modulares Design",
+            event: "Ereignisgesteuerter Mechanismus",
+            context: "Kontext- und Parameterverarbeitung",
+            examples: "Anwendungsbeispiele",
+            config: "Konfigurationsreferenz",
+            tomcatServer: "TomcatServer",
+            nettyServer: "NettyHttpServer",
+            serverGuide: "Server-Auswahlführer",
+            tomcatFeatures: "TomcatServer-Funktionen",
+            nettyFeatures: "NettyHttpServer-Funktionen",
+            tomcatScenarios: "TomcatServer-Anwendungsfälle",
+            nettyScenarios: "NettyHttpServer-Anwendungsfälle"
+        },
+        zh: {
+            title: "tinystruct 框架",
+            intro: "tinystruct 是一个轻量级 Java 应用框架，设计用于构建从命令行工具到 Web 应用的各种应用程序。它的核心理念是'编写一次，随处运行'，通过统一的 Action 机制实现命令行和 Web 环境下的代码复用。",
+            features: "核心特性",
+            unifiedCall: "统一的方法调用机制",
+            lowLatency: "低延迟服务调用",
+            lightweight: "轻量级设计",
+            deployment: "灵活的部署选项",
+            action: "Action 机制",
+            server: "服务器实现",
+            modular: "模块化设计",
+            event: "事件驱动机制",
+            context: "上下文与参数处理",
+            examples: "应用示例",
+            config: "配置参考",
+            tomcatServer: "TomcatServer",
+            nettyServer: "NettyHttpServer",
+            serverGuide: "服务器选择指南",
+            tomcatFeatures: "TomcatServer 特点",
+            nettyFeatures: "NettyHttpServer 特点",
+            tomcatScenarios: "TomcatServer 适用场景",
+            nettyScenarios: "NettyHttpServer 适用场景"
+        }
+    };
 
 </script>
 </body>
