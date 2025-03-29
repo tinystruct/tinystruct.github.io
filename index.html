@@ -381,6 +381,7 @@
     <div class="menu">
         <a href="#about" class="lang" data-en="What is tinystruct?" data-fr="Qu'est-ce que tinystruct?" data-de="Was ist tinystruct?" data-zh="什么是 tinystruct?">What is tinystruct?</a>
         <a href="#features" class="lang" data-en="Features" data-fr="Caractéristiques" data-de="Funktionen" data-zh="特点">Features</a>
+        <a href="#architecture" class="lang" data-en="Architecture" data-fr="Architecture" data-de="Architektur" data-zh="架构">Architecture</a>
         <a href="#use-cases" class="lang" data-en="Use Cases" data-fr="Cas d'utilisation" data-de="Anwendungsfälle" data-zh="用例">Use Cases</a>
         <a href="#installation" class="lang" data-en="Installation" data-fr="Installation" data-de="Installation" data-zh="安装">Installation</a>
         <a href="#resources" class="lang" data-en="Resources" data-fr="Ressources" data-de="Ressourcen" data-zh="资源">Resources</a>
@@ -418,6 +419,13 @@
         <li class="lang" data-en="Flexible Deployment Options: Support for monolithic, microservices, and hybrid deployment modes." data-fr="Options de déploiement flexibles : Support des modes de déploiement monolithique, microservices et hybride." data-de="Flexible Bereitstellungsoptionen: Unterstützung für monolithische, Microservices- und hybride Bereitstellungsmodi." data-zh="灵活的部署选项：支持单体、微服务和混合部署模式。">Flexible Deployment Options: Support for monolithic, microservices, and hybrid deployment modes.</li>
     </ul>
 
+    <h2 id="architecture" class="lang" data-en="Architecture" data-fr="Architecture" data-de="Architektur" data-zh="架构">Architecture</h2>
+    <p class="lang" data-en="tinystruct follows a modular, action-oriented architecture that enables code reuse between command-line applications and web services. The framework provides a unified interface through the @Action annotation mechanism, allowing developers to write code once and run it anywhere." data-fr="tinystruct suit une architecture modulaire, orientée action qui permet la réutilisation du code entre les applications en ligne de commande et les services Web. Le framework fournit une interface unifiée grâce au mécanisme d'annotation @Action, permettant aux développeurs d'écrire le code une fois et de l'exécuter partout." data-de="tinystruct folgt einer modularen, aktionsorientierten Architektur, die die Wiederverwendung von Code zwischen Befehlszeilenanwendungen und Webdiensten ermöglicht. Das Framework bietet eine einheitliche Schnittstelle durch den @Action-Annotationsmechanismus, der es Entwicklern ermöglicht, Code einmal zu schreiben und überall auszuführen." data-zh="tinystruct 遵循模块化、面向动作的架构，实现命令行应用程序和 Web 服务之间的代码复用。该框架通过 @Action 注解机制提供统一接口，允许开发人员一次编写代码，随处运行。">tinystruct follows a modular, action-oriented architecture that enables code reuse between command-line applications and web services. The framework provides a unified interface through the @Action annotation mechanism, allowing developers to write code once and run it anywhere.</p>
+    <div class="architecture-image" style="text-align: center; margin: 20px 0;">
+        <img src="tinystruct.png" alt="tinystruct Architecture" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
+    </div>
+    <p class="lang" data-en="The diagram above illustrates how tinystruct allows applications to be accessed through both web services and command-line interfaces using the same underlying code. This architecture promotes code reusability, maintainability, and flexibility in deployment options." data-fr="Le diagramme ci-dessus illustre comment tinystruct permet aux applications d'être accessibles à la fois via des services Web et des interfaces en ligne de commande en utilisant le même code sous-jacent. Cette architecture favorise la réutilisabilité du code, la maintenabilité et la flexibilité des options de déploiement." data-de="Das obige Diagramm veranschaulicht, wie tinystruct es ermöglicht, auf Anwendungen sowohl über Webdienste als auch über Befehlszeilenschnittstellen mit demselben zugrunde liegenden Code zuzugreifen. Diese Architektur fördert die Wiederverwendbarkeit von Code, die Wartbarkeit und die Flexibilität bei den Bereitstellungsoptionen." data-zh="上图说明了 tinystruct 如何允许应用程序使用相同的底层代码通过 Web 服务和命令行界面访问。这种架构促进了代码的可重用性、可维护性和部署选项的灵活性。">The diagram above illustrates how tinystruct allows applications to be accessed through both web services and command-line interfaces using the same underlying code. This architecture promotes code reusability, maintainability, and flexibility in deployment options.</p>
+
     <h2 id="use-cases" class="lang" data-en="Best Use Cases and Their Benefits" data-fr="Meilleurs cas d'utilisation et leurs avantages" data-de="Beste Anwendungsfälle und deren Vorteile" data-zh="最佳用例及其优势">Best Use Cases and Their Benefits</h2>
     <ul>
         <li class="lang" data-en="Lightweight Web Applications: Perfect for small-scale websites needing speed and simplicity." data-fr="Applications web légères: Parfait pour les sites web à petite échelle nécessitant rapidité et simplicité." data-de="Leichte Webanwendungen: Ideal für kleine Websites, die Schnelligkeit und Einfachheit benötigen." data-zh="轻量级 Web 应用程序：非常适合需要速度和简单性的小型网站。">Lightweight Web Applications: Perfect for small-scale websites needing speed and simplicity.</li>
@@ -432,7 +440,7 @@
     <pre class="language-xml"><code>&lt;dependency&gt;
   &lt;groupId&gt;org.tinystruct&lt;/groupId&gt;
   &lt;artifactId&gt;tinystruct&lt;/artifactId&gt;
-  &lt;version&gt;1.6.1&lt;/version&gt;
+  &lt;version&gt;1.6.2&lt;/version&gt;
   &lt;classifier&gt;jar-with-dependencies&lt;/classifier&gt;
 &lt;/dependency&gt;</code><button class="copy-btn" onclick="copyCode(this)">Copy</button>
 </pre>
@@ -591,7 +599,7 @@ mcp.auth.token=123456</code></pre>
 
 <!-- Footer -->
 <footer>
-    <p class="lang" data-en="Created with ❤️ by James ZHOU" data-fr="Créé avec ❤️ par James ZHOU" data-de="Erstellt mit ❤️ von James ZHOU" data-zh="❤️ 创建者: James ZHOU">Created with ❤️ by James ZHOU</p>
+    <p class="lang" data-en="Created with by James ZHOU" data-fr="Créé avec par James ZHOU" data-de="Erstellt mit von James ZHOU" data-zh="创建者: James ZHOU">Created with by James ZHOU</p>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -649,7 +657,7 @@ mcp.auth.token=123456</code></pre>
     const mainCommands = [
         "$ bin/dispatcher --version",
         "  _/  '         _ _/  _     _ _/",
-        "  /  /  /) (/ _)  /  /  (/ (  /  1.6.1",
+        "  /  /  /) (/ _)  /  /  (/ (  /  1.6.2",
         "           /",
         " ",
         "$ bin/dispatcher --help",
@@ -800,6 +808,8 @@ mcp.auth.token=123456</code></pre>
             lowLatency: "Low Latency Service Call",
             lightweight: "Lightweight Design",
             deployment: "Flexible Deployment Options",
+            architecture: "Architecture",
+            architectureIntro: "Framework architecture overview",
             action: "Action Mechanism",
             server: "Server Implementation",
             modular: "Modular Design",
@@ -823,6 +833,8 @@ mcp.auth.token=123456</code></pre>
             lowLatency: "Appel de service à faible latence",
             lightweight: "Conception légère",
             deployment: "Options de déploiement flexibles",
+            architecture: "Architecture",
+            architectureIntro: "Aperçu de l'architecture du framework",
             action: "Mécanisme Action",
             server: "Implémentation du serveur",
             modular: "Conception modulaire",
@@ -846,6 +858,8 @@ mcp.auth.token=123456</code></pre>
             lowLatency: "Niedrige Latenz-Serviceaufrufe",
             lightweight: "Leichtgewichtiges Design",
             deployment: "Flexible Bereitstellungsoptionen",
+            architecture: "Architektur",
+            architectureIntro: "Überblick über die Framework-Architektur",
             action: "Action-Mechanismus",
             server: "Server-Implementierung",
             modular: "Modulares Design",
@@ -869,6 +883,8 @@ mcp.auth.token=123456</code></pre>
             lowLatency: "低延迟服务调用",
             lightweight: "轻量级设计",
             deployment: "灵活的部署选项",
+            architecture: "架构",
+            architectureIntro: "框架架构概览",
             action: "Action 机制",
             server: "服务器实现",
             modular: "模块化设计",
