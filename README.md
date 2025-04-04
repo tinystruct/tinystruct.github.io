@@ -1,10 +1,10 @@
-# Tinystruct Framework Documentation
+# tinystruct Framework Documentation
 
 [English](en/) | [中文](zh/)
 
-Welcome to the Tinystruct Framework documentation. This documentation provides comprehensive guidance for using and developing with the Tinystruct Framework.
+Welcome to the tinystruct Framework documentation. This documentation provides comprehensive guidance for using and developing with the tinystruct Framework.
 
-欢迎查阅 Tinystruct 框架文档。本文档为使用和开发 Tinystruct 框架提供全面的指导。
+欢迎查阅 tinystruct 框架文档。本文档为使用和开发 tinystruct 框架提供全面的指导。
 
 ## Choose Your Language / 选择语言
 
@@ -41,5 +41,5 @@ If you'd like to contribute to this documentation, please:
 
 ## License / 许可证
 
-This documentation is licensed under the same terms as the Tinystruct Framework.
-本文档采用与 Tinystruct 框架相同的许可条款。
+This documentation is licensed under the same terms as the tinystruct Framework.
+本文档采用与 tinystruct 框架相同的许可条款。

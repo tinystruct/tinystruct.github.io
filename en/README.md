@@ -1,11 +1,11 @@
-# Tinystruct Framework
+# tinystruct Framework
 
 `"How many are your works, O LORD! In wisdom you made them all; the earth is full of your creatures."`
 ***Psalms 104:24***
 
 ## Overview
 
-Tinystruct is a simple yet powerful framework for Java development. It embraces simple thinking and better design principles, making it easy to use while delivering excellent performance.
+tinystruct is a simple yet powerful framework for Java development. It embraces simple thinking and better design principles, making it easy to use while delivering excellent performance.
 
 ## Key Features
 

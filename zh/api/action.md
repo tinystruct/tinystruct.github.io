@@ -2,7 +2,7 @@
 
 ## @Action 注解
 
-`@Action` 注解用于定义 Tinystruct 应用程序中的路由和命令。
+`@Action` 注解用于定义 tinystruct 应用程序中的路由和命令。
 
 ### 参数
 
@@ -17,7 +17,7 @@
 
 ```java
 @Action(
-    value = "users/{id}", 
+    value = "users",
     description = "根据ID获取用户",
     mode = Action.Mode.Web
 )
@@ -25,6 +25,8 @@ public User getUser(Integer id) {
     return userService.findById(id);
 }
 ```
+
+请注意，Tinystruct 会根据参数自动将像 `/users/123` 这样的请求路由到适当的方法。无需在 @Action 注解中定义像 `{id}` 这样的路径变量。
 
 ## Action 类
 

@@ -2,7 +2,7 @@
 
 ## @Action Annotation
 
-The `@Action` annotation is used to define routes and commands in Tinystruct applications.
+The `@Action` annotation is used to define routes and commands in tinystruct applications.
 
 ### Parameters
 
@@ -17,7 +17,7 @@ The `@Action` annotation is used to define routes and commands in Tinystruct app
 
 ```java
 @Action(
-    value = "users/{id}", 
+    value = "users",
     description = "Get user by ID",
     mode = Action.Mode.Web
 )
@@ -25,6 +25,8 @@ public User getUser(Integer id) {
     return userService.findById(id);
 }
 ```
+
+Note that Tinystruct automatically routes requests like `/users/123` to the appropriate method based on the parameters. There's no need to define path variables like `{id}` in the @Action annotation.
 
 ## Action Class
 
