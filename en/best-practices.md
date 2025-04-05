@@ -59,20 +59,20 @@ Organize your code into logical packages:
 // Good: Focused on user management
 public class UserActions extends AbstractApplication {
     @Action("users")
-    public JsonResponse getUsers() { ... }
-    
+    public String getUsers() { ... }
+
     @Action("users/{id}")
-    public JsonResponse getUser(Integer id) { ... }
-    
+    public String getUser(Integer id) { ... }
+
     @Action("users/create")
-    public JsonResponse createUser(Request request) { ... }
+    public String createUser(Request request) { ... }
 }
 
 // Good: Focused on authentication
 public class AuthActions extends AbstractApplication {
     @Action("login")
     public Response login(Request request) { ... }
-    
+
     @Action("logout")
     public Response logout(Request request) { ... }
 }
@@ -83,21 +83,28 @@ public class AuthActions extends AbstractApplication {
 ```java
 // Good: Thin action method
 @Action("users")
-public JsonResponse getUsers() {
-    UserService userService = ServiceRegistry.getInstance().getService(UserService.class);
+public String getUsers(Response response) {
+    // Get users from service or repository
     List<User> users = userService.findAll();
-    return new JsonResponse(users);
+
+    // Set content type to JSON
+    response.headers().add(Header.CONTENT_TYPE.set("application/json"));
+
+    // Create JSON response
+    Builder builder = new Builder();
+    builder.put("users", users);
+
+    return builder.toString();
 }
 
 // Bad: Action method with business logic
 @Action("users")
-public JsonResponse getUsers() {
+public String getUsers(Response response) {
     Repository repository = Type.MySQL.createRepository();
-    repository.connect(getConfiguration());
-    
+
     List<Row> rows = repository.query("SELECT * FROM users");
     List<User> users = new ArrayList<>();
-    
+
     for (Row row : rows) {
         User user = new User();
         user.setId(row.getInt("id"));
@@ -105,8 +112,15 @@ public JsonResponse getUsers() {
         user.setEmail(row.getString("email"));
         users.add(user);
     }
-    
-    return new JsonResponse(users);
+
+    // Set content type to JSON
+    response.headers().add(Header.CONTENT_TYPE.set("application/json"));
+
+    // Create JSON response
+    Builder builder = new Builder();
+    builder.put("users", users);
+
+    return builder.toString();
 }
 ```
 
@@ -114,35 +128,59 @@ public JsonResponse getUsers() {
 
 ```java
 @Action("users/create")
-public JsonResponse createUser(Request request) {
+public String createUser(Request request, Response response) {
     String name = request.getParameter("name");
     String email = request.getParameter("email");
     String password = request.getParameter("password");
-    
+
     // Validate input
     List<String> errors = new ArrayList<>();
-    
+
     if (name == null || name.trim().isEmpty()) {
         errors.add("Name is required");
     }
-    
+
     if (email == null || !email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
         errors.add("Valid email is required");
     }
-    
+
     if (password == null || password.length() < 8) {
         errors.add("Password must be at least 8 characters");
     }
-    
+
+    // Set content type to JSON
+    response.headers().add(Header.CONTENT_TYPE.set("application/json"));
+
+    // Create JSON response
+    Builder builder = new Builder();
+
     if (!errors.isEmpty()) {
-        return new JsonResponse(Map.of("success", false, "errors", errors));
+        builder.put("success", false);
+
+        // Add errors to response
+        Builders errorsBuilder = new Builders();
+        for (String error : errors) {
+            errorsBuilder.add(error);
+        }
+        builder.put("errors", errorsBuilder);
+
+        return builder.toString();
     }
-    
+
     // Process valid input
-    UserService userService = ServiceRegistry.getInstance().getService(UserService.class);
     User user = userService.createUser(name, email, password);
-    
-    return new JsonResponse(Map.of("success", true, "user", user));
+
+    // Create success response
+    builder.put("success", true);
+
+    // Add user to response
+    Builder userBuilder = new Builder();
+    userBuilder.put("id", user.getId());
+    userBuilder.put("name", user.getName());
+    userBuilder.put("email", user.getEmail());
+    builder.put("user", userBuilder);
+
+    return builder.toString();
 }
 ```
 
@@ -153,28 +191,28 @@ public JsonResponse createUser(Request request) {
 ```java
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    
+
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-    
+
     @Override
     public User createUser(String name, String email, String password) {
         // Check if email already exists
         if (userRepository.findByEmail(email) != null) {
             throw new ApplicationException("Email already in use");
         }
-        
+
         // Hash password
         String hashedPassword = PasswordUtils.hashPassword(password);
-        
+
         // Create user
         User user = new User();
         user.setName(name);
         user.setEmail(email);
         user.setPassword(hashedPassword);
         user.setCreatedAt(new Date());
-        
+
         // Save user
         return userRepository.save(user);
     }
@@ -186,35 +224,35 @@ public class UserServiceImpl implements UserService {
 ```java
 public class TransferServiceImpl implements TransferService {
     private final AccountRepository accountRepository;
-    
+
     @Override
     public void transferFunds(int fromAccountId, int toAccountId, double amount) {
         Repository repository = accountRepository.getRepository();
-        
+
         try {
             repository.setAutoCommit(false);
-            
+
             Account fromAccount = accountRepository.findById(fromAccountId);
             Account toAccount = accountRepository.findById(toAccountId);
-            
+
             if (fromAccount == null) {
                 throw new ApplicationException("Source account not found");
             }
-            
+
             if (toAccount == null) {
                 throw new ApplicationException("Destination account not found");
             }
-            
+
             if (fromAccount.getBalance() < amount) {
                 throw new ApplicationException("Insufficient funds");
             }
-            
+
             fromAccount.setBalance(fromAccount.getBalance() - amount);
             toAccount.setBalance(toAccount.getBalance() + amount);
-            
+
             accountRepository.update(fromAccount);
             accountRepository.update(toAccount);
-            
+
             // Log transaction
             TransactionLog log = new TransactionLog();
             log.setFromAccountId(fromAccountId);
@@ -222,7 +260,7 @@ public class TransferServiceImpl implements TransferService {
             log.setAmount(amount);
             log.setTimestamp(new Date());
             transactionLogRepository.save(log);
-            
+
             repository.commit();
         } catch (Exception e) {
             repository.rollback();
@@ -250,22 +288,22 @@ public interface UserRepository {
 
 public class MySQLUserRepository implements UserRepository {
     private final Repository repository;
-    
+
     public MySQLUserRepository(Repository repository) {
         this.repository = repository;
     }
-    
+
     @Override
     public User findById(int id) {
         List<Row> rows = repository.query("SELECT * FROM users WHERE id = ?", id);
-        
+
         if (rows.isEmpty()) {
             return null;
         }
-        
+
         return mapRowToUser(rows.get(0));
     }
-    
+
     private User mapRowToUser(Row row) {
         User user = new User();
         user.setId(row.getInt("id"));
@@ -283,10 +321,10 @@ public class MySQLUserRepository implements UserRepository {
 ```java
 public class RepositoryFactory {
     private static final Repository repository;
-    
+
     static {
         repository = Type.MySQL.createRepository();
-        
+
         // Register shutdown hook to close connection
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
@@ -296,7 +334,7 @@ public class RepositoryFactory {
             }
         }));
     }
-    
+
     public static Repository getRepository() {
         return repository;
     }
@@ -313,11 +351,11 @@ public Response getUser(Integer id) {
     try {
         UserService userService = ServiceRegistry.getInstance().getService(UserService.class);
         User user = userService.findById(id);
-        
+
         if (user == null) {
             return new ErrorResponse(404, "User not found");
         }
-        
+
         return new JsonResponse(user);
     } catch (Exception e) {
         logger.error("Error retrieving user", e);
@@ -337,12 +375,12 @@ public class ResourceNotFoundException extends ApplicationException {
 
 public class ValidationException extends ApplicationException {
     private final List<String> errors;
-    
+
     public ValidationException(List<String> errors) {
         super("Validation failed");
         this.errors = errors;
     }
-    
+
     public List<String> getErrors() {
         return errors;
     }
@@ -354,17 +392,17 @@ public class ValidationException extends ApplicationException {
 ```java
 public class ErrorHandlerInterceptor implements ActionInterceptor {
     private static final Logger logger = Logger.getLogger(ErrorHandlerInterceptor.class.getName());
-    
+
     @Override
     public boolean before(Action action, Object[] args) {
         return true;
     }
-    
+
     @Override
     public void after(Action action, Object result) {
         // No action needed
     }
-    
+
     @Override
     public void onException(Action action, Exception e) {
         // Find request in arguments
@@ -375,13 +413,13 @@ public class ErrorHandlerInterceptor implements ActionInterceptor {
                 break;
             }
         }
-        
+
         if (request == null) {
             return;
         }
-        
+
         Response response;
-        
+
         if (e instanceof ResourceNotFoundException) {
             response = new ErrorResponse(404, e.getMessage());
         } else if (e instanceof ValidationException) {
@@ -399,7 +437,7 @@ public class ErrorHandlerInterceptor implements ActionInterceptor {
             logger.log(Level.SEVERE, "Unhandled exception", e);
             response = new ErrorResponse(500, "Internal server error");
         }
-        
+
         request.setAttribute("_response", response);
     }
 }
@@ -414,7 +452,7 @@ public class PasswordUtils {
     public static String hashPassword(String password) {
         return BCrypt.hashpw(password, BCrypt.gensalt(12));
     }
-    
+
     public static boolean verifyPassword(String password, String hashedPassword) {
         return BCrypt.checkpw(password, hashedPassword);
     }
@@ -429,7 +467,7 @@ public class SecurityUtils {
         if (input == null) {
             return null;
         }
-        
+
         return input
             .replace("&", "&amp;")
             .replace("<", "&lt;")
@@ -450,7 +488,7 @@ public class CsrfUtils {
         session.setAttribute("csrf_token", token);
         return token;
     }
-    
+
     public static boolean validateToken(Session session, String token) {
         String storedToken = (String) session.getAttribute("csrf_token");
         return storedToken != null && storedToken.equals(token);
@@ -461,10 +499,10 @@ public class CsrfUtils {
 public Response showForm(Request request) {
     Session session = request.getSession(true);
     String csrfToken = CsrfUtils.generateToken(session);
-    
+
     Map<String, Object> model = new HashMap<>();
     model.put("csrfToken", csrfToken);
-    
+
     return new TemplateResponse("form.html", model);
 }
 
@@ -472,11 +510,11 @@ public Response showForm(Request request) {
 public Response processForm(Request request) {
     Session session = request.getSession(false);
     String csrfToken = request.getParameter("csrf_token");
-    
+
     if (session == null || !CsrfUtils.validateToken(session, csrfToken)) {
         return new ErrorResponse(403, "Invalid CSRF token");
     }
-    
+
     // Process form
 }
 ```
@@ -487,19 +525,26 @@ public Response processForm(Request request) {
 
 ```java
 @Action("products")
-public JsonResponse getProducts() {
+public String getProducts(Response response) {
     @SuppressWarnings("unchecked")
     List<Product> products = (List<Product>) CacheManager.get("all_products");
-    
+
     if (products == null) {
-        ProductService productService = ServiceRegistry.getInstance().getService(ProductService.class);
+        // Get products from database or service
         products = productService.findAll();
-        
+
         // Cache for 10 minutes
         CacheManager.put("all_products", products, 10 * 60 * 1000);
     }
-    
-    return new JsonResponse(products);
+
+    // Set content type to JSON
+    response.headers().add(Header.CONTENT_TYPE.set("application/json"));
+
+    // Create JSON response
+    Builder builder = new Builder();
+    builder.put("products", products);
+
+    return builder.toString();
 }
 ```
 
@@ -536,54 +581,54 @@ database.connections.idle.timeout=300000
 public class UserServiceTest {
     private UserService userService;
     private UserRepository userRepository;
-    
+
     @Before
     public void setUp() {
         userRepository = mock(UserRepository.class);
         userService = new UserServiceImpl(userRepository);
     }
-    
+
     @Test
     public void testCreateUser() {
         // Arrange
         String name = "John Doe";
         String email = "john@example.com";
         String password = "password123";
-        
+
         User savedUser = new User();
         savedUser.setId(1);
         savedUser.setName(name);
         savedUser.setEmail(email);
-        
+
         when(userRepository.findByEmail(email)).thenReturn(null);
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
-        
+
         // Act
         User result = userService.createUser(name, email, password);
-        
+
         // Assert
         assertNotNull(result);
         assertEquals(1, result.getId());
         assertEquals(name, result.getName());
         assertEquals(email, result.getEmail());
-        
+
         verify(userRepository).findByEmail(email);
         verify(userRepository).save(any(User.class));
     }
-    
+
     @Test(expected = ApplicationException.class)
     public void testCreateUser_EmailExists() {
         // Arrange
         String email = "john@example.com";
-        
+
         User existingUser = new User();
         existingUser.setEmail(email);
-        
+
         when(userRepository.findByEmail(email)).thenReturn(existingUser);
-        
+
         // Act
         userService.createUser("John Doe", email, "password123");
-        
+
         // Assert: expect ApplicationException
     }
 }
@@ -595,43 +640,47 @@ public class UserServiceTest {
 public class UserActionsIntegrationTest {
     private static AbstractApplication application;
     private static Repository repository;
-    
+
     @BeforeClass
     public static void setUpClass() {
         application = new TestApplication();
         application.init();
-        
+
         repository = Type.H2.createRepository();
         repository.connect(application.getConfiguration());
-        
+
         // Set up test database
         repository.execute("CREATE TABLE users (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(100), email VARCHAR(100), password VARCHAR(100), created_at TIMESTAMP)");
     }
-    
+
     @Before
     public void setUp() {
         // Clear test data
         repository.execute("DELETE FROM users");
-        
+
         // Insert test data
         repository.execute("INSERT INTO users (name, email, password, created_at) VALUES (?, ?, ?, NOW())", "Test User", "test@example.com", "password");
     }
-    
+
     @Test
     public void testGetUsers() {
         // Arrange
         MockRequest request = new MockRequest();
-        
+
         // Act
         Object result = application.execute("users", request);
-        
+
         // Assert
-        assertTrue(result instanceof JsonResponse);
-        JsonResponse response = (JsonResponse) result;
-        
+        assertTrue(result instanceof String);
+        String jsonString = (String) result;
+
+        // Parse JSON response
+        Builder builder = new Builder();
+        builder.parse(jsonString);
+
         @SuppressWarnings("unchecked")
-        List<Map<String, Object>> users = (List<Map<String, Object>>) response.getData();
-        
+        Builders users = (Builders) builder.get("users");
+
         assertEquals(1, users.size());
         assertEquals("Test User", users.get(0).get("name"));
         assertEquals("test@example.com", users.get(0).get("email"));
@@ -649,11 +698,11 @@ public class Application extends AbstractApplication {
     public void init() {
         // Load base configuration
         getConfiguration().load("config.properties");
-        
+
         // Load environment-specific configuration
         String env = System.getProperty("env", "dev");
         getConfiguration().load("config." + env + ".properties");
-        
+
         System.out.println("Application initialized with " + env + " environment");
     }
 }
@@ -684,7 +733,7 @@ public JsonResponse healthCheck() {
     Map<String, Object> status = new HashMap<>();
     status.put("status", "UP");
     status.put("timestamp", new Date());
-    
+
     // Check database connection
     try {
         Repository repository = Type.MySQL.createRepository();
@@ -696,10 +745,10 @@ public JsonResponse healthCheck() {
         status.put("database_error", e.getMessage());
         status.put("status", "DOWN");
     }
-    
+
     // Check other dependencies
     // ...
-    
+
     return new JsonResponse(status);
 }
 ```

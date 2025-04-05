@@ -59,20 +59,20 @@ my-app/
 // 好：专注于用户管理
 public class UserActions extends AbstractApplication {
     @Action("users")
-    public JsonResponse getUsers() { ... }
-    
+    public String getUsers() { ... }
+
     @Action("users/{id}")
-    public JsonResponse getUser(Integer id) { ... }
-    
+    public String getUser(Integer id) { ... }
+
     @Action("users/create")
-    public JsonResponse createUser(Request request) { ... }
+    public String createUser(Request request) { ... }
 }
 
 // 好：专注于身份验证
 public class AuthActions extends AbstractApplication {
     @Action("login")
     public Response login(Request request) { ... }
-    
+
     @Action("logout")
     public Response logout(Request request) { ... }
 }
@@ -83,21 +83,28 @@ public class AuthActions extends AbstractApplication {
 ```java
 // 好：精简的动作方法
 @Action("users")
-public JsonResponse getUsers() {
-    UserService userService = ServiceRegistry.getInstance().getService(UserService.class);
+public String getUsers(Response response) {
+    // 从服务或仓库获取用户
     List<User> users = userService.findAll();
-    return new JsonResponse(users);
+
+    // 设置内容类型为 JSON
+    response.headers().add(Header.CONTENT_TYPE.set("application/json"));
+
+    // 创建 JSON 响应
+    Builder builder = new Builder();
+    builder.put("users", users);
+
+    return builder.toString();
 }
 
 // 坏：包含业务逻辑的动作方法
 @Action("users")
-public JsonResponse getUsers() {
+public String getUsers(Response response) {
     Repository repository = Type.MySQL.createRepository();
-    repository.connect(getConfiguration());
-    
+
     List<Row> rows = repository.query("SELECT * FROM users");
     List<User> users = new ArrayList<>();
-    
+
     for (Row row : rows) {
         User user = new User();
         user.setId(row.getInt("id"));
@@ -105,8 +112,15 @@ public JsonResponse getUsers() {
         user.setEmail(row.getString("email"));
         users.add(user);
     }
-    
-    return new JsonResponse(users);
+
+    // 设置内容类型为 JSON
+    response.headers().add(Header.CONTENT_TYPE.set("application/json"));
+
+    // 创建 JSON 响应
+    Builder builder = new Builder();
+    builder.put("users", users);
+
+    return builder.toString();
 }
 ```
 
@@ -114,35 +128,59 @@ public JsonResponse getUsers() {
 
 ```java
 @Action("users/create")
-public JsonResponse createUser(Request request) {
+public String createUser(Request request, Response response) {
     String name = request.getParameter("name");
     String email = request.getParameter("email");
     String password = request.getParameter("password");
-    
+
     // 验证输入
     List<String> errors = new ArrayList<>();
-    
+
     if (name == null || name.trim().isEmpty()) {
         errors.add("名称是必需的");
     }
-    
+
     if (email == null || !email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
         errors.add("需要有效的电子邮件");
     }
-    
+
     if (password == null || password.length() < 8) {
         errors.add("密码必须至少为 8 个字符");
     }
-    
+
+    // 设置内容类型为 JSON
+    response.headers().add(Header.CONTENT_TYPE.set("application/json"));
+
+    // 创建 JSON 响应
+    Builder builder = new Builder();
+
     if (!errors.isEmpty()) {
-        return new JsonResponse(Map.of("success", false, "errors", errors));
+        builder.put("success", false);
+
+        // 将错误添加到响应中
+        Builders errorsBuilder = new Builders();
+        for (String error : errors) {
+            errorsBuilder.add(error);
+        }
+        builder.put("errors", errorsBuilder);
+
+        return builder.toString();
     }
-    
+
     // 处理有效输入
-    UserService userService = ServiceRegistry.getInstance().getService(UserService.class);
     User user = userService.createUser(name, email, password);
-    
-    return new JsonResponse(Map.of("success", true, "user", user));
+
+    // 创建成功响应
+    builder.put("success", true);
+
+    // 将用户添加到响应中
+    Builder userBuilder = new Builder();
+    userBuilder.put("id", user.getId());
+    userBuilder.put("name", user.getName());
+    userBuilder.put("email", user.getEmail());
+    builder.put("user", userBuilder);
+
+    return builder.toString();
 }
 ```
 
@@ -153,28 +191,28 @@ public JsonResponse createUser(Request request) {
 ```java
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    
+
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-    
+
     @Override
     public User createUser(String name, String email, String password) {
         // 检查电子邮件是否已存在
         if (userRepository.findByEmail(email) != null) {
             throw new ApplicationException("电子邮件已被使用");
         }
-        
+
         // 哈希密码
         String hashedPassword = PasswordUtils.hashPassword(password);
-        
+
         // 创建用户
         User user = new User();
         user.setName(name);
         user.setEmail(email);
         user.setPassword(hashedPassword);
         user.setCreatedAt(new Date());
-        
+
         // 保存用户
         return userRepository.save(user);
     }
@@ -186,35 +224,35 @@ public class UserServiceImpl implements UserService {
 ```java
 public class TransferServiceImpl implements TransferService {
     private final AccountRepository accountRepository;
-    
+
     @Override
     public void transferFunds(int fromAccountId, int toAccountId, double amount) {
         Repository repository = accountRepository.getRepository();
-        
+
         try {
             repository.setAutoCommit(false);
-            
+
             Account fromAccount = accountRepository.findById(fromAccountId);
             Account toAccount = accountRepository.findById(toAccountId);
-            
+
             if (fromAccount == null) {
                 throw new ApplicationException("未找到源账户");
             }
-            
+
             if (toAccount == null) {
                 throw new ApplicationException("未找到目标账户");
             }
-            
+
             if (fromAccount.getBalance() < amount) {
                 throw new ApplicationException("资金不足");
             }
-            
+
             fromAccount.setBalance(fromAccount.getBalance() - amount);
             toAccount.setBalance(toAccount.getBalance() + amount);
-            
+
             accountRepository.update(fromAccount);
             accountRepository.update(toAccount);
-            
+
             // 记录交易
             TransactionLog log = new TransactionLog();
             log.setFromAccountId(fromAccountId);
@@ -222,7 +260,7 @@ public class TransferServiceImpl implements TransferService {
             log.setAmount(amount);
             log.setTimestamp(new Date());
             transactionLogRepository.save(log);
-            
+
             repository.commit();
         } catch (Exception e) {
             repository.rollback();
@@ -250,22 +288,22 @@ public interface UserRepository {
 
 public class MySQLUserRepository implements UserRepository {
     private final Repository repository;
-    
+
     public MySQLUserRepository(Repository repository) {
         this.repository = repository;
     }
-    
+
     @Override
     public User findById(int id) {
         List<Row> rows = repository.query("SELECT * FROM users WHERE id = ?", id);
-        
+
         if (rows.isEmpty()) {
             return null;
         }
-        
+
         return mapRowToUser(rows.get(0));
     }
-    
+
     private User mapRowToUser(Row row) {
         User user = new User();
         user.setId(row.getInt("id"));
@@ -283,10 +321,10 @@ public class MySQLUserRepository implements UserRepository {
 ```java
 public class RepositoryFactory {
     private static final Repository repository;
-    
+
     static {
         repository = Type.MySQL.createRepository();
-        
+
         // 注册关闭钩子以关闭连接
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
@@ -296,7 +334,7 @@ public class RepositoryFactory {
             }
         }));
     }
-    
+
     public static Repository getRepository() {
         return repository;
     }
@@ -313,11 +351,11 @@ public Response getUser(Integer id) {
     try {
         UserService userService = ServiceRegistry.getInstance().getService(UserService.class);
         User user = userService.findById(id);
-        
+
         if (user == null) {
             return new ErrorResponse(404, "未找到用户");
         }
-        
+
         return new JsonResponse(user);
     } catch (Exception e) {
         logger.error("检索用户时出错", e);
@@ -337,12 +375,12 @@ public class ResourceNotFoundException extends ApplicationException {
 
 public class ValidationException extends ApplicationException {
     private final List<String> errors;
-    
+
     public ValidationException(List<String> errors) {
         super("验证失败");
         this.errors = errors;
     }
-    
+
     public List<String> getErrors() {
         return errors;
     }
@@ -354,17 +392,17 @@ public class ValidationException extends ApplicationException {
 ```java
 public class ErrorHandlerInterceptor implements ActionInterceptor {
     private static final Logger logger = Logger.getLogger(ErrorHandlerInterceptor.class.getName());
-    
+
     @Override
     public boolean before(Action action, Object[] args) {
         return true;
     }
-    
+
     @Override
     public void after(Action action, Object result) {
         // 不需要操作
     }
-    
+
     @Override
     public void onException(Action action, Exception e) {
         // 在参数中查找请求
@@ -375,13 +413,13 @@ public class ErrorHandlerInterceptor implements ActionInterceptor {
                 break;
             }
         }
-        
+
         if (request == null) {
             return;
         }
-        
+
         Response response;
-        
+
         if (e instanceof ResourceNotFoundException) {
             response = new ErrorResponse(404, e.getMessage());
         } else if (e instanceof ValidationException) {
@@ -399,7 +437,7 @@ public class ErrorHandlerInterceptor implements ActionInterceptor {
             logger.log(Level.SEVERE, "未处理的异常", e);
             response = new ErrorResponse(500, "内部服务器错误");
         }
-        
+
         request.setAttribute("_response", response);
     }
 }
@@ -414,7 +452,7 @@ public class PasswordUtils {
     public static String hashPassword(String password) {
         return BCrypt.hashpw(password, BCrypt.gensalt(12));
     }
-    
+
     public static boolean verifyPassword(String password, String hashedPassword) {
         return BCrypt.checkpw(password, hashedPassword);
     }
@@ -429,7 +467,7 @@ public class SecurityUtils {
         if (input == null) {
             return null;
         }
-        
+
         return input
             .replace("&", "&amp;")
             .replace("<", "&lt;")
@@ -450,7 +488,7 @@ public class CsrfUtils {
         session.setAttribute("csrf_token", token);
         return token;
     }
-    
+
     public static boolean validateToken(Session session, String token) {
         String storedToken = (String) session.getAttribute("csrf_token");
         return storedToken != null && storedToken.equals(token);
@@ -461,10 +499,10 @@ public class CsrfUtils {
 public Response showForm(Request request) {
     Session session = request.getSession(true);
     String csrfToken = CsrfUtils.generateToken(session);
-    
+
     Map<String, Object> model = new HashMap<>();
     model.put("csrfToken", csrfToken);
-    
+
     return new TemplateResponse("form.html", model);
 }
 
@@ -472,11 +510,11 @@ public Response showForm(Request request) {
 public Response processForm(Request request) {
     Session session = request.getSession(false);
     String csrfToken = request.getParameter("csrf_token");
-    
+
     if (session == null || !CsrfUtils.validateToken(session, csrfToken)) {
         return new ErrorResponse(403, "无效的 CSRF 令牌");
     }
-    
+
     // 处理表单
 }
 ```
@@ -487,19 +525,26 @@ public Response processForm(Request request) {
 
 ```java
 @Action("products")
-public JsonResponse getProducts() {
+public String getProducts(Response response) {
     @SuppressWarnings("unchecked")
     List<Product> products = (List<Product>) CacheManager.get("all_products");
-    
+
     if (products == null) {
-        ProductService productService = ServiceRegistry.getInstance().getService(ProductService.class);
+        // 从数据库或服务获取产品
         products = productService.findAll();
-        
+
         // 缓存 10 分钟
         CacheManager.put("all_products", products, 10 * 60 * 1000);
     }
-    
-    return new JsonResponse(products);
+
+    // 设置内容类型为 JSON
+    response.headers().add(Header.CONTENT_TYPE.set("application/json"));
+
+    // 创建 JSON 响应
+    Builder builder = new Builder();
+    builder.put("products", products);
+
+    return builder.toString();
 }
 ```
 
@@ -536,54 +581,54 @@ database.connections.idle.timeout=300000
 public class UserServiceTest {
     private UserService userService;
     private UserRepository userRepository;
-    
+
     @Before
     public void setUp() {
         userRepository = mock(UserRepository.class);
         userService = new UserServiceImpl(userRepository);
     }
-    
+
     @Test
     public void testCreateUser() {
         // 安排
         String name = "张三";
         String email = "zhangsan@example.com";
         String password = "password123";
-        
+
         User savedUser = new User();
         savedUser.setId(1);
         savedUser.setName(name);
         savedUser.setEmail(email);
-        
+
         when(userRepository.findByEmail(email)).thenReturn(null);
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
-        
+
         // 行动
         User result = userService.createUser(name, email, password);
-        
+
         // 断言
         assertNotNull(result);
         assertEquals(1, result.getId());
         assertEquals(name, result.getName());
         assertEquals(email, result.getEmail());
-        
+
         verify(userRepository).findByEmail(email);
         verify(userRepository).save(any(User.class));
     }
-    
+
     @Test(expected = ApplicationException.class)
     public void testCreateUser_EmailExists() {
         // 安排
         String email = "zhangsan@example.com";
-        
+
         User existingUser = new User();
         existingUser.setEmail(email);
-        
+
         when(userRepository.findByEmail(email)).thenReturn(existingUser);
-        
+
         // 行动
         userService.createUser("张三", email, "password123");
-        
+
         // 断言：期望 ApplicationException
     }
 }
@@ -595,43 +640,47 @@ public class UserServiceTest {
 public class UserActionsIntegrationTest {
     private static AbstractApplication application;
     private static Repository repository;
-    
+
     @BeforeClass
     public static void setUpClass() {
         application = new TestApplication();
         application.init();
-        
+
         repository = Type.H2.createRepository();
         repository.connect(application.getConfiguration());
-        
+
         // 设置测试数据库
         repository.execute("CREATE TABLE users (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(100), email VARCHAR(100), password VARCHAR(100), created_at TIMESTAMP)");
     }
-    
+
     @Before
     public void setUp() {
         // 清除测试数据
         repository.execute("DELETE FROM users");
-        
+
         // 插入测试数据
         repository.execute("INSERT INTO users (name, email, password, created_at) VALUES (?, ?, ?, NOW())", "测试用户", "test@example.com", "password");
     }
-    
+
     @Test
     public void testGetUsers() {
         // 安排
         MockRequest request = new MockRequest();
-        
+
         // 行动
         Object result = application.execute("users", request);
-        
+
         // 断言
-        assertTrue(result instanceof JsonResponse);
-        JsonResponse response = (JsonResponse) result;
-        
+        assertTrue(result instanceof String);
+        String jsonString = (String) result;
+
+        // 解析 JSON 响应
+        Builder builder = new Builder();
+        builder.parse(jsonString);
+
         @SuppressWarnings("unchecked")
-        List<Map<String, Object>> users = (List<Map<String, Object>>) response.getData();
-        
+        Builders users = (Builders) builder.get("users");
+
         assertEquals(1, users.size());
         assertEquals("测试用户", users.get(0).get("name"));
         assertEquals("test@example.com", users.get(0).get("email"));
@@ -649,11 +698,11 @@ public class Application extends AbstractApplication {
     public void init() {
         // 加载基本配置
         getConfiguration().load("config.properties");
-        
+
         // 加载环境特定配置
         String env = System.getProperty("env", "dev");
         getConfiguration().load("config." + env + ".properties");
-        
+
         System.out.println("应用程序已使用 " + env + " 环境初始化");
     }
 }
@@ -684,7 +733,7 @@ public JsonResponse healthCheck() {
     Map<String, Object> status = new HashMap<>();
     status.put("status", "UP");
     status.put("timestamp", new Date());
-    
+
     // 检查数据库连接
     try {
         Repository repository = Type.MySQL.createRepository();
@@ -696,10 +745,10 @@ public JsonResponse healthCheck() {
         status.put("database_error", e.getMessage());
         status.put("status", "DOWN");
     }
-    
+
     // 检查其他依赖项
     // ...
-    
+
     return new JsonResponse(status);
 }
 ```
