@@ -102,9 +102,17 @@ repository.execute("UPDATE users SET name = ? WHERE id = ?",
 
 ```java
 @Action("api/data")
-public JsonResponse getData(Request request) {
+public String getData(Request request, Response response) {
     String param = request.getParameter("key");
-    return new JsonResponse({"key": param});
+
+    // Set content type to JSON
+    response.headers().add(Header.CONTENT_TYPE.set("application/json"));
+
+    // Create JSON response
+    Builder builder = new Builder();
+    builder.put("key", param);
+
+    return builder.toString();
 }
 ```
 
