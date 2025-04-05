@@ -16,7 +16,7 @@ EventDispatcher dispatcher = EventDispatcher.getInstance();
 dispatcher.registerHandler(UserCreatedEvent.class, event -> {
     User user = event.getPayload();
     System.out.println("User created: " + user.getName());
-    
+
     // Send welcome email
     emailService.sendWelcomeEmail(user.getEmail());
 });
@@ -31,11 +31,11 @@ dispatcher.dispatch(new UserCreatedEvent(newUser));
 ```java
 public class UserCreatedEvent implements Event<User> {
     private final User user;
-    
+
     public UserCreatedEvent(User user) {
         this.user = user;
     }
-    
+
     @Override
     public User getPayload() {
         return user;
@@ -48,24 +48,24 @@ public class UserCreatedEvent implements Event<User> {
 ```java
 public class MyApp extends AbstractApplication {
     private static final EventDispatcher dispatcher = EventDispatcher.getInstance();
-    
+
     static {
         // Register application startup handler
         dispatcher.registerHandler(ApplicationStartEvent.class, event -> {
             System.out.println("Application started: " + event.getPayload().getName());
         });
-        
+
         // Register application shutdown handler
         dispatcher.registerHandler(ApplicationShutdownEvent.class, event -> {
             System.out.println("Application shutting down: " + event.getPayload().getName());
         });
     }
-    
+
     @Override
     public void init() {
         // Dispatch startup event
         dispatcher.dispatch(new ApplicationStartEvent(this));
-        
+
         // Register shutdown hook
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             dispatcher.dispatch(new ApplicationShutdownEvent(this));
@@ -74,502 +74,278 @@ public class MyApp extends AbstractApplication {
 }
 ```
 
-## Dependency Injection
+## Command Line Interface (CLI)
 
-tinystruct provides a simple dependency injection mechanism.
+Tinystruct provides a powerful command-line interface through its dispatcher system, allowing you to execute actions from the command line.
 
-### Service Registry
+### Basic CLI Usage
 
-```java
-// Register services
-ServiceRegistry.getInstance().register(UserService.class, new UserServiceImpl());
-ServiceRegistry.getInstance().register(EmailService.class, new EmailServiceImpl());
+```bash
+# Execute an action with parameters
+bin/dispatcher say/"Hello World"
 
-// Retrieve services
-UserService userService = ServiceRegistry.getInstance().getService(UserService.class);
-EmailService emailService = ServiceRegistry.getInstance().getService(EmailService.class);
+# Execute with named parameters
+bin/dispatcher say --words "Hello World" --import tinystruct.examples.example
 ```
 
-### Injection in Actions
+### Creating CLI Commands
+
+You can create custom CLI commands by adding the `Action.Mode.CLI` mode to your action annotations:
 
 ```java
-@Action("users")
-public JsonResponse getUsers() {
-    UserService userService = ServiceRegistry.getInstance().getService(UserService.class);
-    List<User> users = userService.findAll();
-    return new JsonResponse(users);
-}
-```
-
-## Aspect-Oriented Programming
-
-tinystruct supports aspect-oriented programming through interceptors.
-
-### Action Interceptors
-
-```java
-// Create an interceptor
-public class LoggingInterceptor implements ActionInterceptor {
-    @Override
-    public boolean before(Action action, Object[] args) {
-        System.out.println("Executing action: " + action.getPathRule());
-        return true; // Continue execution
-    }
-    
-    @Override
-    public void after(Action action, Object result) {
-        System.out.println("Action completed: " + action.getPathRule());
-    }
-    
-    @Override
-    public void onException(Action action, Exception e) {
-        System.err.println("Action failed: " + action.getPathRule() + " - " + e.getMessage());
-    }
-}
-
-// Register the interceptor
-ActionManager.getInstance().addInterceptor(new LoggingInterceptor());
-```
-
-### Authentication Interceptor
-
-```java
-public class AuthInterceptor implements ActionInterceptor {
-    @Override
-    public boolean before(Action action, Object[] args) {
-        // Check if action requires authentication
-        if (action.getClass().isAnnotationPresent(RequiresAuth.class)) {
-            // Get the request from arguments
-            Request request = null;
-            for (Object arg : args) {
-                if (arg instanceof Request) {
-                    request = (Request) arg;
-                    break;
-                }
-            }
-            
-            if (request == null) {
-                return false; // No request found
-            }
-            
-            // Check if user is authenticated
-            Session session = request.getSession(false);
-            if (session == null || session.getAttribute("user") == null) {
-                // User not authenticated
-                if (request.isAjax()) {
-                    // For AJAX requests, set unauthorized status
-                    request.setAttribute("_response_status", 401);
-                    request.setAttribute("_response_message", "Unauthorized");
-                } else {
-                    // For regular requests, redirect to login
-                    request.setAttribute("_redirect", "/login");
-                }
-                return false; // Stop execution
-            }
-        }
-        
-        return true; // Continue execution
-    }
-}
-
-// Custom annotation for authentication requirement
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface RequiresAuth {
-}
-
-// Using the annotation on an action
-@RequiresAuth
-@Action("profile")
-public Response showProfile(Request request) {
-    // This action will only execute if user is authenticated
-    String username = (String) request.getSession().getAttribute("user");
-    return new TemplateResponse("profile.html", Map.of("username", username));
+@Action(value = "generate",
+        description = "POJO object generator",
+        mode = Action.Mode.CLI)
+public String generatePOJO(String table) {
+    // Implementation for generating POJO from database table
+    return "Generated POJO for table: " + table;
 }
 ```
 
-## Caching
+### Built-in CLI Commands
 
-tinystruct provides a caching mechanism to improve performance.
+Tinystruct includes several built-in CLI commands:
 
-### Cache Configuration
+- `download`: Download resources from other servers
+- `exec`: Execute native commands
+- `generate`: Generate POJO objects
+- `install`: Install packages
+- `maven-wrapper`: Extract Maven Wrapper
+- `open`: Open URLs in the default browser
+- `say`: Output words
+- `set`: Set system properties
+- `sql-execute`: Execute SQL statements
+- `sql-query`: Execute SQL queries
+- `update`: Update to the latest version
+
+## HTTP Server Integration
+
+Tinystruct supports multiple HTTP server implementations, allowing you to choose the one that best fits your needs.
+
+### Netty Server
 
 ```java
-// Configure cache in your application
-public class MyApp extends AbstractApplication {
-    @Override
-    public void init() {
-        // Configure cache with 1000 entries and 10 minutes expiration
-        CacheManager.configure(1000, 10 * 60 * 1000);
+// Start a Netty HTTP server
+bin/dispatcher start --import org.tinystruct.system.NettyHttpServer
+```
+
+### Tomcat Server
+
+```java
+// Start a Tomcat server
+bin/dispatcher start --import org.tinystruct.system.TomcatServer
+```
+
+### Undertow Server
+
+```java
+// Start an Undertow server
+bin/dispatcher start --import org.tinystruct.system.UndertowServer
+```
+
+## Context Management
+
+The Context system in Tinystruct allows you to share data between different parts of your application.
+
+```java
+// Set a context attribute
+getContext().setAttribute("user", currentUser);
+
+// Get a context attribute
+User user = (User) getContext().getAttribute("user");
+
+// Get with default value
+String theme = (String) getContext().getAttribute("theme", "default");
+```
+
+## Configuration Management
+
+Tinystruct provides a flexible configuration system that allows you to manage application settings.
+
+```java
+// Get configuration value
+String appName = getConfiguration().get("application.name");
+
+// Set configuration value
+getConfiguration().set("application.mode", "development");
+
+// Load configuration from file
+getConfiguration().load("config.properties");
+```
+
+## Database Operations
+
+Tinystruct offers advanced database operations through the DatabaseOperator class.
+
+### Transaction Management
+
+```java
+try (DatabaseOperator operator = new DatabaseOperator()) {
+    // Begin transaction
+    operator.beginTransaction();
+
+    try {
+        // Execute database operations
+        PreparedStatement stmt1 = operator.preparedStatement(
+            "INSERT INTO users (name) VALUES (?)",
+            new Object[]{"John"}
+        );
+        operator.executeUpdate(stmt1);
+
+        // Commit transaction
+        operator.commitTransaction();
+    } catch (Exception e) {
+        // Rollback transaction
+        operator.rollbackTransaction();
+        throw e;
     }
 }
 ```
 
-### Using the Cache
+### Using Savepoints
 
 ```java
-@Action("users")
-public JsonResponse getUsers() {
-    // Try to get from cache first
-    @SuppressWarnings("unchecked")
-    List<User> users = (List<User>) CacheManager.get("all_users");
-    
-    if (users == null) {
-        // Not in cache, fetch from database
-        UserService userService = ServiceRegistry.getInstance().getService(UserService.class);
-        users = userService.findAll();
-        
-        // Store in cache for future requests
-        CacheManager.put("all_users", users, 5 * 60 * 1000); // 5 minutes
+try (DatabaseOperator operator = new DatabaseOperator()) {
+    // Begin transaction
+    operator.beginTransaction();
+
+    // Execute first operation
+    operator.executeUpdate("INSERT INTO users (name) VALUES ('John')");
+
+    // Create savepoint
+    Savepoint savepoint = operator.createSavepoint("AFTER_INSERT");
+
+    try {
+        // Execute second operation
+        operator.executeUpdate("UPDATE settings SET value = 'new_value'");
+    } catch (Exception e) {
+        // Roll back to savepoint
+        operator.rollbackTransaction(savepoint);
     }
-    
-    return new JsonResponse(users);
+
+    // Commit transaction
+    operator.commitTransaction();
+}
+```
+
+## Object-Relational Mapping
+
+Tinystruct provides a simple object-relational mapping system through the AbstractData class.
+
+```java
+// Define a model class
+public class User extends AbstractData {
+    private int id;
+    private String name;
+    private String email;
+
+    // Getters and setters
+    // ...
 }
 
-@Action("users/create")
-public JsonResponse createUser(Request request) {
-    // Create user logic...
-    
-    // Invalidate cache after modification
-    CacheManager.remove("all_users");
-    
-    return new JsonResponse(Map.of("success", true));
-}
+// Create XML mapping file in resources directory
+// user.map.xml:
+// <mapping>
+//     <class name="com.example.model.User" table="users">
+//         <property name="id" column="id" type="int" identifier="true"/>
+//         <property name="name" column="name" type="string"/>
+//         <property name="email" column="email" type="string"/>
+//     </class>
+// </mapping>
+
+// Use the model
+User user = new User();
+user.setName("John Doe");
+user.setEmail("john@example.com");
+user.append(); // Insert into database
+
+// Find by ID
+User foundUser = new User();
+foundUser.setId(1);
+foundUser.findOneById();
+
+// Update
+foundUser.setName("Jane Doe");
+foundUser.update();
+
+// Delete
+foundUser.delete();
+
+// Find all
+List<User> allUsers = user.findAll();
+
+// Find with condition
+List<User> filteredUsers = user.findWhere("name LIKE ?", "%Doe%");
+
+## JSON Data Handling
+
+Tinystruct provides utilities for working with JSON data through the Builder and Builders classes.
+
+```java
+// Create JSON data
+Builder builder = new Builder();
+builder.put("name", "John Doe");
+builder.put("age", 30);
+
+// Create nested objects
+Builder addressBuilder = new Builder();
+addressBuilder.put("street", "123 Main St");
+addressBuilder.put("city", "Anytown");
+builder.put("address", addressBuilder);
+
+// Create arrays
+Builders hobbiesBuilder = new Builders();
+hobbiesBuilder.add("Reading");
+hobbiesBuilder.add("Hiking");
+builder.put("hobbies", hobbiesBuilder);
+
+// Convert to JSON string
+String json = builder.toString();
+
+// Parse JSON string
+Builder parsedBuilder = new Builder();
+parsedBuilder.parse(json);
+
+// Access JSON data
+String name = parsedBuilder.get("name").toString();
+int age = Integer.parseInt(parsedBuilder.get("age").toString());
+Builder address = (Builder) parsedBuilder.get("address");
+String city = address.get("city").toString();
+Builders hobbies = (Builders) parsedBuilder.get("hobbies");
+String firstHobby = hobbies.get(0).toString();
 ```
 
 ## Internationalization (i18n)
 
-tinystruct supports internationalization for building multilingual applications.
-
-### Message Configuration
-
-```properties
-# messages_en.properties
-greeting=Hello, {0}!
-welcome=Welcome to our application
-error.notfound=Resource not found
-
-# messages_fr.properties
-greeting=Bonjour, {0}!
-welcome=Bienvenue dans notre application
-error.notfound=Ressource non trouvée
-
-# messages_zh.properties
-greeting=你好，{0}！
-welcome=欢迎使用我们的应用程序
-error.notfound=未找到资源
-```
-
-### Using Messages
+Tinystruct supports internationalization for building multilingual applications.
 
 ```java
-@Action("welcome")
-public Response welcome(Request request) {
-    // Get locale from request or use default
-    Locale locale = request.getLocale();
-    
-    // Get message bundle for locale
-    ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
-    
-    // Get message with parameters
-    String greeting = MessageFormat.format(
-        bundle.getString("greeting"),
-        request.getParameter("name", "Guest")
-    );
-    
-    // Get simple message
-    String welcome = bundle.getString("welcome");
-    
-    Map<String, Object> model = new HashMap<>();
-    model.put("greeting", greeting);
-    model.put("welcome", welcome);
-    
-    return new TemplateResponse("welcome.html", model);
-}
+// Get locale from request
+Locale locale = request.getLocale();
+
+// Get message bundle for locale
+ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
+
+// Get message with parameters
+String greeting = MessageFormat.format(
+    bundle.getString("greeting"),
+    "John"
+);
 ```
 
-### Locale Detection
+## Best Practices
 
-```java
-public class LocaleInterceptor implements ActionInterceptor {
-    @Override
-    public boolean before(Action action, Object[] args) {
-        // Find request in arguments
-        for (Object arg : args) {
-            if (arg instanceof Request) {
-                Request request = (Request) arg;
-                
-                // Check for locale parameter
-                String localeParam = request.getParameter("locale");
-                if (localeParam != null) {
-                    // Parse locale
-                    Locale locale = Locale.forLanguageTag(localeParam);
-                    
-                    // Store in session
-                    Session session = request.getSession(true);
-                    session.setAttribute("locale", locale);
-                    
-                    // Set in request
-                    request.setAttribute("locale", locale);
-                } else {
-                    // Check for locale in session
-                    Session session = request.getSession(false);
-                    if (session != null && session.getAttribute("locale") != null) {
-                        request.setAttribute("locale", session.getAttribute("locale"));
-                    }
-                }
-                
-                break;
-            }
-        }
-        
-        return true;
-    }
-}
-```
+1. **Action Organization**: Group related actions in separate classes for better organization.
 
-## WebSocket Support
+2. **Error Handling**: Implement proper error handling for both CLI and web applications.
 
-tinystruct provides WebSocket support for real-time communication.
+3. **Configuration Management**: Use environment-specific configuration files for different environments.
 
-### WebSocket Handler
+4. **Database Connections**: Always use try-with-resources for database operations to ensure proper resource cleanup.
 
-```java
-public class ChatWebSocketHandler implements WebSocketHandler {
-    private static final Set<WebSocketSession> sessions = new ConcurrentHashSet<>();
-    
-    @Override
-    public void onOpen(WebSocketSession session) {
-        sessions.add(session);
-        System.out.println("WebSocket opened: " + session.getId());
-    }
-    
-    @Override
-    public void onMessage(WebSocketSession session, String message) {
-        System.out.println("Received message: " + message);
-        
-        // Broadcast message to all sessions
-        for (WebSocketSession s : sessions) {
-            try {
-                s.sendMessage(message);
-            } catch (IOException e) {
-                System.err.println("Error sending message: " + e.getMessage());
-            }
-        }
-    }
-    
-    @Override
-    public void onClose(WebSocketSession session, int closeCode, String reason) {
-        sessions.remove(session);
-        System.out.println("WebSocket closed: " + session.getId());
-    }
-    
-    @Override
-    public void onError(WebSocketSession session, Throwable error) {
-        System.err.println("WebSocket error: " + error.getMessage());
-    }
-}
-```
-
-### Registering WebSocket Endpoint
-
-```java
-public class MyApp extends AbstractApplication {
-    @Override
-    public void init() {
-        // Register WebSocket endpoint
-        WebSocketManager.getInstance().addEndpoint("/chat", new ChatWebSocketHandler());
-    }
-}
-```
-
-### WebSocket Client
-
-```javascript
-// JavaScript client
-const socket = new WebSocket('ws://localhost:8080/chat');
-
-socket.onopen = function(event) {
-    console.log('Connection established');
-};
-
-socket.onmessage = function(event) {
-    console.log('Message received: ' + event.data);
-    // Update UI with message
-    document.getElementById('messages').innerHTML += '<div>' + event.data + '</div>';
-};
-
-socket.onclose = function(event) {
-    console.log('Connection closed');
-};
-
-// Send message
-function sendMessage() {
-    const message = document.getElementById('messageInput').value;
-    socket.send(message);
-    document.getElementById('messageInput').value = '';
-}
-```
-
-## Task Scheduling
-
-tinystruct provides a task scheduling mechanism for running background tasks.
-
-### Scheduled Tasks
-
-```java
-public class MyApp extends AbstractApplication {
-    @Override
-    public void init() {
-        // Schedule a task to run every 5 minutes
-        TaskScheduler.getInstance().scheduleAtFixedRate(
-            new CleanupTask(),
-            0,              // Initial delay
-            5 * 60 * 1000   // Period (5 minutes)
-        );
-        
-        // Schedule a task to run at a specific time every day
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 2);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        
-        long initialDelay = calendar.getTimeInMillis() - System.currentTimeMillis();
-        if (initialDelay < 0) {
-            initialDelay += 24 * 60 * 60 * 1000; // Add one day
-        }
-        
-        TaskScheduler.getInstance().scheduleAtFixedRate(
-            new DailyReportTask(),
-            initialDelay,
-            24 * 60 * 60 * 1000 // Period (24 hours)
-        );
-    }
-}
-
-// Task implementation
-public class CleanupTask implements Runnable {
-    @Override
-    public void run() {
-        try {
-            System.out.println("Running cleanup task at " + new Date());
-            
-            // Cleanup logic
-            Repository repository = Type.MySQL.createRepository();
-            repository.connect(getConfiguration());
-            
-            // Delete expired sessions
-            repository.execute("DELETE FROM sessions WHERE expiry < NOW()");
-            
-            // Delete old logs
-            repository.execute("DELETE FROM logs WHERE created_at < DATE_SUB(NOW(), INTERVAL 30 DAY)");
-        } catch (Exception e) {
-            System.err.println("Error in cleanup task: " + e.getMessage());
-        }
-    }
-}
-```
-
-## Plugin System
-
-tinystruct includes a plugin system for extending functionality.
-
-### Plugin Interface
-
-```java
-public interface Plugin {
-    void initialize(AbstractApplication application);
-    void shutdown();
-    String getName();
-    String getVersion();
-}
-```
-
-### Implementing a Plugin
-
-```java
-public class AnalyticsPlugin implements Plugin {
-    private AbstractApplication application;
-    
-    @Override
-    public void initialize(AbstractApplication application) {
-        this.application = application;
-        System.out.println("Initializing Analytics Plugin");
-        
-        // Register event handlers
-        EventDispatcher dispatcher = EventDispatcher.getInstance();
-        dispatcher.registerHandler(RequestEvent.class, this::handleRequest);
-    }
-    
-    @Override
-    public void shutdown() {
-        System.out.println("Shutting down Analytics Plugin");
-    }
-    
-    @Override
-    public String getName() {
-        return "Analytics Plugin";
-    }
-    
-    @Override
-    public String getVersion() {
-        return "1.0.0";
-    }
-    
-    private void handleRequest(Event<Request> event) {
-        Request request = event.getPayload();
-        
-        // Log request for analytics
-        String path = request.getRequestURI();
-        String ip = request.getRemoteAddr();
-        String userAgent = request.getHeader("User-Agent");
-        
-        // Store analytics data
-        try {
-            Repository repository = Type.MySQL.createRepository();
-            repository.connect(application.getConfiguration());
-            
-            repository.execute(
-                "INSERT INTO analytics (path, ip, user_agent, timestamp) VALUES (?, ?, ?, NOW())",
-                path, ip, userAgent
-            );
-        } catch (Exception e) {
-            System.err.println("Error logging analytics: " + e.getMessage());
-        }
-    }
-}
-```
-
-### Loading Plugins
-
-```java
-public class MyApp extends AbstractApplication {
-    @Override
-    public void init() {
-        // Load plugins
-        PluginManager pluginManager = PluginManager.getInstance();
-        
-        // Load from configuration
-        String pluginsConfig = getConfiguration().get("plugins", "");
-        String[] pluginClasses = pluginsConfig.split(",");
-        
-        for (String pluginClass : pluginClasses) {
-            if (!pluginClass.trim().isEmpty()) {
-                try {
-                    Class<?> clazz = Class.forName(pluginClass.trim());
-                    Plugin plugin = (Plugin) clazz.getDeclaredConstructor().newInstance();
-                    pluginManager.registerPlugin(plugin);
-                    plugin.initialize(this);
-                } catch (Exception e) {
-                    System.err.println("Error loading plugin " + pluginClass + ": " + e.getMessage());
-                }
-            }
-        }
-    }
-}
-```
+5. **Transaction Management**: Use transactions for operations that require atomicity.
 
 ## Next Steps
 
-- Explore [Best Practices](best-practices.md)
-- Check out the [API Reference](api/README.md)
+- Explore the [API Reference](api/README.md)
+- Check out the [Best Practices](best-practices.md) guide

@@ -1,10 +1,10 @@
-# tinystruct 高级特性
+# Tinystruct 高级特性
 
-本指南涵盖 tinystruct 框架中的高级特性和技术。
+本指南涵盖 Tinystruct 框架中的高级特性和技术。
 
 ## 事件系统
 
-tinystruct 包含一个强大的事件系统，允许组件在没有直接耦合的情况下进行通信。
+Tinystruct 包含一个强大的事件系统，允许组件在没有直接耦合的情况下进行通信。
 
 ### 事件调度器
 
@@ -15,14 +15,14 @@ EventDispatcher dispatcher = EventDispatcher.getInstance();
 // 注册事件处理程序
 dispatcher.registerHandler(UserCreatedEvent.class, event -> {
     User user = event.getPayload();
-    System.out.println("用户已创建：" + user.getName());
-    
+    System.out.println("用户已创建: " + user.getName());
+
     // 发送欢迎邮件
     emailService.sendWelcomeEmail(user.getEmail());
 });
 
 // 分发事件
-User newUser = userService.createUser("john@example.com", "password");
+User newUser = userService.createUser("zhangsan@example.com", "password");
 dispatcher.dispatch(new UserCreatedEvent(newUser));
 ```
 
@@ -30,42 +30,42 @@ dispatcher.dispatch(new UserCreatedEvent(newUser));
 
 ```java
 public class UserCreatedEvent implements Event<User> {
-    private final User user;
-    
+    private final User payload;
+
     public UserCreatedEvent(User user) {
-        this.user = user;
+        this.payload = user;
     }
-    
+
     @Override
     public User getPayload() {
-        return user;
+        return payload;
     }
 }
 ```
 
-### 应用程序生命周期事件
+### 应用生命周期事件
 
 ```java
 public class MyApp extends AbstractApplication {
     private static final EventDispatcher dispatcher = EventDispatcher.getInstance();
-    
+
     static {
-        // 注册应用程序启动处理程序
+        // 注册应用启动处理程序
         dispatcher.registerHandler(ApplicationStartEvent.class, event -> {
-            System.out.println("应用程序已启动：" + event.getPayload().getName());
+            System.out.println("应用已启动: " + event.getPayload().getName());
         });
-        
-        // 注册应用程序关闭处理程序
+
+        // 注册应用关闭处理程序
         dispatcher.registerHandler(ApplicationShutdownEvent.class, event -> {
-            System.out.println("应用程序正在关闭：" + event.getPayload().getName());
+            System.out.println("应用正在关闭: " + event.getPayload().getName());
         });
     }
-    
+
     @Override
     public void init() {
         // 分发启动事件
         dispatcher.dispatch(new ApplicationStartEvent(this));
-        
+
         // 注册关闭钩子
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             dispatcher.dispatch(new ApplicationShutdownEvent(this));
@@ -74,502 +74,272 @@ public class MyApp extends AbstractApplication {
 }
 ```
 
-## 依赖注入
+## 命令行界面 (CLI)
 
-tinystruct 提供了一个简单的依赖注入机制。
+Tinystruct 通过其调度器系统提供强大的命令行界面，允许您从命令行执行操作。
 
-### 服务注册表
+### 基本 CLI 用法
 
-```java
-// 注册服务
-ServiceRegistry.getInstance().register(UserService.class, new UserServiceImpl());
-ServiceRegistry.getInstance().register(EmailService.class, new EmailServiceImpl());
+```bash
+# 使用参数执行操作
+bin/dispatcher say/"Hello World"
 
-// 检索服务
-UserService userService = ServiceRegistry.getInstance().getService(UserService.class);
-EmailService emailService = ServiceRegistry.getInstance().getService(EmailService.class);
+# 使用命名参数执行
+bin/dispatcher say --words "Hello World" --import tinystruct.examples.example
 ```
 
-### 在动作中注入
+### 创建 CLI 命令
+
+您可以通过在操作注解中添加 `Action.Mode.CLI` 模式来创建自定义 CLI 命令：
 
 ```java
-@Action("users")
-public JsonResponse getUsers() {
-    UserService userService = ServiceRegistry.getInstance().getService(UserService.class);
-    List<User> users = userService.findAll();
-    return new JsonResponse(users);
-}
-```
-
-## 面向切面编程
-
-tinystruct 通过拦截器支持面向切面编程。
-
-### 动作拦截器
-
-```java
-// 创建拦截器
-public class LoggingInterceptor implements ActionInterceptor {
-    @Override
-    public boolean before(Action action, Object[] args) {
-        System.out.println("执行动作：" + action.getPathRule());
-        return true; // 继续执行
-    }
-    
-    @Override
-    public void after(Action action, Object result) {
-        System.out.println("动作完成：" + action.getPathRule());
-    }
-    
-    @Override
-    public void onException(Action action, Exception e) {
-        System.err.println("动作失败：" + action.getPathRule() + " - " + e.getMessage());
-    }
-}
-
-// 注册拦截器
-ActionManager.getInstance().addInterceptor(new LoggingInterceptor());
-```
-
-### 身份验证拦截器
-
-```java
-public class AuthInterceptor implements ActionInterceptor {
-    @Override
-    public boolean before(Action action, Object[] args) {
-        // 检查动作是否需要身份验证
-        if (action.getClass().isAnnotationPresent(RequiresAuth.class)) {
-            // 从参数中获取请求
-            Request request = null;
-            for (Object arg : args) {
-                if (arg instanceof Request) {
-                    request = (Request) arg;
-                    break;
-                }
-            }
-            
-            if (request == null) {
-                return false; // 未找到请求
-            }
-            
-            // 检查用户是否已通过身份验证
-            Session session = request.getSession(false);
-            if (session == null || session.getAttribute("user") == null) {
-                // 用户未通过身份验证
-                if (request.isAjax()) {
-                    // 对于 AJAX 请求，设置未授权状态
-                    request.setAttribute("_response_status", 401);
-                    request.setAttribute("_response_message", "未授权");
-                } else {
-                    // 对于常规请求，重定向到登录
-                    request.setAttribute("_redirect", "/login");
-                }
-                return false; // 停止执行
-            }
-        }
-        
-        return true; // 继续执行
-    }
-}
-
-// 身份验证要求的自定义注解
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface RequiresAuth {
-}
-
-// 在动作上使用注解
-@RequiresAuth
-@Action("profile")
-public Response showProfile(Request request) {
-    // 此动作仅在用户通过身份验证时执行
-    String username = (String) request.getSession().getAttribute("user");
-    return new TemplateResponse("profile.html", Map.of("username", username));
+@Action(value = "generate",
+        description = "POJO 对象生成器",
+        mode = Action.Mode.CLI)
+public String generatePOJO(String table) {
+    // 从数据库表生成 POJO 的实现
+    return "为表生成的 POJO：" + table;
 }
 ```
 
-## 缓存
+### 内置 CLI 命令
 
-tinystruct 提供了一个缓存机制来提高性能。
+Tinystruct 包含几个内置 CLI 命令：
 
-### 缓存配置
+- `download`：从其他服务器下载资源
+- `exec`：执行本地命令
+- `generate`：生成 POJO 对象
+- `install`：安装包
+- `maven-wrapper`：提取 Maven Wrapper
+- `open`：在默认浏览器中打开 URL
+- `say`：输出文字
+- `set`：设置系统属性
+- `sql-execute`：执行 SQL 语句
+- `sql-query`：执行 SQL 查询
+- `update`：更新到最新版本
+
+## HTTP 服务器集成
+
+Tinystruct 支持多种 HTTP 服务器实现，允许您选择最适合您需求的服务器。
+
+### Netty 服务器
 
 ```java
-// 在应用程序中配置缓存
-public class MyApp extends AbstractApplication {
-    @Override
-    public void init() {
-        // 配置缓存，具有 1000 个条目和 10 分钟过期时间
-        CacheManager.configure(1000, 10 * 60 * 1000);
+// 启动 Netty HTTP 服务器
+bin/dispatcher start --import org.tinystruct.system.NettyHttpServer
+```
+
+### Tomcat 服务器
+
+```java
+// 启动 Tomcat 服务器
+bin/dispatcher start --import org.tinystruct.system.TomcatServer
+```
+
+## 上下文管理
+
+Tinystruct 中的上下文系统允许您在应用程序的不同部分之间共享数据。
+
+```java
+// 设置上下文属性
+getContext().setAttribute("user", currentUser);
+
+// 获取上下文属性
+User user = (User) getContext().getAttribute("user");
+
+// 获取带默认值的属性
+String theme = (String) getContext().getAttribute("theme", "default");
+```
+
+## 配置管理
+
+Tinystruct 提供了灵活的配置系统，允许您管理应用程序设置。
+
+```java
+// 获取配置值
+String appName = getConfiguration().get("application.name");
+
+// 设置配置值
+getConfiguration().set("application.mode", "development");
+
+// 从文件加载配置
+getConfiguration().load("config.properties");
+```
+
+## 数据库操作
+
+Tinystruct 通过 DatabaseOperator 类提供高级数据库操作。
+
+### 事务管理
+
+```java
+try (DatabaseOperator operator = new DatabaseOperator()) {
+    // 开始事务
+    operator.beginTransaction();
+
+    try {
+        // 执行数据库操作
+        PreparedStatement stmt1 = operator.preparedStatement(
+            "INSERT INTO users (name) VALUES (?)",
+            new Object[]{"张三"}
+        );
+        operator.executeUpdate(stmt1);
+
+        // 提交事务
+        operator.commitTransaction();
+    } catch (Exception e) {
+        // 回滚事务
+        operator.rollbackTransaction();
+        throw e;
     }
 }
 ```
 
-### 使用缓存
+### 使用保存点
 
 ```java
-@Action("users")
-public JsonResponse getUsers() {
-    // 首先尝试从缓存获取
-    @SuppressWarnings("unchecked")
-    List<User> users = (List<User>) CacheManager.get("all_users");
-    
-    if (users == null) {
-        // 不在缓存中，从数据库获取
-        UserService userService = ServiceRegistry.getInstance().getService(UserService.class);
-        users = userService.findAll();
-        
-        // 存储在缓存中供将来请求使用
-        CacheManager.put("all_users", users, 5 * 60 * 1000); // 5 分钟
+try (DatabaseOperator operator = new DatabaseOperator()) {
+    // 开始事务
+    operator.beginTransaction();
+
+    // 执行第一个操作
+    operator.executeUpdate("INSERT INTO users (name) VALUES ('张三')");
+
+    // 创建保存点
+    Savepoint savepoint = operator.createSavepoint("AFTER_INSERT");
+
+    try {
+        // 执行第二个操作
+        operator.executeUpdate("UPDATE settings SET value = 'new_value'");
+    } catch (Exception e) {
+        // 回滚到保存点
+        operator.rollbackTransaction(savepoint);
     }
-    
-    return new JsonResponse(users);
+
+    // 提交事务
+    operator.commitTransaction();
+}
+```
+
+## 对象关系映射
+
+Tinystruct 通过 AbstractData 类提供简单的对象关系映射系统。
+
+```java
+// 定义模型类
+public class User extends AbstractData {
+    private int id;
+    private String name;
+    private String email;
+
+    // Getters 和 setters
+    // ...
 }
 
-@Action("users/create")
-public JsonResponse createUser(Request request) {
-    // 创建用户逻辑...
-    
-    // 修改后使缓存失效
-    CacheManager.remove("all_users");
-    
-    return new JsonResponse(Map.of("success", true));
-}
+// 在资源目录中创建 XML 映射文件
+// user.map.xml:
+// <mapping>
+//     <class name="com.example.model.User" table="users">
+//         <property name="id" column="id" type="int" identifier="true"/>
+//         <property name="name" column="name" type="string"/>
+//         <property name="email" column="email" type="string"/>
+//     </class>
+// </mapping>
+
+// 使用模型
+User user = new User();
+user.setName("张三");
+user.setEmail("zhangsan@example.com");
+user.append(); // 插入数据库
+
+// 按 ID 查找
+User foundUser = new User();
+foundUser.setId(1);
+foundUser.findOneById();
+
+// 更新
+foundUser.setName("李四");
+foundUser.update();
+
+// 删除
+foundUser.delete();
+
+// 查找所有
+List<User> allUsers = user.findAll();
+
+// 条件查找
+List<User> filteredUsers = user.findWhere("name LIKE ?", "%张%");
+```
+
+## JSON 数据处理
+
+Tinystruct 通过 Builder 和 Builders 类提供处理 JSON 数据的工具。
+
+```java
+// 创建 JSON 数据
+Builder builder = new Builder();
+builder.put("name", "张三");
+builder.put("age", 30);
+
+// 创建嵌套对象
+Builder addressBuilder = new Builder();
+addressBuilder.put("street", "主街 123 号");
+addressBuilder.put("city", "任何镇");
+builder.put("address", addressBuilder);
+
+// 创建数组
+Builders hobbiesBuilder = new Builders();
+hobbiesBuilder.add("阅读");
+hobbiesBuilder.add("徒步");
+builder.put("hobbies", hobbiesBuilder);
+
+// 转换为 JSON 字符串
+String json = builder.toString();
+
+// 解析 JSON 字符串
+Builder parsedBuilder = new Builder();
+parsedBuilder.parse(json);
+
+// 访问 JSON 数据
+String name = parsedBuilder.get("name").toString();
+int age = Integer.parseInt(parsedBuilder.get("age").toString());
+Builder address = (Builder) parsedBuilder.get("address");
+String city = address.get("city").toString();
+Builders hobbies = (Builders) parsedBuilder.get("hobbies");
+String firstHobby = hobbies.get(0).toString();
 ```
 
 ## 国际化 (i18n)
 
-tinystruct 支持国际化，用于构建多语言应用程序。
-
-### 消息配置
-
-```properties
-# messages_en.properties
-greeting=Hello, {0}!
-welcome=Welcome to our application
-error.notfound=Resource not found
-
-# messages_fr.properties
-greeting=Bonjour, {0}!
-welcome=Bienvenue dans notre application
-error.notfound=Ressource non trouvée
-
-# messages_zh.properties
-greeting=你好，{0}！
-welcome=欢迎使用我们的应用程序
-error.notfound=未找到资源
-```
-
-### 使用消息
+Tinystruct 支持国际化，用于构建多语言应用程序。
 
 ```java
-@Action("welcome")
-public Response welcome(Request request) {
-    // 从请求获取区域设置或使用默认值
-    Locale locale = request.getLocale();
-    
-    // 获取区域设置的消息包
-    ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
-    
-    // 获取带参数的消息
-    String greeting = MessageFormat.format(
-        bundle.getString("greeting"),
-        request.getParameter("name", "访客")
-    );
-    
-    // 获取简单消息
-    String welcome = bundle.getString("welcome");
-    
-    Map<String, Object> model = new HashMap<>();
-    model.put("greeting", greeting);
-    model.put("welcome", welcome);
-    
-    return new TemplateResponse("welcome.html", model);
-}
+// 从请求获取区域设置
+Locale locale = request.getLocale();
+
+// 获取区域设置的消息包
+ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
+
+// 获取带参数的消息
+String greeting = MessageFormat.format(
+    bundle.getString("greeting"),
+    "张三"
+);
 ```
 
-### 区域设置检测
+## 最佳实践
 
-```java
-public class LocaleInterceptor implements ActionInterceptor {
-    @Override
-    public boolean before(Action action, Object[] args) {
-        // 在参数中查找请求
-        for (Object arg : args) {
-            if (arg instanceof Request) {
-                Request request = (Request) arg;
-                
-                // 检查区域设置参数
-                String localeParam = request.getParameter("locale");
-                if (localeParam != null) {
-                    // 解析区域设置
-                    Locale locale = Locale.forLanguageTag(localeParam);
-                    
-                    // 存储在会话中
-                    Session session = request.getSession(true);
-                    session.setAttribute("locale", locale);
-                    
-                    // 在请求中设置
-                    request.setAttribute("locale", locale);
-                } else {
-                    // 检查会话中的区域设置
-                    Session session = request.getSession(false);
-                    if (session != null && session.getAttribute("locale") != null) {
-                        request.setAttribute("locale", session.getAttribute("locale"));
-                    }
-                }
-                
-                break;
-            }
-        }
-        
-        return true;
-    }
-}
-```
+1. **操作组织**：将相关操作分组到单独的类中，以便更好地组织。
 
-## WebSocket 支持
+2. **错误处理**：为 CLI 和 Web 应用程序实现适当的错误处理。
 
-tinystruct 提供 WebSocket 支持，用于实时通信。
+3. **配置管理**：为不同环境使用特定于环境的配置文件。
 
-### WebSocket 处理程序
+4. **数据库连接**：始终使用 try-with-resources 进行数据库操作，以确保正确的资源清理。
 
-```java
-public class ChatWebSocketHandler implements WebSocketHandler {
-    private static final Set<WebSocketSession> sessions = new ConcurrentHashSet<>();
-    
-    @Override
-    public void onOpen(WebSocketSession session) {
-        sessions.add(session);
-        System.out.println("WebSocket 已打开：" + session.getId());
-    }
-    
-    @Override
-    public void onMessage(WebSocketSession session, String message) {
-        System.out.println("收到消息：" + message);
-        
-        // 向所有会话广播消息
-        for (WebSocketSession s : sessions) {
-            try {
-                s.sendMessage(message);
-            } catch (IOException e) {
-                System.err.println("发送消息时出错：" + e.getMessage());
-            }
-        }
-    }
-    
-    @Override
-    public void onClose(WebSocketSession session, int closeCode, String reason) {
-        sessions.remove(session);
-        System.out.println("WebSocket 已关闭：" + session.getId());
-    }
-    
-    @Override
-    public void onError(WebSocketSession session, Throwable error) {
-        System.err.println("WebSocket 错误：" + error.getMessage());
-    }
-}
-```
-
-### 注册 WebSocket 端点
-
-```java
-public class MyApp extends AbstractApplication {
-    @Override
-    public void init() {
-        // 注册 WebSocket 端点
-        WebSocketManager.getInstance().addEndpoint("/chat", new ChatWebSocketHandler());
-    }
-}
-```
-
-### WebSocket 客户端
-
-```javascript
-// JavaScript 客户端
-const socket = new WebSocket('ws://localhost:8080/chat');
-
-socket.onopen = function(event) {
-    console.log('连接已建立');
-};
-
-socket.onmessage = function(event) {
-    console.log('收到消息：' + event.data);
-    // 使用消息更新 UI
-    document.getElementById('messages').innerHTML += '<div>' + event.data + '</div>';
-};
-
-socket.onclose = function(event) {
-    console.log('连接已关闭');
-};
-
-// 发送消息
-function sendMessage() {
-    const message = document.getElementById('messageInput').value;
-    socket.send(message);
-    document.getElementById('messageInput').value = '';
-}
-```
-
-## 任务调度
-
-tinystruct 提供了一个任务调度机制，用于运行后台任务。
-
-### 计划任务
-
-```java
-public class MyApp extends AbstractApplication {
-    @Override
-    public void init() {
-        // 安排每 5 分钟运行一次的任务
-        TaskScheduler.getInstance().scheduleAtFixedRate(
-            new CleanupTask(),
-            0,              // 初始延迟
-            5 * 60 * 1000   // 周期（5 分钟）
-        );
-        
-        // 安排每天在特定时间运行的任务
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 2);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        
-        long initialDelay = calendar.getTimeInMillis() - System.currentTimeMillis();
-        if (initialDelay < 0) {
-            initialDelay += 24 * 60 * 60 * 1000; // 添加一天
-        }
-        
-        TaskScheduler.getInstance().scheduleAtFixedRate(
-            new DailyReportTask(),
-            initialDelay,
-            24 * 60 * 60 * 1000 // 周期（24 小时）
-        );
-    }
-}
-
-// 任务实现
-public class CleanupTask implements Runnable {
-    @Override
-    public void run() {
-        try {
-            System.out.println("在 " + new Date() + " 运行清理任务");
-            
-            // 清理逻辑
-            Repository repository = Type.MySQL.createRepository();
-            repository.connect(getConfiguration());
-            
-            // 删除过期会话
-            repository.execute("DELETE FROM sessions WHERE expiry < NOW()");
-            
-            // 删除旧日志
-            repository.execute("DELETE FROM logs WHERE created_at < DATE_SUB(NOW(), INTERVAL 30 DAY)");
-        } catch (Exception e) {
-            System.err.println("清理任务中出错：" + e.getMessage());
-        }
-    }
-}
-```
-
-## 插件系统
-
-tinystruct 包含一个插件系统，用于扩展功能。
-
-### 插件接口
-
-```java
-public interface Plugin {
-    void initialize(AbstractApplication application);
-    void shutdown();
-    String getName();
-    String getVersion();
-}
-```
-
-### 实现插件
-
-```java
-public class AnalyticsPlugin implements Plugin {
-    private AbstractApplication application;
-    
-    @Override
-    public void initialize(AbstractApplication application) {
-        this.application = application;
-        System.out.println("初始化分析插件");
-        
-        // 注册事件处理程序
-        EventDispatcher dispatcher = EventDispatcher.getInstance();
-        dispatcher.registerHandler(RequestEvent.class, this::handleRequest);
-    }
-    
-    @Override
-    public void shutdown() {
-        System.out.println("关闭分析插件");
-    }
-    
-    @Override
-    public String getName() {
-        return "分析插件";
-    }
-    
-    @Override
-    public String getVersion() {
-        return "1.0.0";
-    }
-    
-    private void handleRequest(Event<Request> event) {
-        Request request = event.getPayload();
-        
-        // 记录请求以进行分析
-        String path = request.getRequestURI();
-        String ip = request.getRemoteAddr();
-        String userAgent = request.getHeader("User-Agent");
-        
-        // 存储分析数据
-        try {
-            Repository repository = Type.MySQL.createRepository();
-            repository.connect(application.getConfiguration());
-            
-            repository.execute(
-                "INSERT INTO analytics (path, ip, user_agent, timestamp) VALUES (?, ?, ?, NOW())",
-                path, ip, userAgent
-            );
-        } catch (Exception e) {
-            System.err.println("记录分析时出错：" + e.getMessage());
-        }
-    }
-}
-```
-
-### 加载插件
-
-```java
-public class MyApp extends AbstractApplication {
-    @Override
-    public void init() {
-        // 加载插件
-        PluginManager pluginManager = PluginManager.getInstance();
-        
-        // 从配置加载
-        String pluginsConfig = getConfiguration().get("plugins", "");
-        String[] pluginClasses = pluginsConfig.split(",");
-        
-        for (String pluginClass : pluginClasses) {
-            if (!pluginClass.trim().isEmpty()) {
-                try {
-                    Class<?> clazz = Class.forName(pluginClass.trim());
-                    Plugin plugin = (Plugin) clazz.getDeclaredConstructor().newInstance();
-                    pluginManager.registerPlugin(plugin);
-                    plugin.initialize(this);
-                } catch (Exception e) {
-                    System.err.println("加载插件 " + pluginClass + " 时出错：" + e.getMessage());
-                }
-            }
-        }
-    }
-}
-```
+5. **事务管理**：对需要原子性的操作使用事务。
 
 ## 下一步
 
-- 探索[最佳实践](best-practices.md)
-- 查看 [API 参考](api/README.md)
+- 探索 [API 参考](api/README.md)
+- 查看[最佳实践](best-practices.md)指南
