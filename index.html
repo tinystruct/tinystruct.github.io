@@ -695,10 +695,14 @@ mcp.auth.token=123456</code></pre>
         "$ bin/dispatcher say --words Hello --import tinystruct.examples.example",
         "Hello",
         " ",
-        "# bin/dispatcher start --import org.tinystruct.system.NettyHttpServer",
-        "You can access the below URLs:",
-        "  http://localhost:8080/?q=say/Praise%20the%20Lord!",
-        "  http://localhost:8080/?q=praise"
+        "# bin/dispatcher start --import org.tinystruct.system.NettyHttpServer --server-port 777",
+        " ",
+        "  _/  '         _ _/  _     _ _/",
+        "  /  /  /) (/ _)  /  /  (/ (  /  1.6.4",
+        "           /",
+        " ",
+        `${new Date().toLocaleString()} org.tinystruct.system.NettyHttpServer start`,
+        "INFO: Netty server (777) startup in 30 ms"
     ];
 
     const outputMain = document.getElementById('output-main');
