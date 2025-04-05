@@ -51,45 +51,77 @@ Tinystruct 提供多种数据库访问方法：
 
 ## DatabaseOperator
 
-`DatabaseOperator` 类提供了一种方便的方式来执行数据库操作，而无需直接管理 Repository 实例。
+`DatabaseOperator` 类提供了一种方便的方式来执行数据库操作，而无需直接管理 Repository 实例。它自动处理连接管理、语句准备和资源清理。
 
-### 基本用法
+### 创建 DatabaseOperator
 
 ```java
-// 创建 DatabaseOperator 实例
+// 默认构造函数 - 从 ConnectionManager 获取连接
 DatabaseOperator operator = new DatabaseOperator();
 
-// 执行查询
-List<Map<String, Object>> results = operator.query("SELECT * FROM users WHERE id = ?", 1);
+// 使用特定数据库
+DatabaseOperator operator = new DatabaseOperator("myDatabase");
 
-// 执行更新
-int rowsAffected = operator.update("UPDATE users SET name = ? WHERE id = ?", "张三", 1);
-
-// 执行插入
-int newId = operator.insert("INSERT INTO users (name, email) VALUES (?, ?)", "李四", "lisi@example.com");
-
-// 执行删除
-operator.update("DELETE FROM users WHERE id = ?", 1);
+// 使用现有连接
+Connection connection = getConnection();
+DatabaseOperator operator = new DatabaseOperator(connection);
 ```
 
-### 事务支持
+### 执行查询
 
 ```java
-// 开始事务
-operator.begin();
+// 无参数的简单查询
+ResultSet results = operator.query("SELECT * FROM users");
 
-try {
-    // 执行多个操作
-    operator.update("UPDATE accounts SET balance = balance - ? WHERE id = ?", 100.0, 1);
-    operator.update("UPDATE accounts SET balance = balance + ? WHERE id = ?", 100.0, 2);
+// 带参数的查询（使用预处理语句）
+PreparedStatement stmt = operator.preparedStatement("SELECT * FROM users WHERE id = ?", new Object[]{1});
+ResultSet results = operator.executeQuery(stmt);
 
-    // 提交事务
-    operator.commit();
-} catch (Exception e) {
-    // 出错时回滚
-    operator.rollback();
-    throw e;
+// 处理结果
+while (results.next()) {
+    int id = results.getInt("id");
+    String name = results.getString("name");
+    // 处理行数据
 }
+```
+
+### 执行更新
+
+```java
+// 无参数的简单更新
+int rowsAffected = operator.update("UPDATE users SET status = 'active'");
+
+// 带参数的更新
+PreparedStatement stmt = operator.preparedStatement(
+    "UPDATE users SET name = ? WHERE id = ?",
+    new Object[]{"张三", 1}
+);
+int rowsAffected = operator.executeUpdate(stmt);
+
+// 执行可能是查询或更新的语句
+boolean isResultSet = operator.execute("CALL some_procedure()");
+```
+
+### 资源管理
+
+```java
+// 使用 try-with-resources 自动清理
+try (DatabaseOperator operator = new DatabaseOperator()) {
+    ResultSet results = operator.query("SELECT * FROM users");
+    // 处理结果
+} // 自动关闭 ResultSet、PreparedStatement，并将 Connection 返回到连接池
+```
+
+### SQL 注入保护
+
+DatabaseOperator 包含内置的 SQL 注入检测：
+
+```java
+// 默认启用 SQL 注入检查
+DatabaseOperator operator = new DatabaseOperator();
+
+// 禁用 SQL 注入检查（例如，用于 CLI 工具）
+operator.disableSafeCheck();
 ```
 
 ## 仓库 API
@@ -101,36 +133,15 @@ Tinystruct 还使用仓库模式进行直接数据库操作。Repository 接口�
 ```java
 // 创建 MySQL 仓库
 Repository repository = Type.MySQL.createRepository();
-repository.connect(getConfiguration());
 
 // 创建 H2 仓库
 Repository repository = Type.H2.createRepository();
-repository.connect(getConfiguration());
 
 // 创建 SQLite 仓库
 Repository repository = Type.SQLite.createRepository();
-repository.connect(getConfiguration());
 ```
 
 ### 执行查询
-
-```java
-@Action("users")
-public JsonResponse getUsers() {
-    try {
-        Repository repository = Type.MySQL.createRepository();
-        repository.connect(getConfiguration());
-
-        List<Row> users = repository.query("SELECT id, name, email FROM users");
-
-        return new JsonResponse(users);
-    } catch (Exception e) {
-        return new JsonResponse(Map.of("error", e.getMessage()));
-    }
-}
-```
-
-### 参数化查询
 
 ```java
 @Action("users")
@@ -140,12 +151,12 @@ public String getUser(Integer id, Request request, Response response) {
         DatabaseOperator operator = new DatabaseOperator();
 
         // 执行带参数的查询
-        List<Map<String, Object>> results = operator.query("SELECT id, name, email FROM users WHERE id = ?", id);
+        ResultSet results = operator.query("SELECT id, name, email FROM users WHERE id = " + id);
 
         // 设置内容类型为 JSON
         response.headers().add(Header.CONTENT_TYPE.set("application/json"));
 
-        if (results.isEmpty()) {
+        if (!results.next()) {
             // 创建错误响应
             Builder builder = new Builder();
             builder.put("error", "未找到用户");
@@ -154,7 +165,10 @@ public String getUser(Integer id, Request request, Response response) {
 
         // 创建成功响应
         Builder builder = new Builder();
-        builder.put("user", results.get(0));
+        builder.put("id", results.getInt("id"));
+        builder.put("name", results.getString("name"));
+        builder.put("email", results.getString("email"));
+
         return builder.toString();
     } catch (Exception e) {
         // 设置内容类型为 JSON
@@ -172,246 +186,224 @@ public String getUser(Integer id, Request request, Response response) {
 
 ```java
 @Action("users/create")
-public JsonResponse createUser(Request request) {
+public String createUser(Request request, Response response) {
     try {
         String name = request.getParameter("name");
         String email = request.getParameter("email");
 
         if (name == null || email == null) {
-            return new JsonResponse(Map.of("error", "名称和电子邮件是必需的"));
+            response.headers().add(Header.CONTENT_TYPE.set("application/json"));
+            Builder builder = new Builder();
+            builder.put("error", "名称和电子邮件是必需的");
+            return builder.toString();
         }
 
-        Repository repository = Type.MySQL.createRepository();
-        repository.connect(getConfiguration());
+        // 创建 DatabaseOperator 实例
+        DatabaseOperator operator = new DatabaseOperator();
 
-        int result = repository.execute(
+        // 执行带参数的更新
+        PreparedStatement stmt = operator.preparedStatement(
             "INSERT INTO users (name, email) VALUES (?, ?)",
-            name, email
+            new Object[]{name, email}
         );
+        int result = operator.executeUpdate(stmt);
 
-        return new JsonResponse(Map.of("success", true, "rowsAffected", result));
+        // 设置内容类型为 JSON
+        response.headers().add(Header.CONTENT_TYPE.set("application/json"));
+
+        // 创建成功响应
+        Builder builder = new Builder();
+        builder.put("success", true);
+        builder.put("rowsAffected", result);
+
+        return builder.toString();
     } catch (Exception e) {
-        return new JsonResponse(Map.of("error", e.getMessage()));
+        // 设置内容类型为 JSON
+        response.headers().add(Header.CONTENT_TYPE.set("application/json"));
+
+        // 创建错误响应
+        Builder builder = new Builder();
+        builder.put("error", e.getMessage());
+        return builder.toString();
     }
 }
 ```
 
 ### 事务
 
+Tinystruct 通过 `DatabaseOperator` 类提供全面的事务支持。
+
+#### 基本事务用法
+
+```java
+try (DatabaseOperator operator = new DatabaseOperator()) {
+    // 开始事务
+    operator.beginTransaction();
+
+    try {
+        // 执行数据库操作
+        PreparedStatement stmt1 = operator.preparedStatement(
+            "INSERT INTO users (name) VALUES (?)",
+            new Object[]{"张三"}
+        );
+        operator.executeUpdate(stmt1);
+
+        PreparedStatement stmt2 = operator.preparedStatement(
+            "UPDATE settings SET value = ? WHERE name = ?",
+            new Object[]{"新值", "setting_name"}
+        );
+        operator.executeUpdate(stmt2);
+
+        // 如果所有操作都成功，则提交事务
+        operator.commitTransaction();
+
+    } catch (Exception e) {
+        // 如果任何操作失败，则回滚事务
+        operator.rollbackTransaction();
+        throw e;
+    }
+}
+```
+
+#### 示例：使用事务进行资金转账
+
 ```java
 @Action("transfer")
-public JsonResponse transferFunds(Request request) {
+public String transferFunds(Request request, Response response) {
     int fromAccount = Integer.parseInt(request.getParameter("from"));
     int toAccount = Integer.parseInt(request.getParameter("to"));
     double amount = Double.parseDouble(request.getParameter("amount"));
 
-    Repository repository = Type.MySQL.createRepository();
-    repository.connect(getConfiguration());
+    try (DatabaseOperator operator = new DatabaseOperator()) {
+        // 开始事务
+        operator.beginTransaction();
 
-    try {
-        repository.setAutoCommit(false);
+        try {
+            // 从源账户扣除
+            PreparedStatement stmt1 = operator.preparedStatement(
+                "UPDATE accounts SET balance = balance - ? WHERE id = ? AND balance >= ?",
+                new Object[]{amount, fromAccount, amount}
+            );
+            int result1 = operator.executeUpdate(stmt1);
 
-        // 从源账户扣除
-        int result1 = repository.execute(
-            "UPDATE accounts SET balance = balance - ? WHERE id = ? AND balance >= ?",
-            amount, fromAccount, amount
-        );
+            if (result1 == 0) {
+                operator.rollbackTransaction();
 
-        if (result1 == 0) {
-            repository.rollback();
-            return new JsonResponse(Map.of("error", "资金不足"));
-        }
-
-        // 添加到目标账户
-        int result2 = repository.execute(
-            "UPDATE accounts SET balance = balance + ? WHERE id = ?",
-            amount, toAccount
-        );
-
-        if (result2 == 0) {
-            repository.rollback();
-            return new JsonResponse(Map.of("error", "未找到目标账户"));
-        }
-
-        // 记录交易
-        repository.execute(
-            "INSERT INTO transactions (from_account, to_account, amount, date) VALUES (?, ?, ?, NOW())",
-            fromAccount, toAccount, amount
-        );
-
-        repository.commit();
-
-        return new JsonResponse(Map.of("success", true));
-    } catch (Exception e) {
-        repository.rollback();
-        return new JsonResponse(Map.of("error", e.getMessage()));
-    } finally {
-        repository.setAutoCommit(true);
-    }
-}
-```
-
-## 处理结果
-
-### Row 接口
-
-`Row` 接口提供了访问列值的方法：
-
-```java
-List<Row> results = repository.query("SELECT id, name, email FROM users");
-
-for (Row row : results) {
-    int id = row.getInt("id");
-    String name = row.getString("name");
-    String email = row.getString("email");
-
-    System.out.println("用户：" + id + ", " + name + ", " + email);
-}
-```
-
-### 将结果转换为对象
-
-```java
-List<User> users = new ArrayList<>();
-List<Row> results = repository.query("SELECT id, name, email FROM users");
-
-for (Row row : results) {
-    User user = new User();
-    user.setId(row.getInt("id"));
-    user.setName(row.getString("name"));
-    user.setEmail(row.getString("email"));
-
-    users.add(user);
-}
-```
-
-## 数据库工具
-
-### 架构创建
-
-```java
-@Action(value = "init-db",
-        description = "初始化数据库架构",
-        mode = Action.Mode.CLI)
-public String initDatabase() {
-    try {
-        Repository repository = Type.MySQL.createRepository();
-        repository.connect(getConfiguration());
-
-        // 创建用户表
-        repository.execute(
-            "CREATE TABLE IF NOT EXISTS users (" +
-            "id INT AUTO_INCREMENT PRIMARY KEY, " +
-            "name VARCHAR(100) NOT NULL, " +
-            "email VARCHAR(100) NOT NULL UNIQUE, " +
-            "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
-            ")"
-        );
-
-        // 创建帖子表
-        repository.execute(
-            "CREATE TABLE IF NOT EXISTS posts (" +
-            "id INT AUTO_INCREMENT PRIMARY KEY, " +
-            "user_id INT NOT NULL, " +
-            "title VARCHAR(200) NOT NULL, " +
-            "content TEXT, " +
-            "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
-            "FOREIGN KEY (user_id) REFERENCES users(id)" +
-            ")"
-        );
-
-        return "数据库架构初始化成功";
-    } catch (Exception e) {
-        return "初始化数据库时出错：" + e.getMessage();
-    }
-}
-```
-
-### 数据导入/导出
-
-```java
-@Action(value = "export-data",
-        description = "将数据导出到 CSV",
-        mode = Action.Mode.CLI)
-public String exportData() {
-    try {
-        Repository repository = Type.MySQL.createRepository();
-        repository.connect(getConfiguration());
-
-        List<Row> users = repository.query("SELECT id, name, email FROM users");
-
-        try (FileWriter writer = new FileWriter("users.csv");
-             CSVWriter csvWriter = new CSVWriter(writer)) {
-
-            // 写入标题
-            csvWriter.writeNext(new String[]{"ID", "姓名", "电子邮件"});
-
-            // 写入数据
-            for (Row user : users) {
-                csvWriter.writeNext(new String[]{
-                    String.valueOf(user.getInt("id")),
-                    user.getString("name"),
-                    user.getString("email")
-                });
+                response.headers().add(Header.CONTENT_TYPE.set("application/json"));
+                Builder builder = new Builder();
+                builder.put("error", "资金不足");
+                return builder.toString();
             }
+
+            // 添加到目标账户
+            PreparedStatement stmt2 = operator.preparedStatement(
+                "UPDATE accounts SET balance = balance + ? WHERE id = ?",
+                new Object[]{amount, toAccount}
+            );
+            int result2 = operator.executeUpdate(stmt2);
+
+            if (result2 == 0) {
+                operator.rollbackTransaction();
+
+                response.headers().add(Header.CONTENT_TYPE.set("application/json"));
+                Builder builder = new Builder();
+                builder.put("error", "未找到目标账户");
+                return builder.toString();
+            }
+
+            // 记录交易
+            PreparedStatement stmt3 = operator.preparedStatement(
+                "INSERT INTO transactions (from_account, to_account, amount, date) VALUES (?, ?, ?, NOW())",
+                new Object[]{fromAccount, toAccount, amount}
+            );
+            operator.executeUpdate(stmt3);
+
+            // 提交事务
+            operator.commitTransaction();
+
+            response.headers().add(Header.CONTENT_TYPE.set("application/json"));
+            Builder builder = new Builder();
+            builder.put("success", true);
+            return builder.toString();
+        } catch (Exception e) {
+            // 出错时回滚
+            operator.rollbackTransaction();
+            throw e;
         }
-
-        return "已将 " + users.size() + " 个用户导出到 users.csv";
     } catch (Exception e) {
-        return "导出数据时出错：" + e.getMessage();
+        response.headers().add(Header.CONTENT_TYPE.set("application/json"));
+        Builder builder = new Builder();
+        builder.put("error", e.getMessage());
+        return builder.toString();
     }
 }
 ```
 
-## 高级数据库操作
+#### 使用保存点
 
-### 批处理操作
+保存点允许您在事务中创建点，您可以回滚到这些点，而无需回滚整个事务。
 
 ```java
-@Action("batch-insert")
-public JsonResponse batchInsert(Request request) {
+try (DatabaseOperator operator = new DatabaseOperator()) {
+    // 开始事务
+    operator.beginTransaction();
+
+    // 执行第一个操作
+    PreparedStatement stmt1 = operator.preparedStatement(
+        "INSERT INTO users (name) VALUES (?)",
+        new Object[]{"张三"}
+    );
+    operator.executeUpdate(stmt1);
+
+    // 在第一个操作后创建保存点
+    Savepoint savepoint = operator.createSavepoint("AFTER_INSERT");
+
     try {
-        Repository repository = Type.MySQL.createRepository();
-        repository.connect(getConfiguration());
-
-        // 准备批处理数据
-        List<Object[]> batchData = new ArrayList<>();
-        batchData.add(new Object[]{"张三", "zhangsan@example.com"});
-        batchData.add(new Object[]{"李四", "lisi@example.com"});
-        batchData.add(new Object[]{"王五", "wangwu@example.com"});
-
-        // 执行批量插入
-        int[] results = repository.executeBatch(
-            "INSERT INTO users (name, email) VALUES (?, ?)",
-            batchData
+        // 执行第二个操作
+        PreparedStatement stmt2 = operator.preparedStatement(
+            "UPDATE settings SET value = ? WHERE name = ?",
+            new Object[]{"新值", "setting_name"}
         );
-
-        return new JsonResponse(Map.of("success", true, "rowsAffected", Arrays.stream(results).sum()));
+        operator.executeUpdate(stmt2);
     } catch (Exception e) {
-        return new JsonResponse(Map.of("error", e.getMessage()));
+        // 如果第二个操作失败，回滚到保存点
+        operator.rollbackTransaction(savepoint);
+
+        // 尝试替代操作
+        PreparedStatement altStmt = operator.preparedStatement(
+            "INSERT INTO logs (message) VALUES (?)",
+            new Object[]{"操作失败"}
+        );
+        operator.executeUpdate(altStmt);
     }
+
+    // 提交事务
+    operator.commitTransaction();
 }
 ```
 
-### 存储过程
+#### 事务方法
 
-```java
-@Action("call-procedure")
-public JsonResponse callProcedure(Request request) {
-    try {
-        Repository repository = Type.MySQL.createRepository();
-        repository.connect(getConfiguration());
+`DatabaseOperator` 类提供以下与事务相关的方法：
 
-        List<Row> results = repository.query(
-            "CALL get_user_posts(?)",
-            Integer.parseInt(request.getParameter("userId"))
-        );
+- `beginTransaction()`：开始新事务
+- `commitTransaction()`：提交当前事务
+- `rollbackTransaction()`：回滚整个事务
+- `rollbackTransaction(Savepoint)`：回滚到特定保存点
+- `createSavepoint(String)`：创建命名保存点
+- `releaseSavepoint(Savepoint)`：释放保存点
+- `isInTransaction()`：检查事务是否活动
 
-        return new JsonResponse(results);
-    } catch (Exception e) {
-        return new JsonResponse(Map.of("error", e.getMessage()));
-    }
-}
+#### 事务最佳实践
+
+1. 始终使用 try-with-resources 确保正确关闭 `DatabaseOperator`
+2. 将事务操作包裹在 try-catch 块中
+3. 始终显式地提交或回滚事务
+4. 对于可能需要部分回滚的复杂操作，使用保存点
+5. 保持事务尽可能短，以避免长时间锁定资源
+6. 适当处理异常，确保在出错时回滚事务
+
+注意：如果带有活动事务的 `DatabaseOperator` 在未显式提交或回滚事务的情况下关闭，事务将自动回滚以确保数据完整性。
 ```
 
 ## 对象映射方法
@@ -552,28 +544,38 @@ public String getBook(Integer id, Request request, Response response) {
 // 创建新书籍
 Book newBook = new Book();
 newBook.setName("了不起的盖茨比");
-newBook.setAuthor("F. 司科特·菲兹杰拉德");
+newBook.setAuthor("F. 司科特·菲茨杰拉德");
 newBook.setContent("在我年轻和更容易受伤的岁月里...");
-newBook.save(); // 插入数据库
+newBook.append(); // 向数据库插入新记录
 
 // 根据 ID 查找书籍
 Book book = new Book();
 book.setId(1);
-book.find();
+book.findOneById(); // 根据 ID 查找
 
 // 更新书籍
 book.setName("更新的标题");
 book.update();
 
 // 删除书籍
-book.remove();
+book.delete(); // 删除记录
 
 // 查找所有书籍
 List<Book> allBooks = book.findAll();
 
 // 条件查找书籍
-List<Book> books = book.findWhere("author = ?", "F. 司科特·菲兹杰拉德");
+List<Book> books = book.findWhere("author = ?", "F. 司科特·菲茨杰拉德");
 ```
+
+### 数据操作的重要说明
+
+在 Tinystruct 框架中，不同的数据库操作有不同的方法：
+
+- `append()`：专门用于向数据库插入新记录。
+- `update()`：专门用于更新数据库中的现有记录。
+- `save()`：此方法根据记录是否存在来决定是插入还是更新。它是一个便利方法，内部会根据需要调用 `append()` 或 `update()`。
+
+为了清晰和精确控制，建议使用 `append()` 进行插入操作，使用 `update()` 进行更新操作，而不是依赖 `save()`。
 
 ## 最佳实践
 

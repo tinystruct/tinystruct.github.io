@@ -51,45 +51,77 @@ Tinystruct offers several approaches for database access:
 
 ## DatabaseOperator
 
-The `DatabaseOperator` class provides a convenient way to perform database operations without directly managing Repository instances.
+The `DatabaseOperator` class provides a convenient way to perform database operations without directly managing Repository instances. It handles connection management, statement preparation, and resource cleanup automatically.
 
-### Basic Usage
+### Creating a DatabaseOperator
 
 ```java
-// Create a DatabaseOperator instance
+// Default constructor - gets connection from ConnectionManager
 DatabaseOperator operator = new DatabaseOperator();
 
-// Execute a query
-List<Map<String, Object>> results = operator.query("SELECT * FROM users WHERE id = ?", 1);
+// With specific database
+DatabaseOperator operator = new DatabaseOperator("myDatabase");
 
-// Execute an update
-int rowsAffected = operator.update("UPDATE users SET name = ? WHERE id = ?", "John Doe", 1);
-
-// Execute an insert
-int newId = operator.insert("INSERT INTO users (name, email) VALUES (?, ?)", "Jane Smith", "jane@example.com");
-
-// Execute a delete
-operator.update("DELETE FROM users WHERE id = ?", 1);
+// With existing connection
+Connection connection = getConnection();
+DatabaseOperator operator = new DatabaseOperator(connection);
 ```
 
-### Transaction Support
+### Executing Queries
 
 ```java
-// Start a transaction
-operator.begin();
+// Simple query without parameters
+ResultSet results = operator.query("SELECT * FROM users");
 
-try {
-    // Perform multiple operations
-    operator.update("UPDATE accounts SET balance = balance - ? WHERE id = ?", 100.0, 1);
-    operator.update("UPDATE accounts SET balance = balance + ? WHERE id = ?", 100.0, 2);
+// Query with parameters (using prepared statement)
+PreparedStatement stmt = operator.preparedStatement("SELECT * FROM users WHERE id = ?", new Object[]{1});
+ResultSet results = operator.executeQuery(stmt);
 
-    // Commit the transaction
-    operator.commit();
-} catch (Exception e) {
-    // Rollback on error
-    operator.rollback();
-    throw e;
+// Process results
+while (results.next()) {
+    int id = results.getInt("id");
+    String name = results.getString("name");
+    // Process row data
 }
+```
+
+### Executing Updates
+
+```java
+// Simple update without parameters
+int rowsAffected = operator.update("UPDATE users SET status = 'active'");
+
+// Update with parameters
+PreparedStatement stmt = operator.preparedStatement(
+    "UPDATE users SET name = ? WHERE id = ?",
+    new Object[]{"John Doe", 1}
+);
+int rowsAffected = operator.executeUpdate(stmt);
+
+// Execute statement that might be query or update
+boolean isResultSet = operator.execute("CALL some_procedure()");
+```
+
+### Resource Management
+
+```java
+// Using try-with-resources for automatic cleanup
+try (DatabaseOperator operator = new DatabaseOperator()) {
+    ResultSet results = operator.query("SELECT * FROM users");
+    // Process results
+} // Automatically closes ResultSet, PreparedStatement, and returns Connection to pool
+```
+
+### SQL Injection Protection
+
+The DatabaseOperator includes built-in SQL injection detection:
+
+```java
+// SQL injection is checked by default
+DatabaseOperator operator = new DatabaseOperator();
+
+// Disable SQL injection checking (e.g., for CLI tools)
+operator.disableSafeCheck();
 ```
 
 ## Repository API
@@ -101,50 +133,15 @@ Tinystruct also uses the Repository pattern for direct database operations. The 
 ```java
 // Create a MySQL repository
 Repository repository = Type.MySQL.createRepository();
-repository.connect(getConfiguration());
 
 // Create an H2 repository
 Repository repository = Type.H2.createRepository();
-repository.connect(getConfiguration());
 
 // Create a SQLite repository
 Repository repository = Type.SQLite.createRepository();
-repository.connect(getConfiguration());
 ```
 
 ### Executing Queries
-
-```java
-@Action("users")
-public String getUsers(Request request, Response response) {
-    try {
-        Repository repository = Type.MySQL.createRepository();
-        repository.connect(getConfiguration());
-
-        List<Row> users = repository.query("SELECT id, name, email FROM users");
-
-        // Set content type to JSON
-        response.headers().add(Header.CONTENT_TYPE.set("application/json"));
-
-        // Create JSON response
-        Builder builder = new Builder();
-        builder.put("users", users);
-
-        return builder.toString();
-    } catch (Exception e) {
-        // Set content type to JSON
-        response.headers().add(Header.CONTENT_TYPE.set("application/json"));
-
-        // Create error response
-        Builder builder = new Builder();
-        builder.put("error", e.getMessage());
-
-        return builder.toString();
-    }
-}
-```
-
-### Parameterized Queries
 
 ```java
 @Action("users")
@@ -154,12 +151,12 @@ public String getUser(Integer id, Request request, Response response) {
         DatabaseOperator operator = new DatabaseOperator();
 
         // Execute query with parameter
-        List<Map<String, Object>> results = operator.query("SELECT id, name, email FROM users WHERE id = ?", id);
+        ResultSet results = operator.query("SELECT id, name, email FROM users WHERE id = " + id);
 
         // Set content type to JSON
         response.headers().add(Header.CONTENT_TYPE.set("application/json"));
 
-        if (results.isEmpty()) {
+        if (!results.next()) {
             // Create error response
             Builder builder = new Builder();
             builder.put("error", "User not found");
@@ -168,7 +165,10 @@ public String getUser(Integer id, Request request, Response response) {
 
         // Create success response
         Builder builder = new Builder();
-        builder.put("user", results.get(0));
+        builder.put("id", results.getInt("id"));
+        builder.put("name", results.getString("name"));
+        builder.put("email", results.getString("email"));
+
         return builder.toString();
     } catch (Exception e) {
         // Set content type to JSON
@@ -186,246 +186,224 @@ public String getUser(Integer id, Request request, Response response) {
 
 ```java
 @Action("users/create")
-public JsonResponse createUser(Request request) {
+public String createUser(Request request, Response response) {
     try {
         String name = request.getParameter("name");
         String email = request.getParameter("email");
 
         if (name == null || email == null) {
-            return new JsonResponse(Map.of("error", "Name and email are required"));
+            response.headers().add(Header.CONTENT_TYPE.set("application/json"));
+            Builder builder = new Builder();
+            builder.put("error", "Name and email are required");
+            return builder.toString();
         }
 
-        Repository repository = Type.MySQL.createRepository();
-        repository.connect(getConfiguration());
+        // Create a DatabaseOperator instance
+        DatabaseOperator operator = new DatabaseOperator();
 
-        int result = repository.execute(
+        // Execute update with parameters
+        PreparedStatement stmt = operator.preparedStatement(
             "INSERT INTO users (name, email) VALUES (?, ?)",
-            name, email
+            new Object[]{name, email}
         );
+        int result = operator.executeUpdate(stmt);
 
-        return new JsonResponse(Map.of("success", true, "rowsAffected", result));
+        // Set content type to JSON
+        response.headers().add(Header.CONTENT_TYPE.set("application/json"));
+
+        // Create success response
+        Builder builder = new Builder();
+        builder.put("success", true);
+        builder.put("rowsAffected", result);
+
+        return builder.toString();
     } catch (Exception e) {
-        return new JsonResponse(Map.of("error", e.getMessage()));
+        // Set content type to JSON
+        response.headers().add(Header.CONTENT_TYPE.set("application/json"));
+
+        // Create error response
+        Builder builder = new Builder();
+        builder.put("error", e.getMessage());
+        return builder.toString();
     }
 }
 ```
 
 ### Transactions
 
+Tinystruct provides comprehensive transaction support through the `DatabaseOperator` class.
+
+#### Basic Transaction Usage
+
+```java
+try (DatabaseOperator operator = new DatabaseOperator()) {
+    // Begin transaction
+    operator.beginTransaction();
+
+    try {
+        // Execute database operations
+        PreparedStatement stmt1 = operator.preparedStatement(
+            "INSERT INTO users (name) VALUES (?)",
+            new Object[]{"John"}
+        );
+        operator.executeUpdate(stmt1);
+
+        PreparedStatement stmt2 = operator.preparedStatement(
+            "UPDATE settings SET value = ? WHERE name = ?",
+            new Object[]{"new_value", "setting_name"}
+        );
+        operator.executeUpdate(stmt2);
+
+        // Commit transaction if all operations succeed
+        operator.commitTransaction();
+
+    } catch (Exception e) {
+        // Rollback transaction if any operation fails
+        operator.rollbackTransaction();
+        throw e;
+    }
+}
+```
+
+#### Example: Fund Transfer with Transactions
+
 ```java
 @Action("transfer")
-public JsonResponse transferFunds(Request request) {
+public String transferFunds(Request request, Response response) {
     int fromAccount = Integer.parseInt(request.getParameter("from"));
     int toAccount = Integer.parseInt(request.getParameter("to"));
     double amount = Double.parseDouble(request.getParameter("amount"));
 
-    Repository repository = Type.MySQL.createRepository();
-    repository.connect(getConfiguration());
+    try (DatabaseOperator operator = new DatabaseOperator()) {
+        // Begin transaction
+        operator.beginTransaction();
 
-    try {
-        repository.setAutoCommit(false);
+        try {
+            // Deduct from source account
+            PreparedStatement stmt1 = operator.preparedStatement(
+                "UPDATE accounts SET balance = balance - ? WHERE id = ? AND balance >= ?",
+                new Object[]{amount, fromAccount, amount}
+            );
+            int result1 = operator.executeUpdate(stmt1);
 
-        // Deduct from source account
-        int result1 = repository.execute(
-            "UPDATE accounts SET balance = balance - ? WHERE id = ? AND balance >= ?",
-            amount, fromAccount, amount
-        );
+            if (result1 == 0) {
+                operator.rollbackTransaction();
 
-        if (result1 == 0) {
-            repository.rollback();
-            return new JsonResponse(Map.of("error", "Insufficient funds"));
-        }
-
-        // Add to destination account
-        int result2 = repository.execute(
-            "UPDATE accounts SET balance = balance + ? WHERE id = ?",
-            amount, toAccount
-        );
-
-        if (result2 == 0) {
-            repository.rollback();
-            return new JsonResponse(Map.of("error", "Destination account not found"));
-        }
-
-        // Log the transaction
-        repository.execute(
-            "INSERT INTO transactions (from_account, to_account, amount, date) VALUES (?, ?, ?, NOW())",
-            fromAccount, toAccount, amount
-        );
-
-        repository.commit();
-
-        return new JsonResponse(Map.of("success", true));
-    } catch (Exception e) {
-        repository.rollback();
-        return new JsonResponse(Map.of("error", e.getMessage()));
-    } finally {
-        repository.setAutoCommit(true);
-    }
-}
-```
-
-## Working with Results
-
-### Row Interface
-
-The `Row` interface provides methods for accessing column values:
-
-```java
-List<Row> results = repository.query("SELECT id, name, email FROM users");
-
-for (Row row : results) {
-    int id = row.getInt("id");
-    String name = row.getString("name");
-    String email = row.getString("email");
-
-    System.out.println("User: " + id + ", " + name + ", " + email);
-}
-```
-
-### Converting Results to Objects
-
-```java
-List<User> users = new ArrayList<>();
-List<Row> results = repository.query("SELECT id, name, email FROM users");
-
-for (Row row : results) {
-    User user = new User();
-    user.setId(row.getInt("id"));
-    user.setName(row.getString("name"));
-    user.setEmail(row.getString("email"));
-
-    users.add(user);
-}
-```
-
-## Database Utilities
-
-### Schema Creation
-
-```java
-@Action(value = "init-db",
-        description = "Initialize database schema",
-        mode = Action.Mode.CLI)
-public String initDatabase() {
-    try {
-        Repository repository = Type.MySQL.createRepository();
-        repository.connect(getConfiguration());
-
-        // Create users table
-        repository.execute(
-            "CREATE TABLE IF NOT EXISTS users (" +
-            "id INT AUTO_INCREMENT PRIMARY KEY, " +
-            "name VARCHAR(100) NOT NULL, " +
-            "email VARCHAR(100) NOT NULL UNIQUE, " +
-            "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
-            ")"
-        );
-
-        // Create posts table
-        repository.execute(
-            "CREATE TABLE IF NOT EXISTS posts (" +
-            "id INT AUTO_INCREMENT PRIMARY KEY, " +
-            "user_id INT NOT NULL, " +
-            "title VARCHAR(200) NOT NULL, " +
-            "content TEXT, " +
-            "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
-            "FOREIGN KEY (user_id) REFERENCES users(id)" +
-            ")"
-        );
-
-        return "Database schema initialized successfully";
-    } catch (Exception e) {
-        return "Error initializing database: " + e.getMessage();
-    }
-}
-```
-
-### Data Import/Export
-
-```java
-@Action(value = "export-data",
-        description = "Export data to CSV",
-        mode = Action.Mode.CLI)
-public String exportData() {
-    try {
-        Repository repository = Type.MySQL.createRepository();
-        repository.connect(getConfiguration());
-
-        List<Row> users = repository.query("SELECT id, name, email FROM users");
-
-        try (FileWriter writer = new FileWriter("users.csv");
-             CSVWriter csvWriter = new CSVWriter(writer)) {
-
-            // Write header
-            csvWriter.writeNext(new String[]{"ID", "Name", "Email"});
-
-            // Write data
-            for (Row user : users) {
-                csvWriter.writeNext(new String[]{
-                    String.valueOf(user.getInt("id")),
-                    user.getString("name"),
-                    user.getString("email")
-                });
+                response.headers().add(Header.CONTENT_TYPE.set("application/json"));
+                Builder builder = new Builder();
+                builder.put("error", "Insufficient funds");
+                return builder.toString();
             }
+
+            // Add to destination account
+            PreparedStatement stmt2 = operator.preparedStatement(
+                "UPDATE accounts SET balance = balance + ? WHERE id = ?",
+                new Object[]{amount, toAccount}
+            );
+            int result2 = operator.executeUpdate(stmt2);
+
+            if (result2 == 0) {
+                operator.rollbackTransaction();
+
+                response.headers().add(Header.CONTENT_TYPE.set("application/json"));
+                Builder builder = new Builder();
+                builder.put("error", "Destination account not found");
+                return builder.toString();
+            }
+
+            // Log the transaction
+            PreparedStatement stmt3 = operator.preparedStatement(
+                "INSERT INTO transactions (from_account, to_account, amount, date) VALUES (?, ?, ?, NOW())",
+                new Object[]{fromAccount, toAccount, amount}
+            );
+            operator.executeUpdate(stmt3);
+
+            // Commit the transaction
+            operator.commitTransaction();
+
+            response.headers().add(Header.CONTENT_TYPE.set("application/json"));
+            Builder builder = new Builder();
+            builder.put("success", true);
+            return builder.toString();
+        } catch (Exception e) {
+            // Rollback on error
+            operator.rollbackTransaction();
+            throw e;
         }
-
-        return "Exported " + users.size() + " users to users.csv";
     } catch (Exception e) {
-        return "Error exporting data: " + e.getMessage();
+        response.headers().add(Header.CONTENT_TYPE.set("application/json"));
+        Builder builder = new Builder();
+        builder.put("error", e.getMessage());
+        return builder.toString();
     }
 }
 ```
 
-## Advanced Database Operations
+#### Using Savepoints
 
-### Batch Operations
+Savepoints allow you to create points within a transaction that you can roll back to without rolling back the entire transaction.
 
 ```java
-@Action("batch-insert")
-public JsonResponse batchInsert(Request request) {
+try (DatabaseOperator operator = new DatabaseOperator()) {
+    // Begin transaction
+    operator.beginTransaction();
+
+    // Execute first operation
+    PreparedStatement stmt1 = operator.preparedStatement(
+        "INSERT INTO users (name) VALUES (?)",
+        new Object[]{"John"}
+    );
+    operator.executeUpdate(stmt1);
+
+    // Create savepoint after first operation
+    Savepoint savepoint = operator.createSavepoint("AFTER_INSERT");
+
     try {
-        Repository repository = Type.MySQL.createRepository();
-        repository.connect(getConfiguration());
-
-        // Prepare batch data
-        List<Object[]> batchData = new ArrayList<>();
-        batchData.add(new Object[]{"John Doe", "john@example.com"});
-        batchData.add(new Object[]{"Jane Smith", "jane@example.com"});
-        batchData.add(new Object[]{"Bob Johnson", "bob@example.com"});
-
-        // Execute batch insert
-        int[] results = repository.executeBatch(
-            "INSERT INTO users (name, email) VALUES (?, ?)",
-            batchData
+        // Execute second operation
+        PreparedStatement stmt2 = operator.preparedStatement(
+            "UPDATE settings SET value = ? WHERE name = ?",
+            new Object[]{"new_value", "setting_name"}
         );
-
-        return new JsonResponse(Map.of("success", true, "rowsAffected", Arrays.stream(results).sum()));
+        operator.executeUpdate(stmt2);
     } catch (Exception e) {
-        return new JsonResponse(Map.of("error", e.getMessage()));
+        // If second operation fails, roll back to savepoint
+        operator.rollbackTransaction(savepoint);
+
+        // Try alternative operation
+        PreparedStatement altStmt = operator.preparedStatement(
+            "INSERT INTO logs (message) VALUES (?)",
+            new Object[]{"Operation failed"}
+        );
+        operator.executeUpdate(altStmt);
     }
+
+    // Commit transaction
+    operator.commitTransaction();
 }
 ```
 
-### Stored Procedures
+#### Transaction Methods
 
-```java
-@Action("call-procedure")
-public JsonResponse callProcedure(Request request) {
-    try {
-        Repository repository = Type.MySQL.createRepository();
-        repository.connect(getConfiguration());
+The `DatabaseOperator` class provides the following transaction-related methods:
 
-        List<Row> results = repository.query(
-            "CALL get_user_posts(?)",
-            Integer.parseInt(request.getParameter("userId"))
-        );
+- `beginTransaction()`: Begins a new transaction
+- `commitTransaction()`: Commits the current transaction
+- `rollbackTransaction()`: Rolls back the entire transaction
+- `rollbackTransaction(Savepoint)`: Rolls back to a specific savepoint
+- `createSavepoint(String)`: Creates a named savepoint
+- `releaseSavepoint(Savepoint)`: Releases a savepoint
+- `isInTransaction()`: Checks if a transaction is active
 
-        return new JsonResponse(results);
-    } catch (Exception e) {
-        return new JsonResponse(Map.of("error", e.getMessage()));
-    }
-}
+#### Transaction Best Practices
+
+1. Always use try-with-resources to ensure proper closure of the `DatabaseOperator`
+2. Wrap transaction operations in a try-catch block
+3. Always commit or rollback transactions explicitly
+4. Use savepoints for complex operations where partial rollbacks might be needed
+5. Keep transactions as short as possible to avoid locking resources for extended periods
+6. Handle exceptions appropriately, ensuring transactions are rolled back on errors
+
+Note: If a `DatabaseOperator` with an active transaction is closed without explicitly committing or rolling back the transaction, the transaction will be automatically rolled back to ensure data integrity.
 ```
 
 ## Object Mapping Approach
@@ -568,19 +546,19 @@ Book newBook = new Book();
 newBook.setName("The Great Gatsby");
 newBook.setAuthor("F. Scott Fitzgerald");
 newBook.setContent("In my younger and more vulnerable years...");
-newBook.save(); // Insert into database
+newBook.append(); // Insert a new record into database
 
 // Find a book by ID
 Book book = new Book();
 book.setId(1);
-book.find();
+book.findOneById(); // Find by ID
 
 // Update a book
 book.setName("Updated Title");
 book.update();
 
 // Delete a book
-book.remove();
+book.delete(); // Delete the record
 
 // Find all books
 List<Book> allBooks = book.findAll();
@@ -588,6 +566,16 @@ List<Book> allBooks = book.findAll();
 // Find books with conditions
 List<Book> books = book.findWhere("author = ?", "F. Scott Fitzgerald");
 ```
+
+### Important Note on Data Operations
+
+In the tinystruct framework, there are distinct methods for different database operations:
+
+- `append()`: Use this method specifically for inserting new records into the database.
+- `update()`: Use this method specifically for updating existing records in the database.
+- `save()`: This method determines whether to insert or update based on whether the record exists. It's a convenience method that internally calls either `append()` or `update()` as appropriate.
+
+For clarity and precise control, it's recommended to use `append()` for inserts and `update()` for updates rather than relying on `save()`.
 
 ## Best Practices
 
