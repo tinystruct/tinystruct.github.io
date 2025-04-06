@@ -404,7 +404,6 @@ try (DatabaseOperator operator = new DatabaseOperator()) {
 6. 适当处理异常，确保在出错时回滚事务
 
 注意：如果带有活动事务的 `DatabaseOperator` 在未显式提交或回滚事务的情况下关闭，事务将自动回滚以确保数据完整性。
-```
 
 ## 对象映射方法
 

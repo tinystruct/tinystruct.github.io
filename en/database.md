@@ -404,7 +404,6 @@ The `DatabaseOperator` class provides the following transaction-related methods:
 6. Handle exceptions appropriately, ensuring transactions are rolled back on errors
 
 Note: If a `DatabaseOperator` with an active transaction is closed without explicitly committing or rolling back the transaction, the transaction will be automatically rolled back to ensure data integrity.
-```
 
 ## Object Mapping Approach
 

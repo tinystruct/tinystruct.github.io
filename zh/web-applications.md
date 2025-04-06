@@ -18,12 +18,6 @@ bin/dispatcher start --import org.tinystruct.system.NettyHttpServer
 bin/dispatcher start --import org.tinystruct.system.TomcatServer
 ```
 
-### Undertow 服务器
-
-```bash
-bin/dispatcher start --import org.tinystruct.system.UndertowServer
-```
-
 ## 请求处理
 
 ### URL 模式
