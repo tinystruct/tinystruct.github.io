@@ -515,7 +515,7 @@ public String getBook(Integer id, Request request, Response response) {
         book.setId(id);
 
         // Find the book by ID
-        book.find();
+        book.findOneById();
 
         // Set content type to JSON
         response.headers().add(Header.CONTENT_TYPE.set("application/json"));
