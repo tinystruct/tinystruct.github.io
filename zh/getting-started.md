@@ -4,7 +4,7 @@
 
 ## 前提条件
 
-- Java 开发工具包 (JDK) 8 或更高版本
+- Java 开发工具包 (JDK) 17 或更高版本
 - Maven（用于依赖管理）
 - 文本编辑器或 IDE（IntelliJ IDEA、Eclipse、VS Code 等）
 
@@ -18,7 +18,7 @@
 <dependency>
     <groupId>org.tinystruct</groupId>
     <artifactId>tinystruct</artifactId>
-    <version>1.6.8</version>
+    <version>1.6.9</version>
     <classifier>jar-with-dependencies</classifier>
 </dependency>
 ```

@@ -27,7 +27,7 @@ Add the dependency to your pom.xml:
 <dependency>
     <groupId>org.tinystruct</groupId>
     <artifactId>tinystruct</artifactId>
-    <version>1.6.8</version>
+    <version>1.6.9</version>
     <classifier>jar-with-dependencies</classifier>
 </dependency>
 ```

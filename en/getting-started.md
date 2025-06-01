@@ -4,7 +4,7 @@ This guide will help you set up your first tinystruct application and understand
 
 ## Prerequisites
 
-- Java Development Kit (JDK) 8 or higher
+- Java Development Kit (JDK) 17 or higher
 - Maven (for dependency management)
 - A text editor or IDE (IntelliJ IDEA, Eclipse, VS Code, etc.)
 
@@ -18,7 +18,7 @@ Add the tinystruct dependency to your project's `pom.xml` file:
 <dependency>
     <groupId>org.tinystruct</groupId>
     <artifactId>tinystruct</artifactId>
-    <version>1.6.8</version>
+    <version>1.6.9</version>
     <classifier>jar-with-dependencies</classifier>
 </dependency>
 ```
