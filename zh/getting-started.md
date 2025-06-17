@@ -18,7 +18,7 @@
 <dependency>
     <groupId>org.tinystruct</groupId>
     <artifactId>tinystruct</artifactId>
-    <version>1.6.9</version>
+    <version>1.7.0</version>
     <classifier>jar-with-dependencies</classifier>
 </dependency>
 ```
