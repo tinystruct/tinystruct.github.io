@@ -30,12 +30,13 @@
             position: sticky;
             top: 0;
             background-color: #fff;
-            /* color: #fff; */
-            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 2px 8px rgba(44,62,80,0.08);
+            padding: 0.5rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 100;
         }
 
         nav h1 {
@@ -43,10 +44,13 @@
             font-size: 1.5rem;
             display: flex;
             align-items: center;
+            font-weight: 700;
+            color: #2e8555;
+            letter-spacing: -1px;
         }
 
         nav img {
-            margin-right: 0.5rem;
+            margin-right: 0.75rem;
             height: 40px;
             width: 40px;
         }
@@ -54,30 +58,42 @@
         nav .menu {
             display: flex;
             align-items: center;
+            gap: 1.5rem;
         }
 
         nav a {
             text-decoration: none;
-            margin-left: 1.5rem;
+            color: #222;
+            font-weight: 500;
             font-size: 1rem;
+            transition: color 0.2s;
         }
 
         nav a:hover {
-            text-decoration: underline;
+            color: #2e8555;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            margin-left: 1.5rem;
         }
 
         .language-select {
             margin-left: 1.5rem;
             padding: 0.5rem;
             font-size: 1rem;
-            border: none;
-            border-radius: 5px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            background: #fff;
         }
 
         /* Container Styles */
         .container {
-            max-width: 1000px;
-            margin: 2rem auto;
+            max-width: 1100px;
+            margin: 0 auto;
             background: #ffffff;
             padding: 2rem;
             border-radius: 10px;
@@ -93,7 +109,7 @@
         }
 
         h1, h2 {
-            color: #4b3c6e;
+            color: #2e8555;
         }
 
         ul {
@@ -111,7 +127,7 @@
         }
 
         a {
-            color: #4b3c6e;
+            color: #2e8555;
             text-decoration: none;
         }
 
@@ -245,6 +261,52 @@
             }
         }
 
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .footer-content {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            
+            .hero-title {
+                font-size: 2.2rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 600px) {
+            nav {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 0.5rem 1rem;
+            }
+            
+            nav .menu {
+                margin-top: 0.5rem;
+                gap: 1rem;
+            }
+            
+            .hero {
+                padding: 2.5rem 0 1rem 0;
+            }
+            
+            .hero-title {
+                font-size: 1.8rem;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+        }
+
         .terminal {
             font-family: 'Courier New', monospace;
             background: #1e1e1e;
@@ -357,6 +419,186 @@
         .flex {
             display: flex;
         }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(90deg, #3cad6e 0%, #fff 100%);
+            padding: 4rem 0 2rem 0;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #205d3b;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: #444;
+            margin-bottom: 2rem;
+        }
+
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .btn-primary, .btn-secondary {
+            padding: 0.75rem 2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: #2e8555;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #29784c;
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: #2e8555;
+            border: 2px solid #2e8555;
+        }
+
+        .btn-secondary:hover {
+            background: #3cad6e;
+        }
+
+        /* Footer */
+        .footer {
+            background: #222;
+            color: #fff;
+            padding: 2.5rem 0 1.5rem 0;
+            margin-top: 2rem;
+        }
+
+        .footer-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: space-between;
+            padding: 0 2rem;
+        }
+
+        .footer-col {
+            flex: 1 1 180px;
+            min-width: 180px;
+        }
+
+        .footer-col h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #3cad6e;
+        }
+
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 0.7rem;
+        }
+
+        .footer-col ul li a {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-col ul li a:hover {
+            color: #3cad6e;
+        }
+
+        .footer-logo {
+            height: 36px;
+            margin-bottom: 1rem;
+        }
+
+        .footer-copyright {
+            text-align: center;
+            margin-top: 2rem;
+            color: #aaa;
+            font-size: 0.95rem;
+        }
+
+        /* Dark Mode */
+        body.dark {
+            background: #18191a;
+            color: #f5f6fa;
+        }
+
+        body.dark nav {
+            background: #18191a;
+            border-bottom: 1px solid #222;
+        }
+
+        body.dark .hero {
+            background: linear-gradient(90deg, #205d3b 0%, #18191a 100%);
+        }
+
+        body.dark .hero-title {
+            color: #f5f6fa;
+        }
+
+        body.dark .hero-subtitle {
+            color: #ccc;
+        }
+
+        body.dark .container {
+            background: #23272f;
+            color: #f5f6fa;
+        }
+
+        body.dark ul li {
+            background: #23272f;
+            border: 1px solid #222;
+        }
+
+        body.dark .footer {
+            background: #18191a;
+        }
+
+        body.dark .footer-col h4 {
+            color: #3cad6e;
+        }
+
+        body.dark .footer-col ul li a {
+            color: #f5f6fa;
+        }
+
+        body.dark .footer-col ul li a:hover {
+            color: #3cad6e;
+        }
+
+        .terminal {
+            font-family: 'Courier New', monospace;
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+            font-size: 16px;
+            line-height: 1.5;
+            overflow: hidden;
+            color: #00ff00;
+            white-space: pre; /* Preserve spaces and tabs */
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
@@ -365,44 +607,33 @@
         <img src="https://avatars.githubusercontent.com/u/3723144?s=48&v=4" alt="tinystruct logo">
         tinystruct
     </h1>
-
-    <div class="hamburger" onclick="toggleMenu()">
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
-    <button type="button" class="flex h-6 w-6 items-center justify-center rounded-md transition hover:bg-zinc-900/5 dark:hover:bg-white/5" aria-label="Switch to light theme" onclick="toggleTheme()">
-        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" class="h-5 w-5 stroke-zinc-900 dark:hidden">
-            <path d="M12.5 10a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Z"></path>
-            <path stroke-linecap="round" d="M10 5.5v-1M13.182 6.818l.707-.707M14.5 10h1M13.182 13.182l.707.707M10 15.5v-1M6.11 13.889l.708-.707M4.5 10h1M6.11 6.111l.708.707"></path>
-        </svg>
-        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" class="hidden h-5 w-5 stroke-white dark:block">
-            <path d="M15.224 11.724a5.5 5.5 0 0 1-6.949-6.949 5.5 5.5 0 1 0 6.949 6.949Z"></path>
-        </svg>
-    </button>
     <div class="menu">
-        <a href="#about" class="lang" data-en="What is tinystruct?" data-fr="Qu'est-ce que tinystruct?" data-de="Was ist tinystruct?" data-zh="什么是 tinystruct?">What is tinystruct?</a>
-        <a href="#features" class="lang" data-en="Features" data-fr="Caractéristiques" data-de="Funktionen" data-zh="特点">Features</a>
-        <a href="#architecture" class="lang" data-en="Architecture" data-fr="Architecture" data-de="Architektur" data-zh="架构">Architecture</a>
-        <a href="#use-cases" class="lang" data-en="Use Cases" data-fr="Cas d'utilisation" data-de="Anwendungsfälle" data-zh="用例">Use Cases</a>
-        <a href="#installation" class="lang" data-en="Installation" data-fr="Installation" data-de="Installation" data-zh="安装">Installation</a>
-        <a href="#" id="docs-link" class="lang" data-en="Documentation" data-fr="Documentation" data-de="Dokumentation" data-zh="文档">Documentation</a>
+        <a href="#features">Features</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#use-cases">Use Cases</a>
+        <a href="#installation">Installation</a>
+        <a href="#" id="docs-link">Documentation</a>
+        <a href="https://github.com/tinystruct/tinystruct" target="_blank">GitHub</a>
         <select class="language-select" onchange="changeLanguage(this.value)">
             <option value="en">English</option>
             <option value="fr">Français</option>
             <option value="de">Deutsch</option>
             <option value="zh">中文</option>
         </select>
-
-        <a href="https://github.com/tinystruct/tinystruct" target="_blank" class="github-star" title="Star tinystruct on GitHub">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="16" height="16">
-                <path d="M12 .587l3.668 7.435 8.2 1.19-5.934 5.787 1.4 8.169L12 18.896l-7.334 3.872 1.4-8.169L.132 9.212l8.2-1.19L12 .587z"/>
-            </svg>
-            Star us on Github
-        </a>
-
+        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">🌙</button>
     </div>
 </nav>
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-title">A lightweight Java framework for modern apps</div>
+    <div class="hero-subtitle">Write once, run anywhere. Build efficient command-line tools and web applications with unified code and blazing speed.</div>
+    <div class="hero-buttons">
+        <a href="#installation" class="btn-primary">Get Started</a>
+        <a href="/en/" class="btn-secondary">Documentation</a>
+    </div>
+</section>
+
 <div class="container" id="about">
     <h2 class="lang" data-en="What is tinystruct?" data-fr="Qu'est-ce que tinystruct?" data-de="Was ist tinystruct?" data-zh="什么是 tinystruct?">What is tinystruct?</h2>
     <div class="intro lang" data-en="tinystruct is a lightweight Java application framework designed for building applications from command-line tools to web applications. Its core concept is 'write once, run anywhere', achieving code reuse between command-line and web environments through a unified Action mechanism." data-fr="tinystruct est un framework Java léger conçu pour construire des applications allant des outils en ligne de commande aux applications Web. Son concept central est 'écrire une fois, exécuter partout', réalisant la réutilisation du code entre les environnements en ligne de commande et Web grâce à un mécanisme Action unifié." data-de="tinystruct ist ein leichtgewichtiges Java-Anwendungsframework, das für die Entwicklung von Anwendungen von Befehlszeilentools bis hin zu Webanwendungen konzipiert wurde. Sein Kernkonzept ist 'einmal schreiben, überall ausführen' und erreicht Code-Wiederverwendung zwischen Befehlszeilen- und Web-Umgebungen durch einen einheitlichen Action-Mechanismus." data-zh="tinystruct 是一个轻量级 Java 应用框架，设计用于构建从命令行工具到 Web 应用的各种应用程序。它的核心理念是'编写一次，随处运行'，通过统一的 Action 机制实现命令行和 Web 环境下的代码复用。">
@@ -601,11 +832,43 @@ mcp.auth.token=123456</code></pre>
 </div>
 
 <!-- Footer -->
-<footer>
-    <p class="lang" data-en="Created with by James ZHOU" data-fr="Créé avec par James ZHOU" data-de="Erstellt mit von James ZHOU" data-zh="创建者: James ZHOU">Created with by James ZHOU</p>
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-col">
+            <img src="https://avatars.githubusercontent.com/u/3723144?s=48&v=4" alt="tinystruct logo" class="footer-logo">
+            <div style="font-weight:700; font-size:1.1rem; margin-bottom:0.5rem;">tinystruct</div>
+            <div style="color:#aaa;">A lightweight Java framework for modern apps.</div>
+        </div>
+        <div class="footer-col">
+            <h4>Docs</h4>
+            <ul>
+                <li><a href="/en/">Getting Started</a></li>
+                <li><a href="/en/advanced-features.md">Advanced Features</a></li>
+                <li><a href="/en/api/">API Reference</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Community</h4>
+            <ul>
+                <li><a href="https://github.com/tinystruct/tinystruct" target="_blank">GitHub</a></li>
+                <li><a href="https://mvnrepository.com/artifact/org.tinystruct/tinystruct" target="_blank">Maven</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>More</h4>
+            <ul>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#installation">Installation</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-copyright">
+        Copyright © 2025 James ZHOU.
+    </div>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
 <script>
     // Toggle Menu
@@ -824,6 +1087,12 @@ mcp.auth.token=123456</code></pre>
         // Optionally save the current theme to localStorage for persistence
         const isDark = document.documentElement.classList.contains('dark');
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        
+        // Update the theme toggle button icon
+        const themeToggle = document.querySelector('.theme-toggle');
+        if (themeToggle) {
+            themeToggle.textContent = isDark ? '☀️' : '🌙';
+        }
     }
 
     // Initialize theme on page load
@@ -831,6 +1100,10 @@ mcp.auth.token=123456</code></pre>
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme === 'dark') {
             document.documentElement.classList.add('dark');
+            const themeToggle = document.querySelector('.theme-toggle');
+            if (themeToggle) {
+                themeToggle.textContent = '☀️';
+            }
         }
     });
 
