@@ -201,14 +201,152 @@
         .hamburger {
             display: none;
             flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: none;
+            border: none;
+            padding: 0;
+            margin-left: 1rem;
             cursor: pointer;
+            z-index: 110;
+            transition: transform 0.3s;
         }
-
-        .hamburger div {
-            background-color: #fff;
+        .hamburger span {
+            display: block;
+            width: 1.5rem;
             height: 3px;
-            width: 25px;
+            background: #222;
             margin: 3px 0;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+        html.dark .hamburger span {
+            background: #f5f6fa;
+        }
+        .hamburger.active span:nth-child(1) {
+            transform: translateY(6px) rotate(45deg);
+        }
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .hamburger.active span:nth-child(3) {
+            transform: translateY(-6px) rotate(-45deg);
+        }
+        @media (max-width: 900px) {
+            .hamburger {
+                display: flex;
+                position: absolute;
+                right: 1.5rem;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+            nav {
+                position: relative;
+            }
+            .menu {
+                display: none;
+                flex-direction: column;
+                align-items: stretch;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100vw;
+                background: #fff;
+                color: #222;
+                box-shadow: none;
+                border-radius: 0 0 10px 10px;
+                border-top-left-radius: 0;
+                border-top-right-radius: 0;
+                padding: 1.5rem 1rem 1rem 1rem;
+                z-index: 100;
+                gap: 0;
+                max-height: 80vh;
+                overflow-y: auto;
+                margin-top: 0;
+                border-top: none;
+            }
+            html.dark .menu {
+                background: #18191a;
+                color: #f5f6fa;
+                box-shadow: none;
+            }
+            .menu.active {
+                display: flex;
+            }
+            .menu > * {
+                margin: 0.5rem 0;
+                padding: 1rem 0;
+                font-size: 1.15rem;
+                border-bottom: 1px solid #eee;
+                color: inherit;
+                background: none;
+                text-align: left;
+                outline: none;
+                border-radius: 6px;
+                transition: background 0.15s, color 0.15s;
+            }
+            .menu > *:last-child {
+                border-bottom: none;
+            }
+            .menu a, .menu .navbar-dropdown-btn, .menu .navbar-github-btn, .menu .navbar-theme-btn {
+                color: inherit;
+                text-decoration: none;
+                font-weight: 600;
+                width: 100%;
+                display: flex;
+                align-items: center;
+                outline: none;
+                border: none;
+                border-radius: 0;
+                background: none;
+                cursor: pointer;
+            }
+            .menu a:focus, .menu a:hover,
+            .menu .navbar-dropdown-btn:focus, .menu .navbar-dropdown-btn:hover,
+            .menu .navbar-github-btn:focus, .menu .navbar-github-btn:hover,
+            .menu .navbar-theme-btn:focus, .menu .navbar-theme-btn:hover {
+                background: #e6f4ea;
+                color: #2e8555;
+                outline: 2px solid #2e8555;
+                outline-offset: 2px;
+            }
+            html.dark .menu a:focus, html.dark .menu a:hover,
+            html.dark .menu .navbar-dropdown-btn:focus, html.dark .menu .navbar-dropdown-btn:hover,
+            html.dark .menu .navbar-github-btn:focus, html.dark .menu .navbar-github-btn:hover,
+            html.dark .menu .navbar-theme-btn:focus, html.dark .menu .navbar-theme-btn:hover {
+                background: #23272f;
+                color: #3cad6e;
+                outline: 2px solid #3cad6e;
+                outline-offset: 2px;
+            }
+            /* Scrollbar for long menus */
+            .menu {
+                scrollbar-width: thin;
+                scrollbar-color: #2e8555 #e6f4ea;
+            }
+            .menu::-webkit-scrollbar {
+                width: 8px;
+            }
+            .menu::-webkit-scrollbar-thumb {
+                background: #2e8555;
+                border-radius: 4px;
+            }
+            .menu::-webkit-scrollbar-track {
+                background: #e6f4ea;
+                border-radius: 4px;
+            }
+            html.dark .menu::-webkit-scrollbar-thumb {
+                background: #3cad6e;
+            }
+            html.dark .menu::-webkit-scrollbar-track {
+                background: #23272f;
+            }
+            .navbar-item, .navbar-github-btn, .navbar-theme-btn {
+                width: 100%;
+                justify-content: flex-start;
+            }
         }
 
         .menu {
@@ -228,9 +366,7 @@
                 display: none;
                 flex-direction: column;
                 position: absolute;
-                top: 70px;
                 right: 10px;
-                background: #986ce8;
                 padding: 1rem;
                 border-radius: 5px;
                 box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -596,6 +732,169 @@
             white-space: pre; /* Preserve spaces and tabs */
             margin: 10px 0;
         }
+
+        /* Docusaurus-style Navbar Dropdowns and Buttons */
+        .navbar-item {
+            position: relative;
+            margin-left: 1rem;
+        }
+        .navbar-dropdown-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.4em;
+            background: none;
+            border: none;
+            font: inherit;
+            color: #222;
+            cursor: pointer;
+            padding: 0.4em 0.9em;
+            border-radius: 6px;
+            transition: background 0.15s;
+        }
+        .navbar-dropdown-btn:hover, .navbar-dropdown-btn[aria-expanded="true"] {
+            background: #f3f4f6;
+        }
+        .navbar-dropdown-list {
+            position: absolute;
+            top: 110%;
+            left: 0;
+            min-width: 160px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(44,62,80,0.12);
+            padding: 0.5em 0;
+            margin: 0;
+            z-index: 1000;
+            list-style: none;
+            border: 1px solid #e5e7eb;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-8px);
+            transition: opacity 0.15s, transform 0.15s;
+        }
+        .navbar-item.open .navbar-dropdown-list {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+        .navbar-dropdown-list li {
+            margin: 0;
+        }
+        .navbar-dropdown-list a {
+            display: block;
+            padding: 0.5em 1.2em;
+            color: #222;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: background 0.15s, color 0.15s;
+        }
+        .navbar-dropdown-list a:hover {
+            background: #f3f4f6;
+            color: #2e8555;
+        }
+        /* GitHub Button */
+        a.navbar-github-btn {
+            display: flex;
+        }
+        .navbar-github-btn {
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background: none;
+            border: none;
+            color: #222;
+            transition: background 0.15s, color 0.15s;
+            padding: 0;
+            margin-left: 1rem;
+            position: relative;
+        }
+        .navbar-github-btn svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            display: flex;
+            margin: auto;
+        }
+        .navbar-github-btn:hover {
+            background: #f3f4f6;
+            color: #2e8555;
+        }
+        html.dark .navbar-github-btn {
+            color: #f5f6fa;
+        }
+        html.dark .navbar-github-btn:hover {
+            background: #23272f;
+            color: #3cad6e;
+        }
+        /* Theme Toggle Button */
+        .navbar-theme-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background: none;
+            border: none;
+            margin-left: 1rem;
+            color: #222;
+            transition: background 0.15s, color 0.15s;
+            position: relative;
+        }
+        .navbar-theme-btn:hover {
+            background: #f3f4f6;
+            color: #2e8555;
+        }
+        .navbar-theme-btn .theme-icon-dark {
+            display: none;
+        }
+        html.dark .navbar-theme-btn .theme-icon-light {
+            display: none;
+        }
+        html.dark .navbar-theme-btn .theme-icon-dark {
+            display: inline;
+        }
+        /* Dropdown arrow icon */
+        .navbar-dropdown-btn svg {
+            pointer-events: none;
+        }
+        /* Responsive: stack dropdowns on mobile */
+        @media (max-width: 900px) {
+            .navbar-item {
+                margin-left: 0.5rem;
+            }
+            .navbar-github-btn, .navbar-theme-btn {
+                margin-left: 0.5rem;
+            }
+        }
+        @media (max-width: 600px) {
+            .navbar-item {
+                margin-left: 0;
+            }
+            .navbar-github-btn, .navbar-theme-btn {
+                margin-left: 0;
+            }
+        }
+        /* Dark mode for dropdowns and buttons */
+        html.dark .navbar-dropdown-list {
+            background: #23272f;
+            border: 1px solid #222;
+        }
+        html.dark .navbar-dropdown-list a {
+            color: #f5f6fa;
+        }
+        html.dark .navbar-dropdown-list a:hover {
+            background: #2e8555;
+            color: #fff;
+        }
+        html.dark .navbar-github-btn, html.dark .navbar-theme-btn {
+            color: #f5f6fa;
+        }
+        html.dark .navbar-github-btn:hover, html.dark .navbar-theme-btn:hover {
+            background: #23272f;
+            color: #3cad6e;
+        }
     </style>
 </head>
 <body>
@@ -604,21 +903,61 @@
         <img src="https://avatars.githubusercontent.com/u/3723144?s=48&v=4" alt="tinystruct logo">
         tinystruct
     </h1>
-    <div class="menu">
+    <div class="menu" id="navbar-menu">
         <a href="#features">Features</a>
         <a href="#architecture">Architecture</a>
         <a href="#use-cases">Use Cases</a>
         <a href="#installation">Installation</a>
         <a href="#" id="docs-link">Documentation</a>
-        <a href="https://github.com/tinystruct/tinystruct" target="_blank">GitHub</a>
-        <select class="language-select" onchange="changeLanguage(this.value)">
-            <option value="en">English</option>
-            <option value="fr">Français</option>
-            <option value="de">Deutsch</option>
-            <option value="zh">中文</option>
-        </select>
-        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">🌙</button>
+        <!-- Version Dropdown -->
+        <div class="navbar-item navbar-version-dropdown">
+            <button class="navbar-dropdown-btn" aria-haspopup="listbox" aria-expanded="false">
+                <span>v1.7.1</span>
+                <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+            </button>
+            <ul class="navbar-dropdown-list" tabindex="-1" hidden>
+                <li><a href="#">v1.7.1 (latest)</a></li>
+                <li><a href="#">v1.6.0</a></li>
+                <li><a href="#">v1.5.0</a></li>
+            </ul>
+        </div>
+        <!-- Language Dropdown -->
+        <div class="navbar-item navbar-lang-dropdown">
+            <button class="navbar-dropdown-btn" aria-haspopup="listbox" aria-expanded="false">
+                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"></path></svg>
+            </button>
+            <ul class="navbar-dropdown-list" tabindex="-1" hidden>
+                <li><a href="#" onclick="changeLanguage('en')">English</a></li>
+                <li><a href="#" onclick="changeLanguage('fr')">Français</a></li>
+                <li><a href="#" onclick="changeLanguage('de')">Deutsch</a></li>
+                <li><a href="#" onclick="changeLanguage('zh')">中文</a></li>
+            </ul>
+        </div>
+        <!-- GitHub Button -->
+        <a href="https://github.com/tinystruct/tinystruct" target="_blank" class="navbar-github-btn" aria-label="GitHub">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.021c0 4.428 2.865 8.184 6.839 9.504.5.092.682-.217.682-.483 0-.237-.009-.868-.014-1.703-2.782.605-3.369-1.342-3.369-1.342-.454-1.157-1.11-1.465-1.11-1.465-.908-.62.069-.608.069-.608 1.004.07 1.532 1.032 1.532 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.339-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.295 2.748-1.025 2.748-1.025.546 1.378.202 2.397.1 2.65.64.7 1.028 1.595 1.028 2.688 0 3.847-2.338 4.695-4.566 4.944.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.749 0 .268.18.579.688.481C19.138 20.2 22 16.447 22 12.021 22 6.484 17.523 2 12 2z" fill="currentColor"/></svg>
+        </a>
+        <!-- Theme Toggle Button -->
+        <button class="navbar-theme-btn" onclick="toggleTheme()" aria-label="Toggle dark mode">
+            <!-- Sun icon (light mode) -->
+            <svg class="theme-icon-light" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <g stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round">
+                    <circle cx="10" cy="10" r="4"/>
+                    <path d="M10 2.5v1.5M10 16.5v1.5M17.5 10h-1.5M4 10H2.5M14.95 5.05l-1.06 1.06M6.11 13.89l-1.06 1.06M14.95 14.95l-1.06-1.06M6.11 6.11L5.05 5.05"/>
+                </g>
+            </svg>
+            <!-- Moon icon (dark mode) -->
+            <svg class="theme-icon-dark" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="M15.5 10.5A5.5 5.5 0 0 1 9.5 4.5a5.5 5.5 0 1 0 6 6z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            </svg>
+        </button>
     </div>
+    <!-- Hamburger for mobile (moved to far right) -->
+    <button class="hamburger" aria-label="Open menu" aria-controls="navbar-menu" aria-expanded="false" type="button">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
 </nav>
 
 <!-- Hero Section -->
@@ -633,8 +972,7 @@
 
 <div class="container" id="about">
     <h2 class="lang" data-en="What is tinystruct?" data-fr="Qu'est-ce que tinystruct?" data-de="Was ist tinystruct?" data-zh="什么是 tinystruct?">What is tinystruct?</h2>
-    <div class="intro lang" data-en="tinystruct is a lightweight Java application framework designed for building applications from command-line tools to web applications. Its core concept is 'write once, run anywhere', achieving code reuse between command-line and web environments through a unified Action mechanism." data-fr="tinystruct est un framework Java léger conçu pour construire des applications allant des outils en ligne de commande aux applications Web. Son concept central est 'écrire une fois, exécuter partout', réalisant la réutilisation du code entre les environnements en ligne de commande et Web grâce à un mécanisme Action unifié." data-de="tinystruct ist ein leichtgewichtiges Java-Anwendungsframework, das für die Entwicklung von Anwendungen von Befehlszeilentools bis hin zu Webanwendungen konzipiert wurde. Sein Kernkonzept ist 'einmal schreiben, überall ausführen' und erreicht Code-Wiederverwendung zwischen Befehlszeilen- und Web-Umgebungen durch einen einheitlichen Action-Mechanismus." data-zh="tinystruct 是一个轻量级 Java 应用框架，设计用于构建从命令行工具到 Web 应用的各种应用程序。它的核心理念是'编写一次，随处运行'，通过统一的 Action 机制实现命令行和 Web 环境下的代码复用。">
-        tinystruct is a lightweight Java application framework designed for building applications from command-line tools to web applications. Its core concept is 'write once, run anywhere', achieving code reuse between command-line and web environments through a unified Action mechanism.
+    <div class="intro lang" data-en="tinystruct is a lightweight Java application framework designed for building applications from command-line tools to web applications. Its core concept is 'write once, run anywhere', achieving code reuse between command-line and web environments through a unified Action mechanism." data-fr="tinystruct est un framework Java léger conçu pour construire des applications allant des outils en ligne de commande aux applications Web. Son concept central est 'écrire une fois, exécuter partout', réalisant la réutilisation du code entre les environnements en ligne de commande et Web grâce à un mécanisme Action unifié." data-de="tinystruct ist ein leichtgewichtiges Java-Anwendungsframework, das für die Entwicklung von Anwendungen von Befehlszeilentools bis hin zu Webanwendungen konzipiert wurde. Sein Kernkonzept ist 'einmal schreiben, überall ausführen' und erreicht Code-Wiederverwendung zwischen Befehlszeilen- und Web-Umgebungen durch einen einheitlichen Action-Mechanismus." data-zh="tinystruct 是一个轻量级 Java 应用框架，设计用于构建从命令行工具到 Web 应用的各种应用程序。它的核心理念是'编写一次，随处运行'，通过统一的 Action 机制实现命令行和 Web 环境下的代码复用。">tinystruct is a lightweight Java application framework designed for building applications from command-line tools to web applications. Its core concept is 'write once, run anywhere', achieving code reuse between command-line and web environments through a unified Action mechanism.
     </div>
 
     <div class="terminal" id="terminal-main"><div id="output-main"></div><div class="blink" id="cursor-main"></div></div>
@@ -1206,6 +1544,91 @@ mcp.auth.token=123456</code></pre>
             nettyScenarios: "NettyHttpServer 适用场景"
         }
     };
+
+    // Docusaurus-style Navbar Dropdowns
+    (function() {
+        function closeAllDropdowns() {
+            document.querySelectorAll('.navbar-item.open').forEach(function(item) {
+                item.classList.remove('open');
+                var btn = item.querySelector('.navbar-dropdown-btn');
+                if (btn) btn.setAttribute('aria-expanded', 'false');
+                var list = item.querySelector('.navbar-dropdown-list');
+                if (list) list.setAttribute('hidden', '');
+            });
+        }
+        function openDropdown(item) {
+            closeAllDropdowns();
+            item.classList.add('open');
+            var btn = item.querySelector('.navbar-dropdown-btn');
+            if (btn) btn.setAttribute('aria-expanded', 'true');
+            var list = item.querySelector('.navbar-dropdown-list');
+            if (list) list.removeAttribute('hidden');
+        }
+        document.querySelectorAll('.navbar-item').forEach(function(item) {
+            var btn = item.querySelector('.navbar-dropdown-btn');
+            if (!btn) return;
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (item.classList.contains('open')) {
+                    closeAllDropdowns();
+                } else {
+                    openDropdown(item);
+                }
+            });
+            btn.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openDropdown(item);
+                    var first = item.querySelector('.navbar-dropdown-list a');
+                    if (first) first.focus();
+                }
+            });
+            var list = item.querySelector('.navbar-dropdown-list');
+            if (list) {
+                list.addEventListener('keydown', function(e) {
+                    var links = Array.from(list.querySelectorAll('a'));
+                    var idx = links.indexOf(document.activeElement);
+                    if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        if (idx < links.length - 1) links[idx + 1].focus();
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        if (idx > 0) links[idx - 1].focus();
+                    } else if (e.key === 'Escape') {
+                        closeAllDropdowns();
+                        btn.focus();
+                    }
+                });
+            }
+        });
+        document.addEventListener('click', function(e) {
+            closeAllDropdowns();
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeAllDropdowns();
+        });
+    })();
+
+    const hamburger = document.querySelector('.hamburger');
+    const menu = document.getElementById('navbar-menu');
+    if (hamburger && menu) {
+        hamburger.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const isOpen = menu.classList.toggle('active');
+            hamburger.classList.toggle('active', isOpen);
+            hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+        // Close menu on outside click (mobile)
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth <= 900 && menu.classList.contains('active')) {
+                if (!menu.contains(e.target) && !hamburger.contains(e.target)) {
+                    menu.classList.remove('active');
+                    hamburger.classList.remove('active');
+                    hamburger.setAttribute('aria-expanded', 'false');
+                }
+            }
+        });
+    }
 
 </script>
 </body>
