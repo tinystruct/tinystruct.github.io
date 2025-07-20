@@ -175,9 +175,11 @@
             border-radius: 5px;
             overflow-x: auto;
             margin-bottom: 1rem;
+            font-family: 'Courier New', monospace;
         }
 
         pre code {
+            font-family: 'Courier New', monospace;
             display: block;
         }
 
@@ -1439,6 +1441,24 @@ mcp.auth.token=123456</code></pre>
             if (themeToggle) {
                 themeToggle.textContent = '☀️';
             }
+        }
+        // --- Prism code highlight for all code blocks ---
+        document.querySelectorAll('pre > code').forEach(function(code) {
+            // If no language- class, try to guess or set default
+            if (![...code.classList].some(cls => cls.startsWith('language-'))) {
+                // Guess by content or fallback to language-java
+                const text = code.textContent.trim();
+                if (text.startsWith('<dependency>') || text.startsWith('<') && text.endsWith('>')) {
+                    code.classList.add('language-xml');
+                } else if (text.startsWith('#') || text.includes('=') && !text.includes(';')) {
+                    code.classList.add('language-properties');
+                } else {
+                    code.classList.add('language-java');
+                }
+            }
+        });
+        if (window.Prism && Prism.highlightAll) {
+            Prism.highlightAll();
         }
     });
 
