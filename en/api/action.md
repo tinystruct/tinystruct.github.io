@@ -6,12 +6,12 @@ The `@Action` annotation is used to define routes and commands in tinystruct app
 
 ### Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| value | String | The URL pattern or command name |
-| description | String | Description of the action (optional) |
-| options | Argument[] | Command line arguments (optional) |
-| mode | Action.Mode | Execution mode (All, CLI, or Web) |
+| Parameter | Type | Description                                  |
+|-----------|------|----------------------------------------------|
+| value | String | The URL pattern or command name              |
+| description | String | Description of the action (optional)         |
+| options | Argument[] | Command line arguments (optional)            |
+| mode | Action.Mode | Execution mode (All, CLI, or HTTP_GET, etc.) |
 
 ### Example
 
@@ -19,7 +19,7 @@ The `@Action` annotation is used to define routes and commands in tinystruct app
 @Action(
     value = "users",
     description = "Get user by ID",
-    mode = Action.Mode.Web
+    mode = Action.Mode.HTTP_GET
 )
 public User getUser(Integer id) {
     return userService.findById(id);

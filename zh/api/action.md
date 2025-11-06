@@ -19,7 +19,7 @@
 @Action(
     value = "users",
     description = "根据ID获取用户",
-    mode = Action.Mode.Web
+    mode = Action.Mode.HTTP_GET
 )
 public User getUser(Integer id) {
     return userService.findById(id);
