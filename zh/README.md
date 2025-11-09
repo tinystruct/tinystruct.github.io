@@ -27,7 +27,7 @@ tinystruct 是一个简单而强大的 Java 开发框架。它秉承简单思维
 <dependency>
     <groupId>org.tinystruct</groupId>
     <artifactId>tinystruct</artifactId>
-    <version>1.7.8</version>
+    <version>1.7.10</version>
     <classifier>jar-with-dependencies</classifier>
 </dependency>
 ```
