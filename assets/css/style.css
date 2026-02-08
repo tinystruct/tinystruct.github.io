@@ -145,10 +145,15 @@ body {
     color: var(--sidebar-text-hover);
 }
 
+
+.nav-link ion-icon,
 .nav-link svg {
-    margin-right: 0.75rem;
+    margin-right: 1.5rem;
+    /* Increased spacing */
     width: 20px;
     height: 20px;
+    font-size: 1.25rem;
+    /* Ensure icon size if using font-size */
 }
 
 .sidebar-footer {
@@ -919,10 +924,11 @@ footer {
 [data-theme="dark"] .highlight .o {
     color: #ff7b72;
 }
+
 /* Adjust padding on larger screens */
 @media (min-width: 768px) {
     .markdown-body {
-        padding: 2rem 4rem; /* More generous padding for desktop reading */
+        padding: 2rem 4rem;
+        /* More generous padding for desktop reading */
     }
 }
-
