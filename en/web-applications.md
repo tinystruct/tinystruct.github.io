@@ -30,6 +30,34 @@ Tinystruct uses an intelligent pattern matching system for routing:
 
 The framework automatically routes requests to the appropriate method based on the URL pattern and method parameters. There's no need to define path variables like `{id}` in the @Action annotation.
 
+### HTTP Method-Specific Actions
+
+New in version 1.7.17, you can specify which HTTP methods an action responds to using the `mode` parameter:
+
+```java
+import org.tinystruct.system.annotation.Action.Mode;
+
+@Action(value = "users", mode = Mode.HTTP_GET)
+public String getUsers() {
+    return "Get all users";
+}
+
+@Action(value = "users", mode = Mode.HTTP_POST)
+public String createUser() {
+    return "Create user";
+}
+
+@Action(value = "users", mode = Mode.HTTP_PUT)
+public String updateUser() {
+    return "Update user";
+}
+
+@Action(value = "users", mode = Mode.HTTP_DELETE)
+public String deleteUser() {
+    return "Delete user";
+}
+```
+
 ### Accessing Request Parameters
 
 ```java

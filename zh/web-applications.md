@@ -30,6 +30,34 @@ Tinystruct 使用智能的模式匹配系统进行路由：
 
 框架会根据 URL 模式和方法参数自动将请求路由到适当的方法。无需在 @Action 注解中定义像 `{id}` 这样的路径变量。
 
+### HTTP 特定方法操作
+
+1.7.17 版本新增功能，您可以使用 `mode` 参数指定操作响应的 HTTP 方法：
+
+```java
+import org.tinystruct.system.annotation.Action.Mode;
+
+@Action(value = "users", mode = Mode.HTTP_GET)
+public String getUsers() {
+    return "获取所有用户";
+}
+
+@Action(value = "users", mode = Mode.HTTP_POST)
+public String createUser() {
+    return "创建用户";
+}
+
+@Action(value = "users", mode = Mode.HTTP_PUT)
+public String updateUser() {
+    return "更新用户";
+}
+
+@Action(value = "users", mode = Mode.HTTP_DELETE)
+public String deleteUser() {
+    return "删除用户";
+}
+```
+
 ### 访问请求参数
 
 ```java

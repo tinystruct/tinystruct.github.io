@@ -8,1865 +8,387 @@
         content="A lightweight java framework designed for building efficient and scalable applications. Supports both command-line tools and APIs, enabling developers to create robust solutions with ease.">
     <meta name="keywords" content="java, framework, lightweight, command-line, web, applications, tinystruct">
     <meta name="author" content="James ZHOU">
-    <meta name="favicon" content="https://avatars.githubusercontent.com/u/3723144?s=48&v=4">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <title>tinystruct framework - v1.7.17</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
-        integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>
-        :root {
-            --background: #f5f5f5;
-            --text: #000000;
-        }
 
-        /* General Styles */
-        body {
-            font-family: 'Roboto', Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--background);
-            color: var(--text);
-            transition: background-color 0.3s, color 0.3s;
-        }
+    <!-- Styles -->
+    <link rel="stylesheet" href="assets/css/style.css">
 
-        /* Navigation Bar */
-        nav {
-            position: sticky;
-            top: 0;
-            background-color: #fff;
-            box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
-            padding: 0.5rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
-        }
+    <!-- Icons -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 
-        nav h1 {
-            margin: 0;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            font-weight: 700;
-            color: #563cad;
-            letter-spacing: -1px;
-        }
-
-        nav img {
-            margin-right: 0.75rem;
-            height: 40px;
-            width: 40px;
-        }
-
-        nav .menu {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        nav a {
-            text-decoration: none;
-            color: #222;
-            font-weight: 500;
-            font-size: 1rem;
-            transition: color 0.2s;
-        }
-
-        nav a:hover {
-            color: #563cad;
-        }
-
-        .theme-toggle {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 1.2rem;
-            margin-left: 1.5rem;
-        }
-
-        .language-select {
-            margin-left: 1.5rem;
-            padding: 0.5rem;
-            font-size: 1rem;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            background: #fff;
-        }
-
-        /* Container Styles */
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            background: #ffffff;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .dark .container,
-        .dark nav,
-        .dark button {
-            background: #000000;
-        }
-
-        .dark li {
-            background: black;
-            border-radius: 5px;
-        }
-
-        h1,
-        h2 {
-            color: #563cad;
-        }
-
-        ul {
-            margin: 1rem 0;
-            padding: 0;
-            list-style: none;
-        }
-
-        ul li {
-            margin: 0.5rem 0;
-            padding: 1rem;
-        }
-
-        a {
-            color: #563cad;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        footer {
-            text-align: center;
-            padding: 1rem 0;
-            background: #4b3c6e;
-            color: #fff;
-        }
-
-        footer p {
-            margin: 0;
-        }
-
-        .btn {
-            display: inline-block;
-            background: #4b3c6e;
-            color: #fff;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 1rem;
-            margin-top: 1rem;
-        }
-
-        .btn:hover {
-            background: #3a2d58;
-        }
-
-        .language-select {
-            margin-left: 2rem;
-            background-color: #4b3c6e;
-            color: #fff;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        pre {
-            position: relative;
-            background: #ececec;
-            padding: 1rem;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            overflow-x: auto;
-            margin-bottom: 1rem;
-            font-family: 'Courier New', monospace;
-        }
-
-        pre code {
-            font-family: 'Courier New', monospace;
-            display: block;
-        }
-
-        .copy-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #4b3c6e;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-        }
-
-        .copy-btn:hover {
-            background: #3a2d58;
-        }
-
-        /* Hamburger Menu */
-        .hamburger {
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            width: 2.5rem;
-            height: 2.5rem;
-            background: none;
-            border: none;
-            padding: 0;
-            margin-left: 1rem;
-            cursor: pointer;
-            z-index: 110;
-            transition: transform 0.3s;
-        }
-
-        .hamburger span {
-            display: block;
-            width: 1.5rem;
-            height: 3px;
-            background: #222;
-            margin: 3px 0;
-            border-radius: 2px;
-            transition: all 0.3s;
-        }
-
-        html.dark .hamburger span {
-            background: #f5f6fa;
-        }
-
-        .hamburger.active span:nth-child(1) {
-            transform: translateY(6px) rotate(45deg);
-        }
-
-        .hamburger.active span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .hamburger.active span:nth-child(3) {
-            transform: translateY(-6px) rotate(-45deg);
-        }
-
-        @media (max-width: 900px) {
-            .hamburger {
-                display: flex;
-                position: absolute;
-                right: 1.5rem;
-                top: 50%;
-                transform: translateY(-50%);
-            }
-
-            nav {
-                position: relative;
-            }
-
-            .menu {
-                display: none;
-                flex-direction: column;
-                align-items: stretch;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                width: 100vw;
-                background: #fff;
-                color: #222;
-                box-shadow: none;
-                border-radius: 0 0 10px 10px;
-                border-top-left-radius: 0;
-                border-top-right-radius: 0;
-                padding: 1.5rem 1rem 1rem 1rem;
-                z-index: 100;
-                gap: 0;
-                max-height: 80vh;
-                overflow-y: auto;
-                margin-top: 0;
-                border-top: none;
-            }
-
-            html.dark .menu {
-                background: #18191a;
-                color: #f5f6fa;
-                box-shadow: none;
-            }
-
-            .menu.active {
-                display: flex;
-            }
-
-            .menu>* {
-                margin: 0.5rem 0;
-                padding: 1rem 0;
-                font-size: 1.15rem;
-                border-bottom: 1px solid #eee;
-                color: inherit;
-                background: none;
-                text-align: left;
-                outline: none;
-                border-radius: 6px;
-                transition: background 0.15s, color 0.15s;
-            }
-
-            .menu>*:last-child {
-                border-bottom: none;
-            }
-
-            .menu a,
-            .menu .navbar-dropdown-btn,
-            .menu .navbar-github-btn,
-            .menu .navbar-theme-btn {
-                color: inherit;
-                text-decoration: none;
-                font-weight: 600;
-                width: 100%;
-                display: flex;
-                align-items: center;
-                outline: none;
-                border: none;
-                border-radius: 0;
-                background: none;
-                cursor: pointer;
-            }
-
-            .menu a:focus,
-            .menu a:hover,
-            .menu .navbar-dropdown-btn:focus,
-            .menu .navbar-dropdown-btn:hover,
-            .menu .navbar-github-btn:focus,
-            .menu .navbar-github-btn:hover,
-            .menu .navbar-theme-btn:focus,
-            .menu .navbar-theme-btn:hover {
-                background: #e6f4ea;
-                color: #563cad;
-                outline: 2px solid #563cad;
-                outline-offset: 2px;
-            }
-
-            html.dark .menu a:focus,
-            html.dark .menu a:hover,
-            html.dark .menu .navbar-dropdown-btn:focus,
-            html.dark .menu .navbar-dropdown-btn:hover,
-            html.dark .menu .navbar-github-btn:focus,
-            html.dark .menu .navbar-github-btn:hover,
-            html.dark .menu .navbar-theme-btn:focus,
-            html.dark .menu .navbar-theme-btn:hover {
-                background: #23272f;
-                color: #563cad;
-                outline: 2px solid #563cad;
-                outline-offset: 2px;
-            }
-
-            /* Scrollbar for long menus */
-            .menu {
-                scrollbar-width: thin;
-                scrollbar-color: #563cad #e6f4ea;
-            }
-
-            .menu::-webkit-scrollbar {
-                width: 8px;
-            }
-
-            .menu::-webkit-scrollbar-thumb {
-                background: #563cad;
-                border-radius: 4px;
-            }
-
-            .menu::-webkit-scrollbar-track {
-                background: #e6f4ea;
-                border-radius: 4px;
-            }
-
-            html.dark .menu::-webkit-scrollbar-thumb {
-                background: #563cad;
-            }
-
-            html.dark .menu::-webkit-scrollbar-track {
-                background: #23272f;
-            }
-
-            .navbar-item,
-            .navbar-github-btn,
-            .navbar-theme-btn {
-                width: 100%;
-                justify-content: flex-start;
-            }
-        }
-
-        .menu {
-            display: flex;
-        }
-
-        .menu a,
-        .menu .language-select {
-            display: inline-block;
-        }
-
-        @media (max-width: 768px) {
-            .hamburger {
-                display: flex;
-            }
-
-            nav .menu {
-                display: none;
-                flex-direction: column;
-                position: absolute;
-                right: 10px;
-                padding: 1rem;
-                border-radius: 5px;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            }
-
-            .menu.active {
-                display: flex;
-            }
-
-            .menu a {
-                margin: 0.5rem 0;
-            }
-
-            .language-select {
-                margin: 0.5rem 0;
-            }
-
-            .hamburger {
-                order: 1;
-                /* Keep hamburger on the right */
-            }
-
-            nav button {
-                margin-right: 10px;
-                order: 0;
-                /* Move the theme toggle button first */
-            }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 900px) {
-            .footer-content {
-                flex-direction: column;
-                gap: 1.5rem;
-            }
-
-            .hero-title {
-                font-size: 2.2rem;
-            }
-
-            .hero-subtitle {
-                font-size: 1.1rem;
-            }
-
-            .hero-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-        }
-
-        @media (max-width: 600px) {
-            nav {
-                flex-direction: column;
-                align-items: flex-start;
-                padding: 0.5rem 1rem;
-            }
-
-            nav .menu {
-                margin-top: 0.5rem;
-                gap: 1rem;
-            }
-
-            .hero {
-                padding: 2.5rem 0 1rem 0;
-            }
-
-            .hero-title {
-                font-size: 1.8rem;
-            }
-
-            .container {
-                padding: 1rem;
-            }
-        }
-
-        .terminal {
-            font-family: 'Courier New', monospace;
-            background: #1e1e1e;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-            font-size: 16px;
-            line-height: 1.5;
-            overflow: hidden;
-            color: #00ff00;
-            white-space: pre;
-            /* Preserve spaces and tabs */
-            margin: 10px 0;
-        }
-
-        .output {
-            margin-top: 10px;
-        }
-
-        .command {
-            color: #ffffff;
-        }
-
-        .blink {
-            display: inline-block;
-            width: 10px;
-            background: #00ff00;
-            animation: blink 1s steps(2, start) infinite;
-        }
-
-        @keyframes blink {
-            50% {
-                background: transparent;
-            }
-        }
-
-        .highlight {
-            color: #ffcc00;
-        }
-
-        .fade-in {
-            opacity: 0;
-            animation: fadeIn 1s forwards;
-        }
-
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-            }
-        }
-
-        .urls a {
-            color: #4caf50;
-            text-decoration: none;
-        }
-
-        .urls a:hover {
-            text-decoration: underline;
-        }
-
-        .dark {
-            --background: #121212;
-            --text: #f5f5f5;
-        }
-
-        .w-5 {
-            width: 2.0rem;
-        }
-
-        .h-5 {
-            height: 2.0rem;
-        }
-
-        .dark\:hidden:is(.dark *) {
-            display: none;
-        }
-
-        .dark\:block:is(.dark *) {
-            display: block;
-        }
-
-        .dark\:hover\:bg-white\/5:hover:is(.dark *) {
-            background-color: hsla(0, 0%, 100%, .05);
-        }
-
-        .hover\:bg-zinc-900\/5:hover {
-            background-color: rgba(24, 24, 27, .05);
-        }
-
-        .stroke-white {
-            stroke: #fff;
-        }
-
-        .stroke-zinc-900 {
-            stroke: #18181b;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .transition {
-            transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;
-            transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
-            transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
-            transition-timing-function: cubic-bezier(.4, 0, .2, 1);
-            transition-duration: .15s;
-        }
-
-        .rounded-md {
-            border: 0 solid;
-            border-radius: .375rem;
-        }
-
-        .justify-center {
-            justify-content: center;
-        }
-
-        .items-center {
-            align-items: center;
-        }
-
-        .w-6 {
-            width: 2.0rem;
-        }
-
-        .h-6 {
-            height: 2.0rem;
-        }
-
-        .flex {
-            display: flex;
-        }
-
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(90deg, #777ccc 0%, #fff 100%);
-            padding: 4rem 0 2rem 0;
-            text-align: center;
-        }
-
-        .hero-title {
-            font-size: 2.8rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: #563cad;
-        }
-
-        .hero-subtitle {
-            font-size: 1.3rem;
-            color: #444;
-            margin-bottom: 2rem;
-        }
-
-        .hero-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-        }
-
-        .btn-primary,
-        .btn-secondary {
-            padding: 0.75rem 2rem;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            transition: background 0.2s, color 0.2s;
-            text-decoration: none;
-        }
-
-        .btn-primary {
-            background: #563cad;
-            color: #fff;
-        }
-
-        .btn-primary:hover {
-            background: #29784c;
-        }
-
-        .btn-secondary {
-            background: #fff;
-            color: #563cad;
-            border: 2px solid #563cad;
-        }
-
-        .btn-secondary:hover {
-            /* background: #563cad; */
-        }
-
-        /* Footer */
-        .footer {
-            background: #222;
-            color: #fff;
-            padding: 2.5rem 0 1.5rem 0;
-            margin-top: 2rem;
-        }
-
-        .footer-content {
-            max-width: 1100px;
-            margin: 0 auto;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2rem;
-            justify-content: space-between;
-            padding: 0 2rem;
-        }
-
-        .footer-col {
-            flex: 1 1 180px;
-            min-width: 180px;
-        }
-
-        .footer-col h4 {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: #563cad;
-        }
-
-        .footer-col ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .footer-col ul li {
-            margin-bottom: 0.7rem;
-        }
-
-        .footer-col ul li a {
-            color: #fff;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .footer-col ul li a:hover {
-            color: #563cad;
-        }
-
-        .footer-logo {
-            height: 36px;
-            margin-bottom: 1rem;
-        }
-
-        .footer-copyright {
-            text-align: center;
-            margin-top: 2rem;
-            color: #aaa;
-            font-size: 0.95rem;
-        }
-
-        /* Dark Mode */
-        body.dark {
-            background: #18191a;
-            color: #f5f6fa;
-        }
-
-        body.dark nav {
-            background: #18191a;
-            border-bottom: 1px solid #222;
-        }
-
-        body.dark .hero {
-            background: linear-gradient(90deg, #563cad 0%, #18191a 100%);
-        }
-
-        body.dark .hero-title {
-            color: #f5f6fa;
-        }
-
-        body.dark .hero-subtitle {
-            color: #ccc;
-        }
-
-        body.dark .container {
-            background: #23272f;
-            color: #f5f6fa;
-        }
-
-        body.dark ul li {
-            background: #23272f;
-            border: 1px solid #222;
-        }
-
-        body.dark .footer {
-            background: #18191a;
-        }
-
-        body.dark .footer-col h4 {
-            color: #563cad;
-        }
-
-        body.dark .footer-col ul li a {
-            color: #f5f6fa;
-        }
-
-        body.dark .footer-col ul li a:hover {
-            color: #563cad;
-        }
-
-        .terminal {
-            font-family: 'Courier New', monospace;
-            background: #1e1e1e;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-            font-size: 16px;
-            line-height: 1.5;
-            overflow: hidden;
-            color: #00ff00;
-            white-space: pre;
-            /* Preserve spaces and tabs */
-            margin: 10px 0;
-        }
-
-        /* Docusaurus-style Navbar Dropdowns and Buttons */
-        .navbar-item {
-            position: relative;
-            margin-left: 1rem;
-        }
-
-        .navbar-dropdown-btn {
-            display: flex;
-            align-items: center;
-            gap: 0.4em;
-            background: none;
-            border: none;
-            font: inherit;
-            color: #222;
-            cursor: pointer;
-            padding: 0.4em 0.9em;
-            border-radius: 6px;
-            transition: background 0.15s;
-        }
-
-        .navbar-dropdown-btn:hover,
-        .navbar-dropdown-btn[aria-expanded="true"] {
-            background: #f3f4f6;
-        }
-
-        .navbar-dropdown-list {
-            position: absolute;
-            top: 110%;
-            left: 0;
-            min-width: 160px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 16px rgba(44, 62, 80, 0.12);
-            padding: 0.5em 0;
-            margin: 0;
-            z-index: 1000;
-            list-style: none;
-            border: 1px solid #e5e7eb;
-            opacity: 0;
-            pointer-events: none;
-            transform: translateY(-8px);
-            transition: opacity 0.15s, transform 0.15s;
-        }
-
-        .navbar-item.open .navbar-dropdown-list {
-            opacity: 1;
-            pointer-events: auto;
-            transform: translateY(0);
-        }
-
-        .navbar-dropdown-list li {
-            margin: 0;
-        }
-
-        .navbar-dropdown-list a {
-            display: block;
-            padding: 0.5em 1.2em;
-            color: #222;
-            text-decoration: none;
-            font-size: 1rem;
-            transition: background 0.15s, color 0.15s;
-        }
-
-        .navbar-dropdown-list a:hover {
-            background: #f3f4f6;
-            color: #563cad;
-        }
-
-        /* GitHub Button */
-        a.navbar-github-btn {
-            display: flex;
-        }
-
-        .navbar-github-btn {
-            align-items: center;
-            justify-content: center;
-            width: 2.5rem;
-            height: 2.5rem;
-            border-radius: 50%;
-            background: none;
-            border: none;
-            color: #222;
-            transition: background 0.15s, color 0.15s;
-            padding: 0;
-            margin-left: 1rem;
-            position: relative;
-        }
-
-        .navbar-github-btn svg {
-            width: 1.25rem;
-            height: 1.25rem;
-            display: flex;
-            margin: auto;
-        }
-
-        .navbar-github-btn:hover {
-            background: #f3f4f6;
-            color: #563cad;
-        }
-
-        html.dark .navbar-github-btn {
-            color: #f5f6fa;
-        }
-
-        html.dark .navbar-github-btn:hover {
-            background: #23272f;
-            color: #563cad;
-        }
-
-        /* Theme Toggle Button */
-        .navbar-theme-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 2.5rem;
-            height: 2.5rem;
-            border-radius: 50%;
-            background: none;
-            border: none;
-            margin-left: 1rem;
-            color: #222;
-            transition: background 0.15s, color 0.15s;
-            position: relative;
-        }
-
-        .navbar-theme-btn:hover {
-            background: #f3f4f6;
-            color: #563cad;
-        }
-
-        .navbar-theme-btn .theme-icon-dark {
-            display: none;
-        }
-
-        html.dark .navbar-theme-btn .theme-icon-light {
-            display: none;
-        }
-
-        html.dark .navbar-theme-btn .theme-icon-dark {
-            display: inline;
-        }
-
-        /* Dropdown arrow icon */
-        .navbar-dropdown-btn svg {
-            pointer-events: none;
-        }
-
-        /* Responsive: stack dropdowns on mobile */
-        @media (max-width: 900px) {
-            .navbar-item {
-                margin-left: 0.5rem;
-            }
-
-            .navbar-github-btn,
-            .navbar-theme-btn {
-                margin-left: 0.5rem;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .navbar-item {
-                margin-left: 0;
-            }
-
-            .navbar-github-btn,
-            .navbar-theme-btn {
-                margin-left: 0;
-            }
-        }
-
-        /* Dark mode for dropdowns and buttons */
-        html.dark .navbar-dropdown-list {
-            background: #23272f;
-            border: 1px solid #222;
-        }
-
-        html.dark .navbar-dropdown-list a {
-            color: #f5f6fa;
-        }
-
-        html.dark .navbar-dropdown-list a:hover {
-            background: #563cad;
-            color: #fff;
-        }
-
-        html.dark .navbar-github-btn,
-        html.dark .navbar-theme-btn {
-            color: #f5f6fa;
-        }
-
-        html.dark .navbar-github-btn:hover,
-        html.dark .navbar-theme-btn:hover {
-            background: #23272f;
-            color: #563cad;
-        }
-    </style>
+    <!-- Prism for syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
 </head>
 
 <body>
-    <nav>
-        <h1>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <a href="#" class="sidebar-brand">
             <img src="https://avatars.githubusercontent.com/u/3723144?s=48&v=4" alt="tinystruct logo">
-            tinystruct
-        </h1>
-        <div class="menu" id="navbar-menu">
-            <a href="#features">Features</a>
-            <a href="#architecture">Architecture</a>
-            <a href="#use-cases">Use Cases</a>
-            <a href="#installation">Installation</a>
-            <a href="#" id="docs-link">Documentation</a>
-            <!-- Version Dropdown -->
-            <div class="navbar-item navbar-version-dropdown">
-                <button class="navbar-dropdown-btn" aria-haspopup="listbox" aria-expanded="false">
-                    <span>v1.7.17</span>
-                    <svg width="16" height="16" viewBox="0 0 24 24">
-                        <path fill="currentColor" d="M7 10l5 5 5-5z" />
-                    </svg>
-                </button>
-                <ul class="navbar-dropdown-list" tabindex="-1" hidden>
-                    <li><a href="#">v1.7.17 (latest)</a></li>
-                    <li><a href="#">v1.6.0</a></li>
-                    <li><a href="#">v1.5.0</a></li>
-                </ul>
-            </div>
-            <!-- Language Dropdown -->
-            <div class="navbar-item navbar-lang-dropdown">
-                <button class="navbar-dropdown-btn" aria-haspopup="listbox" aria-expanded="false">
-                    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-                        <path fill="currentColor"
-                            d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z">
-                        </path>
-                    </svg>
-                </button>
-                <ul class="navbar-dropdown-list" tabindex="-1" hidden>
-                    <li><a href="#" onclick="changeLanguage('en')">English</a></li>
-                    <li><a href="#" onclick="changeLanguage('fr')">Français</a></li>
-                    <li><a href="#" onclick="changeLanguage('de')">Deutsch</a></li>
-                    <li><a href="#" onclick="changeLanguage('zh')">中文</a></li>
-                </ul>
-            </div>
-            <!-- GitHub Button -->
-            <a href="https://github.com/tinystruct/tinystruct" target="_blank" class="navbar-github-btn"
-                aria-label="GitHub">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M12 2C6.477 2 2 6.484 2 12.021c0 4.428 2.865 8.184 6.839 9.504.5.092.682-.217.682-.483 0-.237-.009-.868-.014-1.703-2.782.605-3.369-1.342-3.369-1.342-.454-1.157-1.11-1.465-1.11-1.465-.908-.62.069-.608.069-.608 1.004.07 1.532 1.032 1.532 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.339-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.295 2.748-1.025 2.748-1.025.546 1.378.202 2.397.1 2.65.64.7 1.028 1.595 1.028 2.688 0 3.847-2.338 4.695-4.566 4.944.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.749 0 .268.18.579.688.481C19.138 20.2 22 16.447 22 12.021 22 6.484 17.523 2 12 2z"
-                        fill="currentColor" />
-                </svg>
-            </a>
-            <!-- Theme Toggle Button -->
-            <button class="navbar-theme-btn" onclick="toggleTheme()" aria-label="Toggle dark mode">
-                <!-- Sun icon (light mode) -->
-                <svg class="theme-icon-light" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                    <g stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round">
-                        <circle cx="10" cy="10" r="4" />
-                        <path
-                            d="M10 2.5v1.5M10 16.5v1.5M17.5 10h-1.5M4 10H2.5M14.95 5.05l-1.06 1.06M6.11 13.89l-1.06 1.06M14.95 14.95l-1.06-1.06M6.11 6.11L5.05 5.05" />
-                    </g>
-                </svg>
-                <!-- Moon icon (dark mode) -->
-                <svg class="theme-icon-dark" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                    <path d="M15.5 10.5A5.5 5.5 0 0 1 9.5 4.5a5.5 5.5 0 1 0 6 6z" stroke="currentColor"
-                        stroke-width="1.5" fill="none" />
-                </svg>
-            </button>
-        </div>
-        <!-- Hamburger for mobile (moved to far right) -->
-        <button class="hamburger" aria-label="Open menu" aria-controls="navbar-menu" aria-expanded="false"
-            type="button">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-    </nav>
+            <span>tinystruct</span>
+        </a>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-title">A lightweight Java framework for modern apps</div>
-        <div class="hero-subtitle">Write once, run anywhere. Build efficient command-line tools and web applications
-            with unified code and blazing speed.</div>
-        <div class="hero-buttons">
-            <a href="#installation" class="btn-primary">Get Started</a>
-            <a href="/en/" class="btn-secondary">Documentation</a>
-        </div>
-    </section>
-
-    <div class="container" id="about">
-        <h2 class="lang" data-en="What is tinystruct?" data-fr="Qu'est-ce que tinystruct?" data-de="Was ist tinystruct?"
-            data-zh="什么是 tinystruct?">What is tinystruct?</h2>
-        <div class="intro lang"
-            data-en="tinystruct is a lightweight Java application framework designed for building applications from command-line tools to web applications. Its core concept is 'write once, run anywhere', achieving code reuse between command-line and web environments through a unified Action mechanism."
-            data-fr="tinystruct est un framework Java léger conçu pour construire des applications allant des outils en ligne de commande aux applications Web. Son concept central est 'écrire une fois, exécuter partout', réalisant la réutilisation du code entre les environnements en ligne de commande et Web grâce à un mécanisme Action unifié."
-            data-de="tinystruct ist ein leichtgewichtiges Java-Anwendungsframework, das für die Entwicklung von Anwendungen von Befehlszeilentools bis hin zu Webanwendungen konzipiert wurde. Sein Kernkonzept ist 'einmal schreiben, überall ausführen' und erreicht Code-Wiederverwendung zwischen Befehlszeilen- und Web-Umgebungen durch einen einheitlichen Action-Mechanismus."
-            data-zh="tinystruct 是一个轻量级 Java 应用框架，设计用于构建从命令行工具到 Web 应用的各种应用程序。它的核心理念是'编写一次，随处运行'，通过统一的 Action 机制实现命令行和 Web 环境下的代码复用。">
-            tinystruct is a lightweight Java application framework designed for building applications from command-line
-            tools to web applications. Its core concept is 'write once, run anywhere', achieving code reuse between
-            command-line and web environments through a unified Action mechanism.
-        </div>
-
-        <div class="terminal" id="terminal-main">
-            <div id="output-main"></div>
-            <div class="blink" id="cursor-main"></div>
-        </div>
-        <h2 class="lang" data-en="Why Choose tinystruct?" data-fr="Pourquoi choisir tinystruct?"
-            data-de="Warum tinystruct wählen?" data-zh="为什么选择 tinystruct?">Why Choose tinystruct?</h2>
-        <p class="lang"
-            data-en="tinystruct focuses on reducing unnecessary complexity in application development. Its lightweight, modular nature makes it an excellent choice for developers looking for a straightforward, efficient framework for various Java-based projects."
-            data-fr="tinystruct se concentre sur la réduction de la complexité inutile dans le développement d'applications. Sa nature légère et modulaire en fait un excellent choix pour les développeurs à la recherche d'un cadre simple et efficace pour divers projets basés sur Java."
-            data-de="tinystruct konzentriert sich darauf, unnötige Komplexität in der Anwendungsentwicklung zu reduzieren. Seine leichte, modulare Natur macht es zu einer ausgezeichneten Wahl für Entwickler, die nach einem einfachen, effizienten Framework für verschiedene Java-basierte Projekte suchen."
-            data-zh="tinystruct 专注于减少应用程序开发中的不必要复杂性。其轻量级、模块化的特性使其成为开发人员在寻找简洁高效的 Java 项目框架时的理想选择。">tinystruct focuses on
-            reducing unnecessary complexity in application development. Its lightweight, modular nature makes it an
-            excellent choice for developers looking for a straightforward, efficient framework for various Java-based
-            projects.</p>
-
-        <h2 id="features" class="lang" data-en="Key Features" data-fr="Caractéristiques principales"
-            data-de="Kernfunktionen" data-zh="核心特性">Key Features</h2>
-        <ul>
-            <li class="lang"
-                data-en="Unified Method Call Mechanism: Support both command-line and web service calls through @Action annotation."
-                data-zh="统一的方法调用机制：通过 @Action 注解支持命令行和 Web 服务调用。">Unified Method Call Mechanism: Support both
-                command-line and web service calls through @Action annotation.</li>
-            <li class="lang" data-en="HTTP Method-Specific Routing: Support for GET, POST, PUT, DELETE, and more."
-                data-zh="HTTP 方法特定路由：支持 GET, POST, PUT, DELETE 等。">HTTP Method-Specific Routing: Support for GET, POST,
-                PUT, DELETE, and more.</li>
-            <li class="lang" data-en="AI Integration with MCP: Built-in support for Model Context Protocol."
-                data-zh="AI 集成与 MCP：内置对模型上下文协议的支持。">AI Integration with MCP: Built-in support for Model Context
-                Protocol.</li>
-            <li class="lang" data-en="SSE Support: Native Server-Sent Events for real-time applications."
-                data-zh="SSE 支持：原生服务器发送事件，用于实时应用。">SSE Support: Native Server-Sent Events for real-time applications.
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="#" class="nav-link active">
+                    <ion-icon name="home-outline"></ion-icon>
+                    <span>Home</span>
+                </a>
             </li>
-            <li class="lang" data-en="Multiple Server Options: Choose between Netty, Tomcat, or Undertow."
-                data-zh="多种服务器选项：可在 Netty, Tomcat 或 Undertow 之间选择。">Multiple Server Options: Choose between Netty,
-                Tomcat, or Undertow.</li>
-            <li class="lang"
-                data-en="Low Latency Service Call: Direct method invocation between services without network overhead."
-                data-zh="低延迟服务调用：服务间直接方法调用，无网络开销。">Low Latency Service Call: Direct method invocation between services
-                without network overhead.</li>
-            <li class="lang" data-en="Lightweight Design: Small core library with minimal external dependencies."
-                data-zh="轻量级设计：核心库体积小，外部依赖少。">Lightweight Design: Small core library with minimal external dependencies.
+            <li class="nav-item">
+                <a href="en/getting-started.md" class="nav-link">
+                    <ion-icon name="rocket-outline"></ion-icon>
+                    <span>Getting Started</span>
+                </a>
             </li>
-            <li class="lang"
-                data-en="Flexible Deployment Options: Support for monolithic, microservices, and hybrid deployment modes."
-                data-zh="灵活的部署选项：支持单体、微服务和混合部署模式。">Flexible Deployment Options: Support for monolithic, microservices,
-                and hybrid deployment modes.</li>
+            <li class="nav-item">
+                <a href="en/core-concepts.md" class="nav-link">
+                    <ion-icon name="book-outline"></ion-icon>
+                    <span>Core Concepts</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="en/api/README.md" class="nav-link">
+                    <ion-icon name="code-slash-outline"></ion-icon>
+                    <span>API Reference</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="https://github.com/tinystruct/tinystruct" target="_blank" class="nav-link">
+                    <ion-icon name="logo-github"></ion-icon>
+                    <span>GitHub</span>
+                </a>
+            </li>
         </ul>
 
-        <h2 id="architecture" class="lang" data-en="Architecture" data-fr="Architecture" data-de="Architektur"
-            data-zh="架构">Architecture</h2>
-        <p class="lang"
-            data-en="tinystruct follows a modular, action-oriented architecture that enables code reuse between command-line applications and web services. The framework provides a unified interface through the @Action annotation mechanism, allowing developers to write code once and run it anywhere."
-            data-fr="tinystruct suit une architecture modulaire, orientée action qui permet la réutilisation du code entre les applications en ligne de commande et les services Web. Le framework fournit une interface unifiée grâce au mécanisme d'annotation @Action, permettant aux développeurs d'écrire le code une fois et de l'exécuter partout."
-            data-de="tinystruct folgt einer modularen, aktionsorientierten Architektur, die die Wiederverwendung von Code zwischen Befehlszeilenanwendungen und Webdiensten ermöglicht. Das Framework bietet eine einheitliche Schnittstelle durch den @Action-Annotationsmechanismus, der es Entwicklern ermöglicht, Code einmal zu schreiben und überall auszuführen."
-            data-zh="tinystruct 遵循模块化、面向动作的架构，实现命令行应用程序和 Web 服务之间的代码复用。该框架通过 @Action 注解机制提供统一接口，允许开发人员一次编写代码，随处运行。">
-            tinystruct follows a modular, action-oriented architecture that enables code reuse between command-line
-            applications and web services. The framework provides a unified interface through the @Action annotation
-            mechanism, allowing developers to write code once and run it anywhere.</p>
-        <div class="architecture-image" style="text-align: center; margin: 20px 0;">
-            <img src="architecture.gif" alt="tinystruct Architecture"
-                style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
+        <div class="sidebar-footer">
+            <p style="font-size: 0.8rem; color: #64748b;">&copy; 2026 tinystruct.org</p>
         </div>
-        <p class="lang"
-            data-en="The diagram above illustrates how tinystruct allows applications to be accessed through both web services and command-line interfaces using the same underlying code. This architecture promotes code reusability, maintainability, and flexibility in deployment options."
-            data-fr="Le diagramme ci-dessus illustre comment tinystruct permet aux applications d'être accessibles à la fois via des services Web et des interfaces en ligne de commande en utilisant le même code sous-jacent. Cette architecture favorise la réutilisabilité du code, la maintenabilité et la flexibilité des options de déploiement."
-            data-de="Das obige Diagramm veranschaulicht, wie tinystruct es ermöglicht, auf Anwendungen sowohl über Webdienste als auch über Befehlszeilenschnittstellen mit demselben zugrunde liegenden Code zuzugreifen. Diese Architektur fördert die Wiederverwendbarkeit von Code, die Wartbarkeit und die Flexibilität bei den Bereitstellungsoptionen."
-            data-zh="上图说明了 tinystruct 如何允许应用程序使用相同的底层代码通过 Web 服务和命令行界面访问。这种架构促进了代码的可重用性、可维护性和部署选项的灵活性。">The diagram
-            above illustrates how tinystruct allows applications to be accessed through both web services and
-            command-line interfaces using the same underlying code. This architecture promotes code reusability,
-            maintainability, and flexibility in deployment options.</p>
+    </aside>
 
-        <h2 id="use-cases" class="lang" data-en="Best Use Cases and Their Benefits"
-            data-fr="Meilleurs cas d'utilisation et leurs avantages" data-de="Beste Anwendungsfälle und deren Vorteile"
-            data-zh="最佳用例及其优势">Best Use Cases and Their Benefits</h2>
-        <ul>
-            <li class="lang"
-                data-en="Lightweight Web Applications: Perfect for small-scale websites needing speed and simplicity."
-                data-fr="Applications web légères: Parfait pour les sites web à petite échelle nécessitant rapidité et simplicité."
-                data-de="Leichte Webanwendungen: Ideal für kleine Websites, die Schnelligkeit und Einfachheit benötigen."
-                data-zh="轻量级 Web 应用程序：非常适合需要速度和简单性的小型网站。">Lightweight Web Applications: Perfect for small-scale websites
-                needing speed and simplicity.</li>
-            <li class="lang" data-en="Command-Line Tools: Develop robust utilities with minimal overhead."
-                data-fr="Outils en ligne de commande: Développez des utilitaires robustes avec un minimum de surcharge."
-                data-de="CLI-Tools: Entwickeln Sie robuste Dienstprogramme mit minimalem Aufwand."
-                data-zh="命令行工具：使用最小的开销开发强大的工具。">Command-Line Tools: Develop robust utilities with minimal overhead.</li>
-            <li class="lang" data-en="Microservices: Modular design makes it ideal for specific, lightweight services."
-                data-fr="Microservices: La conception modulaire le rend idéal pour des services spécifiques et légers."
-                data-de="Mikrodienste: Modulares Design eignet sich hervorragend für spezifische, leichte Dienste."
-                data-zh="微服务：模块化设计使其成为特定轻量服务的理想选择。">Microservices: Modular design makes it ideal for specific,
-                lightweight services.</li>
-            <li class="lang" data-en="Embedded Systems: Small memory footprint fits resource-constrained devices."
-                data-fr="Systèmes embarqués: La petite empreinte mémoire convient aux appareils à ressources limitées."
-                data-de="Eingebettete Systeme: Kleine Speichernutzung passt zu ressourcenbegrenzten Geräten."
-                data-zh="嵌入式系统：小内存占用非常适合资源有限的设备。">Embedded Systems: Small memory footprint fits resource-constrained
-                devices.</li>
-            <li class="lang" data-en="Rapid Prototyping: Quickly iterate ideas with its simple setup."
-                data-fr="Prototypage rapide: Itérez rapidement des idées avec une configuration simple."
-                data-de="Schnelles Prototyping: Schnell Ideen mit einer einfachen Einrichtung iterieren."
-                data-zh="快速原型开发：通过简单的设置快速迭代想法。">Rapid Prototyping: Quickly iterate ideas with its simple setup.</li>
-        </ul>
+    <!-- Main Content Area -->
+    <main class="main-content">
 
-        <h2 id="installation" class="lang" data-en="Installation and Getting Started"
-            data-fr="Installation et démarrage" data-de="Installation und Einstieg" data-zh="安装和入门">Installation and
-            Getting Started</h2>
-        <p class="lang" data-en="Add the dependency into your pom.xml."
-            data-fr="Ajoutez la dépendance dans votre fichier pom.xml."
-            data-de="Fügen Sie die Abhängigkeit in Ihre pom.xml ein." data-zh="将以下 Maven 依赖项添加到您的项目中：">Add the
-            dependency into your pom.xml.</p>
-        <pre class="language-xml"><code>&lt;dependency&gt;
-  &lt;groupId&gt;org.tinystruct&lt;/groupId&gt;
-  &lt;artifactId&gt;tinystruct&lt;/artifactId&gt;
-  &lt;version&gt;1.7.17&lt;/version&gt;
-  &lt;classifier&gt;jar-with-dependencies&lt;/classifier&gt;
-&lt;/dependency&gt;</code><button class="copy-btn" onclick="copyCode(this)">Copy</button>
-</pre>
+        <!-- Header / Hero -->
+        <header class="main-header">
+            <div class="header-top">
+                <div class="version-badge">v1.7.17</div>
+                <div class="header-actions">
+                    <button class="lang-switch" title="Switch Language" onclick="toggleLanguage()">
+                        <span style="font-size: 0.8rem; font-weight: 700;">EN</span>
+                    </button>
+                    <button class="theme-toggle" title="Toggle Dark/Light Mode" onclick="toggleTheme()">
+                        <ion-icon name="moon-outline"></ion-icon>
+                    </button>
+                </div>
+            </div>
 
-        <p class="lang" data-en="Extend the AbstractApplication in Java"
-            data-fr="Étendez la classe AbstractApplication en Java"
-            data-de="Erweitern Sie die AbstractApplication in Java" data-zh="在 Java 中扩展 AbstractApplication 类">Extend
-            the AbstractApplication in Java</p>
-        <pre class="language-java"><code>package tinystruct.examples;
+            <section class="hero">
+                <h1 class="hero-title">A lightweight Java framework for modern apps</h1>
+                <p class="hero-subtitle">
+                    Build efficient, scalable applications with a unified CLI and Web architecture.
+                    Zero boilerplate, maximum performance.
+                </p>
+
+                <div class="hero-actions">
+                    <a href="en/getting-started.md" class="btn btn-primary">
+                        Get Started
+                        <ion-icon name="arrow-forward-outline" style="margin-left: 0.5rem;"></ion-icon>
+                    </a>
+                    <a href="https://github.com/tinystruct/tinystruct" target="_blank" class="btn btn-secondary">
+                        <ion-icon name="logo-github" style="margin-right: 0.5rem;"></ion-icon>
+                        View on GitHub
+                    </a>
+                </div>
+            </section>
+        </header>
+
+        <!-- Content Grid -->
+        <div class="content-wrapper">
+
+            <!-- Performance Card -->
+            <div class="card perf-card">
+                <h3>High Performance</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                    Engineered for speed with minimal overhead.
+                    Handles high-throughput workloads with ease.
+                </p>
+
+                <div class="perf-chart">
+                    <!-- Bars are purely decorative CSS -->
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div> <!-- Target -->
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+
+                    <div class="perf-stat">
+                        <div class="perf-value">86,000+</div>
+                        <div class="perf-label">Requests / Second</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Code Snippet Card -->
+            <div class="card code-card">
+                <h3>Simple & Elegant</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                    No main() method required. Just pure logic.
+                </p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <span class="language">JAVA</span>
+                    </div>
+                    <pre><code class="language-java">package com.example;
 
 import org.tinystruct.AbstractApplication;
-import org.tinystruct.ApplicationException;
 import org.tinystruct.system.annotation.Action;
 
-public class example extends AbstractApplication {
+public class HelloApp extends AbstractApplication {
 
-    @Override
-    public void init() {
-        // TODO Auto-generated method stub
+    @Action("hello")
+    public String hello() {
+        return "Hello, World!";
     }
-
-    @Override
-    public String version() {
-        return "1.0";
-    }
-
-    @Action("praise")
-    public String praise() {
-        return "Praise the Lord!";
-    }
-
-    @Action("say")
-    public String say() throws ApplicationException {
-        if (null != getContext().getAttribute("--words"))
-            return getContext().getAttribute("--words").toString();
-
-        throw new ApplicationException("Could not find the parameter <i>words</i>.");
-    }
-
-    @Action("say")
-    public String say(String words) {
-        return words;
-    }
-}</code><button class="copy-btn" onclick="copyCode(this)">Copy</button>
-</pre>
-
-
-        <h2 class="context lang" data-en="Context and Parameter Processing"
-            data-fr="Contexte et traitement des paramètres" data-de="Kontext- und Parameterverarbeitung"
-            data-zh="上下文与参数处理">Context and Parameter Processing</h2>
-        <pre><code class="language-java">@Action("process")
-public String process() throws ApplicationException {
-    // Get command line parameters from context
-    if (null != getContext().getAttribute("--data")) {
-        String data = getContext().getAttribute("--data").toString();
-        return processData(data);
-    }
-    throw new ApplicationException("Missing required parameter: --data");
-}</code></pre>
-
-        <h2 class="examples lang" data-en="Application Examples" data-fr="Exemples d'applications"
-            data-de="Anwendungsbeispiele" data-zh="应用示例">Application Examples</h2>
-        <pre><code class="language-java">public class ExampleApp extends AbstractApplication {
-    private static final EventDispatcher dispatcher = EventDispatcher.getInstance();
-
-    static {
-        dispatcher.registerHandler(InitEvent.class, handler ->
-            System.out.println(handler.getPayload()));
-    }
-
-    @Override
-    public void init() {
-        // Trigger event on initialization
-        dispatcher.dispatch(new InitEvent());
-    }
-
-    @Action("praise")
-    public String praise() {
-        return "Praise the Lord!";
-    }
-
-    @Action("say")
-    public String say() throws ApplicationException {
-        if (null != getContext().getAttribute("--words"))
-            return getContext().getAttribute("--words").toString();
-        throw new ApplicationException("Could not find the parameter <i>--words</i>.");
-    }
-
-    @Action("say")
-    public String say(String words) {
-        return words;
-    }
-
-    @Override
-    public String version() {
-        return "1.0";
+    
+    @Action("users/{id}")
+    public User getUser(String id) {
+        return userService.findById(id);
     }
 }</code></pre>
+                </div>
+            </div>
 
-        <h2 class="config lang" data-en="Configuration Reference" data-fr="Référence de configuration"
-            data-de="Konfigurationsreferenz" data-zh="配置参考">Configuration Reference</h2>
-        <pre><code class="language-properties"># Database configuration
-driver=org.h2.Driver
-database.url=jdbc:h2:~/test
-database.user=
-database.password=
-database.connections.max=10
-
-# Default settings
-default.file.encoding=UTF-8
-default.home.page=say/Praise the Lord!
-default.reload.mode=true
-default.date.format=yyyy-MM-dd HH:mm:ss
-
-# Error handling
-default.error.process=false
-default.error.page=error
-
-# HTTP configuration
-default.http.max_content_length = 4194304
-
-# System directory
-system.directory=
-
-# Mail configuration
-mail.smtp.host=
-mail.pop3.host=
-mail.smtp.port=
-mail.pop3.port=
-mail.smtp.auth=
-mail.pop3.auth=
-smtp.auth.user=
-smtp.auth.pwd=
-
-# Logging configuration
-logging.override = !TRUE
-handlers = java.util.logging.ConsoleHandler
-java.util.logging.ConsoleHandler.level = FINE
-java.util.logging.ConsoleHandler.formatter = org.apache.juli.OneLineFormatter
-java.util.logging.ConsoleHandler.encoding = UTF-8
-org.tinystruct.valve.Watcher$LockEventListener.level=WARNING
-
-# MQTT configuration
-mqtt.server.host=tcp://192.168.0.101
-mqtt.server.port=1883
-
-# MCP configuration
-mcp.auth.token=123456</code></pre>
-
-        <div class="terminal" id="terminal-secondary">
-            <div id="output-secondary"></div>
-            <div class="blink" id="cursor-secondary"></div>
         </div>
 
-        <div class="links">
-            <a href="https://github.com/tinystruct/tinystruct" class="btn" target="_blank">GitHub Repository</a>
-            <a href="https://mvnrepository.com/artifact/org.tinystruct/tinystruct" class="btn" target="_blank">Maven
-                Repository</a>
-            <a href="#" id="docs-link-resources" class="btn">Documentation</a>
-        </div>
+        <!-- Features Grid -->
+        <section class="features-grid">
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <ion-icon name="flash-outline" size="large"></ion-icon>
+                </div>
+                <h4>Unified Architecture</h4>
+                <p>Write your logic once and expose it as both a Command Line Interface and a Web API instantly.</p>
+            </div>
 
-        <h2 class="projects lang" data-en="Projects" data-fr="Projets" data-de="Projekte" data-zh="项目">Projects</h2>
-        <ul>
-            <li><a href="https://github.com/tinystruct/smalltalk">https://github.com/tinystruct/smalltalk</a></li>
-            <li><a href="https://github.com/m0ver/bible-online">https://github.com/m0ver/bible-online</a></li>
-        </ul>
-    </div>
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <ion-icon name="server-outline" size="large"></ion-icon>
+                </div>
+                <h4>Multiple Servers</h4>
+                <p>Built-in support for Netty, Tomcat, and Undertow. switch between them with a simple flag.</p>
+            </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-col">
-                <img src="https://avatars.githubusercontent.com/u/3723144?s=48&v=4" alt="tinystruct logo"
-                    class="footer-logo">
-                <div style="font-weight:700; font-size:1.1rem; margin-bottom:0.5rem;">tinystruct</div>
-                <div style="color:#aaa;">A lightweight Java framework for modern apps.</div>
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <ion-icon name="hardware-chip-outline" size="large"></ion-icon>
+                </div>
+                <h4>AI Ready (MCP)</h4>
+                <p>Native integration with Model Context Protocol for building next-gen AI applications.</p>
             </div>
-            <div class="footer-col">
-                <h4>Docs</h4>
-                <ul>
-                    <li><a href="/en/">Getting Started</a></li>
-                    <li><a href="/en/advanced-features.md">Advanced Features</a></li>
-                    <li><a href="/en/api/">API Reference</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Community</h4>
-                <ul>
-                    <li><a href="https://github.com/tinystruct/tinystruct" target="_blank">GitHub</a></li>
-                    <li><a href="https://mvnrepository.com/artifact/org.tinystruct/tinystruct" target="_blank">Maven</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>More</h4>
-                <ul>
-                    <li><a href="#features">Features</a></li>
-                    <li><a href="#architecture">Architecture</a></li>
-                    <li><a href="#installation">Installation</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-copyright">
-            Copyright © 2025 James ZHOU.
-        </div>
-    </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"
-        integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <ion-icon name="pulse-outline" size="large"></ion-icon>
+                </div>
+                <h4>Real-time SSE</h4>
+                <p>Push updates to clients instantly with built-in Server-Sent Events support.</p>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <ion-icon name="cube-outline" size="large"></ion-icon>
+                </div>
+                <h4>Lightweight</h4>
+                <p>Tiny footprint with minimal external dependencies. Perfect for microservices.</p>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <ion-icon name="code-working-outline" size="large"></ion-icon>
+                </div>
+                <h4>Zero Configuration</h4>
+                <p>Convention over configuration principles. Start coding immediately without XML hell.</p>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-content">
+                <p>Released under the Apache License 2.0</p>
+                <p>&copy; 2026 James ZHOU. All rights reserved.</p>
+            </div>
+        </footer>
+
+    </main>
+
+    <!-- Prism Script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+    <!-- Theme and Language Logic -->
     <script>
-        // Toggle Menu
-        function toggleMenu() {
-            const menu = document.querySelector('.menu');
-            menu.classList.toggle('active');
-        }
-
-        // Change language based on user selection
-        function changeLanguage(lang) {
-            const elements = document.querySelectorAll('.lang');
-            elements.forEach(element => {
-                const translation = element.dataset[lang];
-                if (translation) {
-                    element.innerHTML = translation;
-                }
-            });
-
-            // Update documentation links based on selected language
-            const docsLink = document.getElementById('docs-link');
-            const docsLinkResources = document.getElementById('docs-link-resources');
-
-            if (docsLink) {
-                docsLink.href = '/' + lang + '/';
-            }
-
-            if (docsLinkResources) {
-                docsLinkResources.href = '/' + lang + '/';
-            }
-
-            // Update URL fragment with selected language
-            window.location.hash = lang;
-        }
-
-        // Check URL fragment for language code and apply it
-        function applyLanguageFromURL() {
-            const hash = window.location.hash.substring(1); // Get language code from the URL fragment
-            const validLanguages = ['en', 'fr', 'de', 'zh']; // Define valid languages
-
-            if (validLanguages.includes(hash)) {
-                const select = document.querySelector('.language-select');
-                select.value = hash;
-                changeLanguage(hash); // Apply the language change
-            }
-        }
-
-        // Initialize language based on URL or browser settings
-        function initializeLanguage() {
-            // Check URL fragment first
-            applyLanguageFromURL();
-
-            // If no language in URL, check browser language
-            if (!window.location.hash) {
-                const browserLang = navigator.language.split('-')[0];
-                if (['en', 'fr', 'de', 'zh'].includes(browserLang)) {
-                    changeLanguage(browserLang);
-                } else {
-                    changeLanguage('en'); // Default to English
-                }
-            }
-        }
-
-        // Add event listener to load language on page load
-        window.addEventListener('DOMContentLoaded', initializeLanguage);
-        // Copy Code Function
-        function copyCode(button) {
-            const codeBlock = button.previousElementSibling;
-            navigator.clipboard.writeText(codeBlock.innerText)
-                .then(() => {
-                    button.innerText = 'Copied!';
-                    setTimeout(() => {
-                        button.innerText = 'Copy';
-                    }, 2000);
-                })
-                .catch(err => {
-                    console.error('Failed to copy code:', err);
-                });
-        }
-
-        const mainCommands = [
-            "$ bin/dispatcher --version",
-            "  _/  '         _ _/  _     _ _/",
-            "  /  /  /) (/ _)  /  /  (/ (  /  1.7.17",
-            "           /",
-            " ",
-            "$ bin/dispatcher --help",
-            "Usage: bin/dispatcher COMMAND [OPTIONS]",
-            "Commands:",
-            "  download             \tDownload a resource from other servers",
-            "  exec                 \tTo execute native command(s)",
-            "  generate             \tPOJO object generator",
-            "  install              \tInstall a package",
-            "  open                 \tStart a default browser to open the specific URL",
-            "  say                  \tOutput words",
-            "  set                  \tSet system property",
-            "  sql-execute          \tExecutes the given SQL statement, which may be an INSERT, UPDATE, DELETE, or DDL statement",
-            "  sql-query            \tExecutes the given SQL statement, which returns a single ResultSet object",
-            "  update               \tUpdate for the latest version",
-            " ",
-            "Options:",
-            "  --allow-remote-access\tAllow to be accessed remotely",
-            "  --help               \tHelp command",
-            "  --host               \tHost name / IP",
-            "  --import             \tImport application",
-            "  --logo               \tPrint logo",
-            "  --settings           \tPrint settings",
-            "  --version            \tPrint version",
-            " ",
-            "Run 'bin/dispatcher COMMAND --help' for more information on a command."
-        ];
-
-        const secondaryCommands = [
-            "$ bin/dispatcher say --words Hello --import tinystruct.examples.example",
-            "Hello",
-            " ",
-            "# bin/dispatcher start --import org.tinystruct.system.NettyHttpServer --server-port 777",
-            " ",
-            "  _/  '         _ _/  _     _ _/",
-            "  /  /  /) (/ _)  /  /  (/ (  /  1.7.17",
-            "           /",
-            " ",
-            `${new Date().toLocaleString()} org.tinystruct.system.NettyHttpServer start`,
-            "INFO: Netty server (777) startup in 30 ms"
-        ];
-
-        const outputMain = document.getElementById('output-main');
-        const cursorMain = document.getElementById('cursor-main');
-        const outputSecondary = document.getElementById('output-secondary');
-        const cursorSecondary = document.getElementById('cursor-secondary');
-
-        let iMain = 0;
-        let iSecondary = 0;
-
-        function typeMainCommands() {
-            if (iMain < mainCommands.length) {
-                const line = mainCommands[iMain];
-                const textDiv = document.createElement('div');
-                textDiv.textContent = line;
-                textDiv.classList.add('fade-in');
-                outputMain.appendChild(textDiv);
-                iMain++;
-                setTimeout(typeMainCommands, 100);
-            } else {
-                cursorMain.style.display = 'none';
-                typeSecondaryCommands();
-            }
-        }
-
-        function typeSecondaryCommands() {
-            if (iSecondary < secondaryCommands.length) {
-                const line = secondaryCommands[iSecondary];
-                const textDiv = document.createElement('div');
-                textDiv.textContent = line;
-                textDiv.classList.add('fade-in');
-                outputSecondary.appendChild(textDiv);
-                iSecondary++;
-                setTimeout(typeSecondaryCommands, 100);
-            } else {
-                cursorSecondary.style.display = 'none';
-            }
-        }
-
-        typeMainCommands();
-
-        // Check if DeviceMotion is supported
-        /*    if (window.DeviceMotionEvent) {
-                console.log("DeviceMotion is supported on this device.");
-        
-                // Add an event listener for device motion
-                window.addEventListener('devicemotion', function(event) {
-                    const acceleration = event.accelerationIncludingGravity;
-        
-                    if (acceleration) {
-                        const x = acceleration.x || 0;
-                        const y = acceleration.y || 0;
-                        const z = acceleration.z || 0;
-        
-                        // Normalize the acceleration values
-                        const red = Math.min(Math.abs(x * 50), 255);
-                        const green = Math.min(Math.abs(y * 50), 255);
-                        const blue = Math.min(Math.abs(z * 50), 255);
-        
-                        // Create a dynamic RGB color
-                        const backgroundColor = `rgb(${Math.floor(red)}, ${Math.floor(green)}, ${Math.floor(blue)})`;
-        
-                        // Apply the color to the website background
-                        document.body.style.backgroundColor = backgroundColor;
-        
-                        // Optionally, display the RGB values on the page
-                        if (!document.getElementById('motionInfo')) {
-                            const infoDiv = document.createElement('div');
-                            infoDiv.id = 'motionInfo';
-                            infoDiv.style.position = 'fixed';
-                            infoDiv.style.bottom = '10px';
-                            infoDiv.style.left = '10px';
-                            infoDiv.style.padding = '5px';
-                            infoDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
-                            infoDiv.style.borderRadius = '5px';
-                            infoDiv.style.fontFamily = 'Arial, sans-serif';
-                            infoDiv.style.color = '#000';
-                            document.body.appendChild(infoDiv);
-                        }
-        
-                        const infoDiv = document.getElementById('motionInfo');
-                        infoDiv.textContent = `R: ${Math.floor(red)} G: ${Math.floor(green)} B: ${Math.floor(blue)}`;
-                    }
-                });
-            } else {
-                console.log("DeviceMotion is not supported on this device.");
-                alert("Your device does not support DeviceMotion.");
-            }*/
-
+        // Theme Toggle
         function toggleTheme() {
-            // Toggle the 'dark' class on the <html> element
-            document.documentElement.classList.toggle('dark');
-            // Optionally save the current theme to localStorage for persistence
-            const isDark = document.documentElement.classList.contains('dark');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
 
-            // Update the theme toggle button icon
-            const themeToggle = document.querySelector('.theme-toggle');
-            if (themeToggle) {
-                themeToggle.textContent = isDark ? '☀️' : '🌙';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = document.querySelector('.theme-toggle ion-icon');
+            if (theme === 'dark') {
+                icon.setAttribute('name', 'sunny-outline');
+            } else {
+                icon.setAttribute('name', 'moon-outline');
             }
         }
 
-        // Initialize theme on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.documentElement.classList.add('dark');
-                const themeToggle = document.querySelector('.theme-toggle');
-                if (themeToggle) {
-                    themeToggle.textContent = '☀️';
-                }
-            }
-            // --- Prism code highlight for all code blocks ---
-            document.querySelectorAll('pre > code').forEach(function (code) {
-                // If no language- class, try to guess or set default
-                if (![...code.classList].some(cls => cls.startsWith('language-'))) {
-                    // Guess by content or fallback to language-java
-                    const text = code.textContent.trim();
-                    if (text.startsWith('<dependency>') || text.startsWith('<') && text.endsWith('>')) {
-                        code.classList.add('language-xml');
-                    } else if (text.startsWith('#') || text.includes('=') && !text.includes(';')) {
-                        code.classList.add('language-properties');
-                    } else {
-                        code.classList.add('language-java');
-                    }
-                }
-            });
-            if (window.Prism && Prism.highlightAll) {
-                Prism.highlightAll();
-            }
-        });
+        // Initialize Theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
 
+        // Language Switcher (Mock implementation for demo)
         const translations = {
-            en: {
-                title: "tinystruct framework",
-                intro: "tinystruct is a lightweight Java application framework designed for building applications from command-line tools to web applications. Its core concept is 'write once, run anywhere', achieving code reuse between command-line and web environments through a unified Action mechanism.",
-                features: "Core Features",
-                unifiedCall: "Unified Method Call Mechanism",
-                lowLatency: "Low Latency Service Call",
-                lightweight: "Lightweight Design",
-                deployment: "Flexible Deployment Options",
-                architecture: "Architecture",
-                architectureIntro: "Framework architecture overview",
-                action: "Action Mechanism",
-                server: "Server Implementation",
-                modular: "Modular Design",
-                event: "Event-Driven Mechanism",
-                context: "Context and Parameter Processing",
-                examples: "Application Examples",
-                config: "Configuration Reference",
-                tomcatServer: "TomcatServer",
-                nettyServer: "NettyHttpServer",
-                serverGuide: "Server Selection Guide",
-                tomcatFeatures: "TomcatServer Features",
-                nettyFeatures: "NettyHttpServer Features",
-                tomcatScenarios: "TomcatServer Use Cases",
-                nettyScenarios: "NettyHttpServer Use Cases"
+            'zh': {
+                'hero-title': '用于现代应用的轻量级 Java 框架',
+                'hero-subtitle': '使用统一的 CLI 和 Web 架构构建高效、可扩展的应用程序。零样板代码，极致性能。',
+                'get-started': '开始使用',
+                'view-github': '在 GitHub 上查看',
+                'features': {
+                    'unified': '统一架构',
+                    'unified-desc': '只需编写一次逻辑，即可同时作为命令行接口和 Web API 发布。',
+                    'servers': '多服务器支持',
+                    'servers-desc': '内置支持 Netty、Tomcat 和 Undertow。只需一个简单的标志即可切换。',
+                    'ai': 'AI 就绪 (MCP)',
+                    'ai-desc': '原生集成模型上下文协议 (MCP)，用于构建下一代 AI 应用程序。',
+                    'sse': '实时 SSE',
+                    'sse-desc': '内置服务器发送事件支持，可即时向客户端推送更新。',
+                    'lightweight': '轻量级',
+                    'lightweight-desc': '极小的占用空间，最少的外部依赖。微服务的完美选择。',
+                    'zero-config': '零配置',
+                    'zero-config-desc': '约定优于配置原则。无需 XML 地狱即可立即开始编码。'
+                },
+                'sidebar': {
+                    'Home': '首页',
+                    'Getting Started': '入门指南',
+                    'Core Concepts': '核心概念',
+                    'API Reference': 'API 参考',
+                    'GitHub': 'GitHub'
+                }
             },
-            fr: {
-                title: "framework tinystruct",
-                intro: "tinystruct est un framework Java léger conçu pour construire des applications allant des outils en ligne de commande aux applications Web. Son concept central est 'écrire une fois, exécuter partout', réalisant la réutilisation du code entre les environnements en ligne de commande et Web grâce à un mécanisme Action unifié.",
-                features: "Caractéristiques principales",
-                unifiedCall: "Mécanisme d'appel de méthode unifié",
-                lowLatency: "Appel de service à faible latence",
-                lightweight: "Conception légère",
-                deployment: "Options de déploiement flexibles",
-                architecture: "Architecture",
-                architectureIntro: "Aperçu de l'architecture du framework",
-                action: "Mécanisme Action",
-                server: "Implémentation du serveur",
-                modular: "Conception modulaire",
-                event: "Mécanisme piloté par événements",
-                context: "Contexte et traitement des paramètres",
-                examples: "Exemples d'applications",
-                config: "Référence de configuration",
-                tomcatServer: "TomcatServer",
-                nettyServer: "NettyHttpServer",
-                serverGuide: "Guide de sélection du serveur",
-                tomcatFeatures: "Caractéristiques de TomcatServer",
-                nettyFeatures: "Caractéristiques de NettyHttpServer",
-                tomcatScenarios: "Cas d'utilisation de TomcatServer",
-                nettyScenarios: "Cas d'utilisation de NettyHttpServer"
-            },
-            de: {
-                title: "tinystruct framework",
-                intro: "tinystruct ist ein leichtgewichtiges Java-Anwendungsframework, das für die Entwicklung von Anwendungen von Befehlszeilentools bis hin zu Webanwendungen konzipiert wurde. Sein Kernkonzept ist 'einmal schreiben, überall ausführen' und erreicht Code-Wiederverwendung zwischen Befehlszeilen- und Web-Umgebungen durch einen einheitlichen Action-Mechanismus.",
-                features: "Kernfunktionen",
-                unifiedCall: "Einheitlicher Methodenaufruf-Mechanismus",
-                lowLatency: "Niedrige Latenz-Serviceaufrufe",
-                lightweight: "Leichtgewichtiges Design",
-                deployment: "Flexible Bereitstellungsoptionen",
-                architecture: "Architektur",
-                architectureIntro: "Überblick über die Framework-Architektur",
-                action: "Action-Mechanismus",
-                server: "Server-Implementierung",
-                modular: "Modulares Design",
-                event: "Ereignisgesteuerter Mechanismus",
-                context: "Kontext- und Parameterverarbeitung",
-                examples: "Anwendungsbeispiele",
-                config: "Konfigurationsreferenz",
-                tomcatServer: "TomcatServer",
-                nettyServer: "NettyHttpServer",
-                serverGuide: "Server-Auswahlführer",
-                tomcatFeatures: "TomcatServer-Funktionen",
-                nettyFeatures: "NettyHttpServer-Funktionen",
-                tomcatScenarios: "TomcatServer-Anwendungsfälle",
-                nettyScenarios: "NettyHttpServer-Anwendungsfälle"
-            },
-            zh: {
-                title: "tinystruct 框架",
-                intro: "tinystruct 是一个轻量级 Java 应用框架，设计用于构建从命令行工具到 Web 应用的各种应用程序。它的核心理念是'编写一次，随处运行'，通过统一的 Action 机制实现命令行和 Web 环境下的代码复用。",
-                features: "核心特性",
-                unifiedCall: "统一的方法调用机制",
-                lowLatency: "低延迟服务调用",
-                lightweight: "轻量级设计",
-                deployment: "灵活的部署选项",
-                architecture: "架构",
-                architectureIntro: "框架架构概览",
-                action: "Action 机制",
-                server: "服务器实现",
-                modular: "模块化设计",
-                event: "事件驱动机制",
-                context: "上下文与参数处理",
-                examples: "应用示例",
-                config: "配置参考",
-                tomcatServer: "TomcatServer",
-                nettyServer: "NettyHttpServer",
-                serverGuide: "服务器选择指南",
-                tomcatFeatures: "TomcatServer 特点",
-                nettyFeatures: "NettyHttpServer 特点",
-                tomcatScenarios: "TomcatServer 适用场景",
-                nettyScenarios: "NettyHttpServer 适用场景"
+            'en': {
+                'hero-title': 'A lightweight Java framework for modern apps',
+                'hero-subtitle': 'Build efficient, scalable applications with a unified CLI and Web architecture. Zero boilerplate, maximum performance.',
+                'get-started': 'Get Started',
+                'view-github': 'View on GitHub',
+                'features': {
+                    'unified': 'Unified Architecture',
+                    'unified-desc': 'Write your logic once and expose it as both a Command Line Interface and a Web API instantly.',
+                    'servers': 'Multiple Servers',
+                    'servers-desc': 'Built-in support for Netty, Tomcat, and Undertow. Switch between them with a simple flag.',
+                    'ai': 'AI Ready (MCP)',
+                    'ai-desc': 'Native integration with Model Context Protocol for building next-gen AI applications.',
+                    'sse': 'Real-time SSE',
+                    'sse-desc': 'Push updates to clients instantly with built-in Server-Sent Events support.',
+                    'lightweight': 'Lightweight',
+                    'lightweight-desc': 'Tiny footprint with minimal external dependencies. Perfect for microservices.',
+                    'zero-config': 'Zero Configuration',
+                    'zero-config-desc': 'Convention over configuration principles. Start coding immediately without XML hell.'
+                },
+                'sidebar': {
+                    'Home': 'Home',
+                    'Getting Started': 'Getting Started',
+                    'Core Concepts': 'Core Concepts',
+                    'API Reference': 'API Reference',
+                    'GitHub': 'GitHub'
+                }
             }
         };
 
-        // Docusaurus-style Navbar Dropdowns
-        (function () {
-            function closeAllDropdowns() {
-                document.querySelectorAll('.navbar-item.open').forEach(function (item) {
-                    item.classList.remove('open');
-                    var btn = item.querySelector('.navbar-dropdown-btn');
-                    if (btn) btn.setAttribute('aria-expanded', 'false');
-                    var list = item.querySelector('.navbar-dropdown-list');
-                    if (list) list.setAttribute('hidden', '');
-                });
-            }
-            function openDropdown(item) {
-                closeAllDropdowns();
-                item.classList.add('open');
-                var btn = item.querySelector('.navbar-dropdown-btn');
-                if (btn) btn.setAttribute('aria-expanded', 'true');
-                var list = item.querySelector('.navbar-dropdown-list');
-                if (list) list.removeAttribute('hidden');
-            }
-            document.querySelectorAll('.navbar-item').forEach(function (item) {
-                var btn = item.querySelector('.navbar-dropdown-btn');
-                if (!btn) return;
-                btn.addEventListener('click', function (e) {
-                    e.stopPropagation();
-                    if (item.classList.contains('open')) {
-                        closeAllDropdowns();
-                    } else {
-                        openDropdown(item);
-                    }
-                });
-                btn.addEventListener('keydown', function (e) {
-                    if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        openDropdown(item);
-                        var first = item.querySelector('.navbar-dropdown-list a');
-                        if (first) first.focus();
-                    }
-                });
-                var list = item.querySelector('.navbar-dropdown-list');
-                if (list) {
-                    list.addEventListener('keydown', function (e) {
-                        var links = Array.from(list.querySelectorAll('a'));
-                        var idx = links.indexOf(document.activeElement);
-                        if (e.key === 'ArrowDown') {
-                            e.preventDefault();
-                            if (idx < links.length - 1) links[idx + 1].focus();
-                        } else if (e.key === 'ArrowUp') {
-                            e.preventDefault();
-                            if (idx > 0) links[idx - 1].focus();
-                        } else if (e.key === 'Escape') {
-                            closeAllDropdowns();
-                            btn.focus();
-                        }
-                    });
-                }
-            });
-            document.addEventListener('click', function (e) {
-                closeAllDropdowns();
-            });
-            document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape') closeAllDropdowns();
-            });
-        })();
+        let currentLang = 'en';
 
-        const hamburger = document.querySelector('.hamburger');
-        const menu = document.getElementById('navbar-menu');
-        if (hamburger && menu) {
-            hamburger.addEventListener('click', function (e) {
-                e.stopPropagation();
-                const isOpen = menu.classList.toggle('active');
-                hamburger.classList.toggle('active', isOpen);
-                hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'zh' : 'en';
+            document.querySelector('.lang-switch span').textContent = currentLang.toUpperCase();
+
+            // Update Text Content
+            const t = translations[currentLang];
+            document.querySelector('.hero-title').textContent = t['hero-title'];
+            document.querySelector('.hero-subtitle').textContent = t['hero-subtitle'];
+            document.querySelector('.btn-primary').childNodes[0].nodeValue = t['get-started'] + ' '; // Preserve icon space
+            document.querySelector('.btn-secondary').childNodes[2].nodeValue = ' ' + t['view-github']; // Preserve icon space
+
+            // Update Features
+            const featureItems = document.querySelectorAll('.feature-item');
+            const keys = ['unified', 'servers', 'ai', 'sse', 'lightweight', 'zero-config'];
+
+            featureItems.forEach((item, index) => {
+                const key = keys[index];
+                item.querySelector('h4').textContent = t['features'][key];
+                item.querySelector('p').textContent = t['features'][key + '-desc'];
             });
-            // Close menu on outside click (mobile)
-            document.addEventListener('click', function (e) {
-                if (window.innerWidth <= 900 && menu.classList.contains('active')) {
-                    if (!menu.contains(e.target) && !hamburger.contains(e.target)) {
-                        menu.classList.remove('active');
-                        hamburger.classList.remove('active');
-                        hamburger.setAttribute('aria-expanded', 'false');
+
+            // Update Perf Card
+            document.querySelector('.perf-card h3').textContent = currentLang === 'en' ? 'High Performance' : '极致性能';
+            document.querySelector('.perf-card p').textContent = currentLang === 'en' ?
+                'Engineered for speed with minimal overhead. Handles high-throughput workloads with ease.' :
+                '专为速度而设计，开销极小。轻松处理高吞吐量工作负载。';
+            document.querySelector('.perf-label').textContent = currentLang === 'en' ? 'Requests / Second' : '请求 / 秒';
+
+            // Update Code Card
+            document.querySelector('.code-card h3').textContent = currentLang === 'en' ? 'Simple & Elegant' : '简单优雅';
+            document.querySelector('.code-card p').textContent = currentLang === 'en' ?
+                'No main() method required. Just pure logic.' :
+                '无需 main() 方法。只需纯粹的逻辑。';
+
+            // Update Sidebar
+            const sidebarLinks = document.querySelectorAll('.nav-link');
+            const sidebarKeys = ['Home', 'Getting Started', 'Core Concepts', 'API Reference', 'GitHub'];
+
+            sidebarLinks.forEach((link, index) => {
+                const key = sidebarKeys[index];
+                const span = link.querySelector('span');
+                if (span) {
+                    span.textContent = t['sidebar'][key];
+                }
+
+                // Update hrefs for documentation links
+                if (key === 'Getting Started' || key === 'Core Concepts' || key === 'API Reference') {
+                    const originalHref = link.getAttribute('href');
+                    const isZh = currentLang === 'zh';
+
+                    if (isZh && originalHref.startsWith('en/')) {
+                        link.setAttribute('href', originalHref.replace('en/', 'zh/'));
+                    } else if (!isZh && originalHref.startsWith('zh/')) {
+                        link.setAttribute('href', originalHref.replace('zh/', 'en/'));
                     }
+                }
+
+                // Update Hero Button Link
+                const heroBtn = document.querySelector('.btn-primary');
+                const heroHref = heroBtn.getAttribute('href');
+                if (currentLang === 'zh' && heroHref.startsWith('en/')) {
+                    heroBtn.setAttribute('href', heroHref.replace('en/', 'zh/'));
+                } else if (currentLang === 'en' && heroHref.startsWith('zh/')) {
+                    heroBtn.setAttribute('href', heroHref.replace('zh/', 'en/'));
                 }
             });
         }
-
     </script>
 </body>
 

@@ -327,6 +327,55 @@ String greeting = MessageFormat.format(
 );
 ```
 
+## AI 集成
+
+1.7.17 版本新增功能，tinystruct 内置了对 AI 集成的支持，专为与模型上下文协议 (MCP) 配合使用而设计。
+
+### MCP 集成
+
+要使用 MCP (模型上下文协议) 功能，首先需要配置您的认证令牌：
+
+```properties
+# config.properties
+mcp.auth.token=your_mcp_token_here
+```
+
+然后您可以构建支持 AI 的操作：
+
+```java
+@Action("ai/generate")
+public String generateContent(String prompt) {
+    // 处理 AI 请求的基本示例
+    // 具体实现取决于特定的 MCP 客户端使用情况
+    return "为提示生成的内容: " + prompt;
+}
+```
+
+## 服务器发送事件 (SSE)
+
+tinystruct 1.7.17 引入了对服务器发送事件的原生支持，使构建聊天界面或实时推送等实时应用程序变得容易。
+
+```java
+@Action(value = "stream", mode = Mode.HTTP_GET)
+public void streamData(Request request, Response response) throws InterruptedException {
+    // 为 SSE 设置适当的标头
+    response.setHeader("Content-Type", "text/event-stream");
+    response.setHeader("Cache-Control", "no-cache");
+    response.setHeader("Connection", "keep-alive");
+    
+    // 模拟流式数据
+    for (int i = 0; i < 5; i++) {
+        String data = "data: {\"time\": \"" + new Date() + "\", \"count\": " + i + "}\n\n";
+        response.write(data);
+        
+        // 在实际应用中，您可能会等待事件而不是休眠
+        Thread.sleep(1000);
+    }
+    
+    response.write("event: close\ndata: end\n\n");
+}
+```
+
 ## 最佳实践
 
 1. **操作组织**：将相关操作分组到单独的类中，以便更好地组织。

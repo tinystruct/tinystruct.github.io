@@ -341,6 +341,45 @@ public class RepositoryFactory {
 }
 ```
 
+## RESTful API Design
+
+1. **Resource Naming**: Use plural nouns for resources.
+
+```
+GET /api/users      // Get all users
+GET /api/users/1    // Get user with ID 1
+POST /api/users     // Create a new user
+PUT /api/users/1    // Update user with ID 1
+DELETE /api/users/1 // Delete user with ID 1
+```
+
+2. **HTTP Methods**: Use appropriate HTTP methods for actions.
+
+- **GET**: Retrieve resources
+- **POST**: Create resources
+- **PUT**: Update resources
+- **DELETE**: Delete resources
+
+Use the `mode` parameter in `@Action` to enforce methods:
+
+```java
+@Action(value = "api/users", mode = Mode.HTTP_GET)
+public String getUsers() { ... }
+
+@Action(value = "api/users", mode = Mode.HTTP_POST)
+public String createUser() { ... }
+```
+
+3. **Status Codes**: Return appropriate HTTP status codes.
+
+- **200 OK**: Success
+- **201 Created**: Resource created
+- **400 Bad Request**: Invalid input
+- **401 Unauthorized**: Authentication failed
+- **403 Forbidden**: Authorization failed
+- **404 Not Found**: Resource not found
+- **500 Internal Server Error**: Server error
+
 ## Error Handling
 
 1. **Consistent Error Handling**: Implement consistent error handling across your application.

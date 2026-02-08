@@ -333,6 +333,55 @@ String greeting = MessageFormat.format(
 );
 ```
 
+## AI Integration
+
+New in version 1.7.17, tinystruct includes built-in support for AI integration, specifically designed to work with the Model Context Protocol (MCP).
+
+### MCP Integration
+
+To use MCP (Model Context Protocol) features, you first need to configure your authentication token:
+
+```properties
+# config.properties
+mcp.auth.token=your_mcp_token_here
+```
+
+Then you can build AI-enabled actions:
+
+```java
+@Action("ai/generate")
+public String generateContent(String prompt) {
+    // Basic example of handling AI requests
+    // detailed implementation depends on specific MCP client usage
+    return "Generated content for: " + prompt;
+}
+```
+
+## Server-Sent Events (SSE)
+
+tinystruct 1.7.17 introduces native support for Server-Sent Events, making it easy to build real-time applications like chat interfaces or live feeds.
+
+```java
+@Action(value = "stream", mode = Mode.HTTP_GET)
+public void streamData(Request request, Response response) throws InterruptedException {
+    // Set proper headers for SSE
+    response.setHeader("Content-Type", "text/event-stream");
+    response.setHeader("Cache-Control", "no-cache");
+    response.setHeader("Connection", "keep-alive");
+    
+    // Simulate streaming data
+    for (int i = 0; i < 5; i++) {
+        String data = "data: {\"time\": \"" + new Date() + "\", \"count\": " + i + "}\n\n";
+        response.write(data);
+        
+        // In a real app, you might wait for events instead of sleeping
+        Thread.sleep(1000);
+    }
+    
+    response.write("event: close\ndata: end\n\n");
+}
+```
+
 ## Best Practices
 
 1. **Action Organization**: Group related actions in separate classes for better organization.

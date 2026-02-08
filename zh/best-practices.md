@@ -341,6 +341,45 @@ public class RepositoryFactory {
 }
 ```
 
+## RESTful API 设计
+
+1. **资源命名**：使用复数名词作为资源名称。
+
+```
+GET /api/users      // 获取所有用户
+GET /api/users/1    // 获取 ID 为 1 的用户
+POST /api/users     // 创建新用户
+PUT /api/users/1    // 更新 ID 为 1 的用户
+DELETE /api/users/1 // 删除 ID 为 1 的用户
+```
+
+2. **HTTP 方法**：为操作使用适当的 HTTP 方法。
+
+- **GET**：检索资源
+- **POST**：创建资源
+- **PUT**：更新资源
+- **DELETE**：删除资源
+
+在 `@Action` 中使用 `mode` 参数强制执行方法：
+
+```java
+@Action(value = "api/users", mode = Mode.HTTP_GET)
+public String getUsers() { ... }
+
+@Action(value = "api/users", mode = Mode.HTTP_POST)
+public String createUser() { ... }
+```
+
+3. **状态码**：返回适当的 HTTP 状态码。
+
+- **200 OK**：成功
+- **201 Created**：资源已创建
+- **400 Bad Request**：输入无效
+- **401 Unauthorized**：身份验证失败
+- **403 Forbidden**：授权失败
+- **404 Not Found**：未找到资源
+- **500 Internal Server Error**：服务器错误
+
 ## 错误处理
 
 1. **一致的错误处理**：在整个应用程序中实现一致的错误处理。
