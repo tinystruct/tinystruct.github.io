@@ -959,3 +959,64 @@ footer {
         /* More generous padding for desktop reading */
     }
 }
+
+/* Terminal Block */
+.terminal-wrapper {
+    padding: 0 3rem;
+    margin-bottom: 2rem;
+    max-width: 1400px;
+}
+
+.terminal {
+    font-family: 'Fira Code', 'Courier New', monospace;
+    background: #1e1e1e;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    overflow: hidden;
+    color: #00ff00;
+    white-space: pre;
+    border: 1px solid #333;
+    min-height: 300px;
+}
+
+.blink {
+    display: inline-block;
+    width: 8px;
+    height: 1.2em;
+    background: #00ff00;
+    animation: terminal-blink 1s steps(2, start) infinite;
+    vertical-align: middle;
+    margin-left: 2px;
+}
+
+@keyframes terminal-blink {
+    50% {
+        background: transparent;
+    }
+}
+
+.fade-in {
+    opacity: 0;
+    animation: terminal-fadeIn 0.2s forwards;
+}
+
+@keyframes terminal-fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .terminal-wrapper {
+        padding: 0 1.5rem;
+    }
+    
+    .terminal {
+        font-size: 0.8rem;
+        padding: 1rem;
+        min-height: 200px;
+    }
+}

@@ -171,6 +171,14 @@ public class HelloApp extends AbstractApplication {
 
         </div>
 
+        <!-- Terminal Section -->
+        <div class="terminal-wrapper">
+            <div class="terminal" id="terminal-main">
+                <div id="output-main"></div>
+                <div class="blink" id="cursor-main"></div>
+            </div>
+        </div>
+
         <!-- Features Grid -->
         <section class="features-grid">
             <div class="feature-item">
@@ -391,6 +399,78 @@ public class HelloApp extends AbstractApplication {
                 }
             }
         }
+
+        // Terminal Typing Effect
+        const commands = [
+            "$ bin/dispatcher --version",
+            "  _/  '         _ _/  _     _ _/",
+            "  /  /  /) (/ _)  /  /  (/ (  /  1.7.17",
+            "           /",
+            " ",
+            "$ bin/dispatcher --help",
+            "Usage: bin/dispatcher COMMAND [OPTIONS]",
+            "Commands:",
+            "  download             \tDownload a resource from other servers",
+            "  exec                 \tTo execute native command(s)",
+            "  generate             \tPOJO object generator",
+            "  install              \tInstall a package",
+            "  open                 \tStart a default browser to open the specific URL",
+            "  say                  \tOutput words",
+            "  set                  \tSet system property",
+            "  sql-execute          \tExecutes the given SQL statement, which may be an INSERT, UPDATE, DELETE, or DDL statement",
+            "  sql-query            \tExecutes the given SQL statement, which returns a single ResultSet object",
+            "  update               \tUpdate for the latest version",
+            " ",
+            "Options:",
+            "  --allow-remote-access\tAllow to be accessed remotely",
+            "  --help               \tHelp command",
+            "  --host               \tHost name / IP",
+            "  --import             \tImport application",
+            "  --logo               \tPrint logo",
+            "  --settings           \tPrint settings",
+            "  --version            \tPrint version",
+            " ",
+            "Run 'bin/dispatcher COMMAND --help' for more information on a command.",
+            " ",
+            "$ bin/dispatcher say --words Hello --import tinystruct.examples.example",
+            "Hello",
+            " ",
+            "# bin/dispatcher start --import org.tinystruct.system.NettyHttpServer --server-port 777",
+            " ",
+            "  _/  '         _ _/  _     _ _/",
+            "  /  /  /) (/ _)  /  /  (/ (  /  1.7.17",
+            "           /",
+            " ",
+            `${new Date().toLocaleString()} org.tinystruct.system.NettyHttpServer start`,
+            "INFO: Netty server (777) startup in 30 ms"
+        ];
+
+        const outputMain = document.getElementById('output-main');
+        const cursorMain = document.getElementById('cursor-main');
+
+        let i = 0;
+
+        function typeCommands() {
+            if (i < commands.length) {
+                const line = commands[i];
+                const textDiv = document.createElement('div');
+                textDiv.textContent = line;
+                textDiv.classList.add('fade-in');
+                outputMain.appendChild(textDiv);
+                i++;
+                
+                // Auto scroll to bottom
+                const terminal = document.getElementById('terminal-main');
+                terminal.scrollTop = terminal.scrollHeight;
+                
+                setTimeout(typeCommands, 100);
+            } else {
+                // Keep cursor blinking at the end
+            }
+        }
+
+        // Start typing after a short delay
+        setTimeout(typeCommands, 1000);
     </script>
 </body>
 
