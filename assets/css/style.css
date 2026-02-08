@@ -683,7 +683,7 @@ footer {
 .markdown-body pre code {
     background: transparent;
     padding: 0;
-    color: inherit;
+    color: var(--primary-color);
     font-size: 0.9em;
 }
 
