@@ -200,7 +200,14 @@ public class MyApp extends AbstractApplication {
 
 5. **文档**：记录所有配置属性、其用途及其默认值。
 
+## MCP 配置
+
+| 属性 | 描述 | 默认值 |
+|----------|-------------|---------|
+| mcp.auth.token | MCP 鉴权令牌 | - |
+
 ## 相关 API
+
 
 - [应用程序 API](application.md)
 - [数据库 API](database.md)

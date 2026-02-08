@@ -11,7 +11,18 @@
 | value | String | URL模式或命令名称 |
 | description | String | 动作描述（可选） |
 | options | Argument[] | 命令行参数（可选） |
-| mode | Action.Mode | 执行模式（All、CLI或Web） |
+| mode | Action.Mode | 执行模式（All、CLI 或 HTTP_GET 等） |
+
+### HTTP 方法模式
+
+- `Mode.HTTP_GET` - 仅 GET 请求
+- `Mode.HTTP_POST` - 仅 POST 请求
+- `Mode.HTTP_PUT` - 仅 PUT 请求
+- `Mode.HTTP_DELETE` - 仅 DELETE 请求
+- `Mode.HTTP_PATCH` - 仅 PATCH 请求
+- `Mode.HTTP_HEAD` - 仅 HEAD 请求
+- `Mode.HTTP_OPTIONS` - 仅 OPTIONS 请求
+
 
 ### 示例
 

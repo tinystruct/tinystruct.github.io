@@ -277,7 +277,14 @@ if (dbPassword == null) {
  */
 ```
 
+## MCP Configuration
+
+| Property | Description | Default |
+|----------|-------------|---------|
+| mcp.auth.token | MCP authentication token | - |
+
 ## Related APIs
+
 
 - [Application API](application.md)
 - [Database API](database.md)

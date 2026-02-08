@@ -13,6 +13,17 @@ The `@Action` annotation is used to define routes and commands in tinystruct app
 | options | Argument[] | Command line arguments (optional)            |
 | mode | Action.Mode | Execution mode (All, CLI, or HTTP_GET, etc.) |
 
+### HTTP Method Modes
+
+- `Mode.HTTP_GET` - GET requests only
+- `Mode.HTTP_POST` - POST requests only
+- `Mode.HTTP_PUT` - PUT requests only
+- `Mode.HTTP_DELETE` - DELETE requests only
+- `Mode.HTTP_PATCH` - PATCH requests only
+- `Mode.HTTP_HEAD` - HEAD requests only
+- `Mode.HTTP_OPTIONS` - OPTIONS requests only
+
+
 ### Example
 
 ```java

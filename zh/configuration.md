@@ -236,6 +236,13 @@ Properties props = getConfiguration().getProperties();
 | java.util.logging.ConsoleHandler.formatter | 控制台处理器格式化程序 | org.apache.juli.OneLineFormatter |
 | java.util.logging.ConsoleHandler.encoding | 控制台处理器编码 | UTF-8 |
 
+### AI/MCP 设置
+
+| 属性 | 描述 | 默认值 |
+|----------|-------------|---------|
+| mcp.auth.token | MCP 鉴权令牌 | - |
+
+
 ## 最佳实践
 
 1. **环境变量**：对敏感信息（如数据库密码）使用环境变量。

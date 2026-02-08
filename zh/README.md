@@ -10,12 +10,17 @@ tinystruct 是一个简单而强大的 Java 开发框架。它秉承简单思维
 ## 主要特性
 
 - **轻量级架构**：最小的开销，最大的灵活性
+- **AI 集成与 MCP**：内置支持 AI 集成和 Model Context Protocol (MCP)
+- **HTTP 特定方法 Action**：支持基于 HTTP 方法（GET, POST, PUT, DELETE 等）的路由
+- **SSE 支持**：原生 Server-Sent Events 支持，用于实时应用
+- **多种服务器选项**：支持 Netty, Tomcat 和 Undertow
 - **双模式支持**：同时支持 Web 应用和命令行工具开发
+- **现代架构**：无需 `main()` 方法，通过 CLI 命令直接启动
 - **简单配置**：易于设置和自定义
-- **高性能**：优化的执行效率
+- **高性能**：优化的执行效率，处理超过 86,000 req/s
 - **数据库集成**：内置多数据库支持
 - **RESTful 支持**：便捷的 API 开发
-- **命令行工具**：强大的 CLI 功能
+
 
 ## 快速开始
 
@@ -27,7 +32,7 @@ tinystruct 是一个简单而强大的 Java 开发框架。它秉承简单思维
 <dependency>
     <groupId>org.tinystruct</groupId>
     <artifactId>tinystruct</artifactId>
-    <version>1.7.15</version>
+    <version>1.7.17</version>
     <classifier>jar-with-dependencies</classifier>
 </dependency>
 ```

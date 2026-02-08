@@ -236,6 +236,12 @@ Properties props = getConfiguration().getProperties();
 | java.util.logging.ConsoleHandler.formatter | Console handler formatter | org.apache.juli.OneLineFormatter |
 | java.util.logging.ConsoleHandler.encoding | Console handler encoding | UTF-8 |
 
+### AI/MCP Settings
+
+| Property | Description | Default |
+|----------|-------------|---------|
+| mcp.auth.token | MCP authentication token | - |
+
 ## Best Practices
 
 1. **Environment Variables**: Use environment variables for sensitive information like database passwords.

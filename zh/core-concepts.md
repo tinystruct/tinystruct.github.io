@@ -1,5 +1,17 @@
 # 核心概念
 
+## 框架哲学
+
+tinystruct 遵循以下核心设计准则：
+
+1. **无需 `main()` 方法** - 通过命令行指令直接启动应用。
+2. **统一 CLI 和 Web 设计** - 编写一次代码，即可在命令行和 Web 环境中运行。
+3. **内置轻量级服务器** - 默认支持 Netty, Tomcat 和 Undertow。
+4. **极简配置** - 避免过度使用 XML 或 YAML 配置文件。
+5. **性能优先架构** - 专注于高吞吐量和超低延迟。
+6. **AI 就绪** - 内置对 MCP 模型上下文协议的支持。
+
+
 ## 应用结构
 
 ### AbstractApplication
@@ -20,7 +32,7 @@ public class MyApp extends AbstractApplication {
 
     @Override
     public String version() {
-        return "1.0.0";
+        return "1.7.17";
     }
 }
 ```
@@ -164,7 +176,29 @@ try {
 }
 ```
 
+## AI 集成
+
+tinystruct 已经为现代 AI 应用做好准备，通过对 MCP (Model Context Protocol) 的支持，您可以轻松集成 AI 功能。
+
+### MCP 配置
+
+在 `config.properties` 中配置您的认证令牌：
+
+```bash
+mcp.auth.token=YOUR_TOKEN_HERE
+```
+
+### AI 动作示例
+
+```java
+@Action("ai/chat")
+public String chat(String message) {
+    return aiService.processMessage(message);
+}
+```
+
 ## 下一步
+
 
 - 了解[Web应用开发](web-applications.md)
 - 探索[数据库集成](database.md)

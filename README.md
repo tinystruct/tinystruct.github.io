@@ -6,6 +6,17 @@ Welcome to the tinystruct framework documentation. This documentation provides c
 
 欢迎查阅 tinystruct 框架文档。本文档为使用和开发 tinystruct 框架提供全面的指导。
 
+## What's New in v1.7.17
+
+- **Enhanced AI Integration**: Built-in support for AI integration and plugin-based architecture
+- **MCP Server Support**: Integration with Model Context Protocol (MCP) for advanced AI capabilities
+- **Improved Performance**: Handling over 86,000 requests per second with ultra-low latency (~17ms)
+- **HTTP Method-Specific Actions**: Support for HTTP method-specific routing (GET, POST, PUT, DELETE, etc.)
+- **Modern Architecture**: No `main()` method required - start applications directly with CLI commands
+- **Modular Design**: Plugin-based architecture for extensibility
+- **Multiple Server Options**: Support for Netty, Tomcat, and Undertow
+- **SSE Support**: Built-in Server-Sent Events support for real-time applications
+
 ## Choose Your Language / 选择语言
 
 ### [English Documentation](en/)
@@ -38,10 +49,113 @@ Welcome to the tinystruct framework documentation. This documentation provides c
   - [配置 API](zh/api/configuration.md)
   - [数据库 API](zh/api/database.md)
 
+## Quick Start
+
+### Using the tinystruct Archetype
+
+The fastest way to get started is using the tinystruct archetype:
+
+```bash
+# Follow the archetype to create a project quickly
+https://github.com/tinystruct/tinystruct-archetype
+```
+
+### Manual Installation
+
+Add the dependency to your `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>org.tinystruct</groupId>
+    <artifactId>tinystruct</artifactId>
+    <version>1.7.17</version>
+    <classifier>jar-with-dependencies</classifier>
+</dependency>
+```
+
+### Basic Example
+
+```java
+package tinystruct.examples;
+
+import org.tinystruct.AbstractApplication;
+import org.tinystruct.ApplicationException;
+import org.tinystruct.system.annotation.Action;
+import org.tinystruct.system.annotation.Action.Mode;
+
+public class Example extends AbstractApplication {
+
+    @Override
+    public void init() {
+        // Initialization code
+    }
+
+    @Override
+    public String version() {
+        return "1.0";
+    }
+
+    @Action("praise")
+    public String praise() {
+        return "Praise the Lord!";
+    }
+
+    @Action("say")
+    public String say(String words) {
+        return words;
+    }
+
+    // HTTP method-specific actions
+    @Action(value = "hello", mode = Mode.HTTP_GET)
+    public String helloGet() {
+        return "GET";
+    }
+
+    @Action(value = "hello", mode = Mode.HTTP_POST)
+    public String helloPost() {
+        return "POST";
+    }
+}
+```
+
+## Why Choose tinystruct?
+
+### Modern Design Philosophy
+
+1. **No `main()` method required** - Applications start directly with CLI commands
+2. **Unified CLI and Web** - Write once, run anywhere (CLI or Web)
+3. **Built-in lightweight HTTP servers** - Netty, Tomcat, or Undertow
+4. **Minimal configuration** - No excessive XML or YAML
+5. **Performance-first architecture** - Zero overhead, no reflection-based scanning
+6. **AI-ready** - Designed for AI integration with MCP support
+
+### Performance Benchmarks
+
+```
+Running 30s test @ http://127.0.0.1:8080/?q=say/Praise the Lord!
+12 threads and 400 connections
+
+Requests/sec:  86753.98
+Transfer/sec:  17.46MB
+Latency:       17.44ms (avg)
+```
+
+## Architecture
+
+tinystruct follows a modular, action-oriented architecture that enables:
+
+- Code reuse between CLI and web applications
+- Unified interface through `@Action` annotation
+- Plugin-based extensibility
+- Low-latency direct method invocation
+- Flexible deployment options (monolithic, microservices, or hybrid)
+
+![Architecture](architecture.gif)
+
 ## Contributing / 贡献
 
 If you'd like to contribute to this documentation, please:
-如果您想为此文档做出贡献，请：
+如果您想为此文档做出贡献,请：
 
 1. Fork the repository / 复刻仓库
 2. Create a new branch for your changes / 创建新的分支
@@ -49,5 +163,5 @@ If you'd like to contribute to this documentation, please:
 
 ## License / 许可证
 
-This documentation is licensed under the same terms as the tinystruct framework.
+This documentation is licensed under the same terms as the tinystruct framework (Apache License 2.0).
 本文档采用与 tinystruct 框架相同的许可条款。

@@ -10,6 +10,15 @@
 
 ## 安装
 
+### 使用 tinystruct Archetype (最快方式)
+
+最简单的入门方式是使用 tinystruct archetype 创建项目：
+
+```bash
+# 按照 archetype 指南快速创建项目
+https://github.com/tinystruct/tinystruct-archetype
+```
+
 ### Maven 依赖
 
 将 tinystruct 依赖项添加到项目的 `pom.xml` 文件中：
@@ -18,12 +27,13 @@
 <dependency>
     <groupId>org.tinystruct</groupId>
     <artifactId>tinystruct</artifactId>
-    <version>1.7.15</version>
+    <version>1.7.17</version>
     <classifier>jar-with-dependencies</classifier>
 </dependency>
 ```
 
 ### 手动安装
+
 
 或者，您可以直接从 [Maven 仓库](https://mvnrepository.com/artifact/org.tinystruct/tinystruct) 下载 JAR 文件，并将其添加到项目的类路径中。
 
@@ -60,6 +70,18 @@ public class HelloWorldApp extends AbstractApplication {
     public String hello(String name) {
         return "你好，" + name + "！";
     }
+
+    // HTTP 特定方法 Action
+    @Action(value = "greet", mode = Action.Mode.HTTP_GET)
+    public String greetGet() {
+        return "你好 (GET)";
+    }
+
+    @Action(value = "greet", mode = Action.Mode.HTTP_POST)
+    public String greetPost() {
+        return "你好 (POST)";
+    }
+
 }
 ```
 
@@ -100,12 +122,23 @@ bin/dispatcher hello/John --import com.example.HelloWorldApp
 
 ### 4. 作为 Web 应用程序运行
 
-要将应用程序作为 Web 服务器运行：
+您可以在三种内置服务器中选择：
 
+1. **Netty** (推荐用于高性能环境)
 ```bash
-# 使用 Netty 启动服务器
 bin/dispatcher start --import org.tinystruct.system.NettyHttpServer --import com.example.HelloWorldApp
 ```
+
+2. **Tomcat** (传统 Servlet 支持)
+```bash
+bin/dispatcher start --import org.tinystruct.system.TomcatServer --import com.example.HelloWorldApp
+```
+
+3. **Undertow** (轻量级嵌入式)
+```bash
+bin/dispatcher start --import org.tinystruct.system.UndertowServer --import com.example.HelloWorldApp
+```
+
 
 然后访问您的应用程序：
 - http://localhost:8080/?q=hello
