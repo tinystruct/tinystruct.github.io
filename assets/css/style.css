@@ -732,13 +732,75 @@ footer {
 /* Markdown Body Structure */
 .markdown-body {
     box-sizing: border-box;
+    /* Match index.html content-wrapper max-width logic roughly, or keep it readable */
     min-width: 200px;
-    max-width: 980px;
+    max-width: 1012px;
+    /* Consistent with container-lg */
     margin: 0 auto;
-    padding: 45px;
+    padding: 0 1.5rem;
+    /* Match mobile padding, overridden by media queries if needed */
     font-family: var(--font-primary);
     color: var(--text-primary);
     background-color: transparent;
+}
+
+/* Ensure headings in markdown pages look like the index page */
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3 {
+    font-family: var(--font-heading);
+    color: var(--text-primary);
+}
+
+.markdown-body h1 {
+    font-size: 2.5rem;
+    /* Match hero h1 roughly or main headers */
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.markdown-body h2 {
+    font-size: 2rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.markdown-body a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.markdown-body a:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+.markdown-body code {
+    background-color: rgba(99, 102, 241, 0.1);
+    /* Light indigo tint */
+    color: var(--primary-dark);
+    font-family: 'Fira Code', 'Consolas', monospace;
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+[data-theme="dark"] .markdown-body code {
+    background-color: rgba(99, 102, 241, 0.2);
+    color: #a5b4fc;
+    /* Lighter indigo for dark mode */
+}
+
+/* Blockquotes to match index style feel */
+.markdown-body blockquote {
+    color: var(--text-secondary);
+    border-left: 4px solid var(--border-color);
+    /* Subtle border */
+    background: transparent;
+    /* Cleaner look */
+    padding: 0 1em;
+    margin-left: 0;
 }
 
 @media (max-width: 767px) {
@@ -857,3 +919,10 @@ footer {
 [data-theme="dark"] .highlight .o {
     color: #ff7b72;
 }
+/* Adjust padding on larger screens */
+@media (min-width: 768px) {
+    .markdown-body {
+        padding: 2rem 4rem; /* More generous padding for desktop reading */
+    }
+}
+
