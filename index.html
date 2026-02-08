@@ -69,13 +69,21 @@
         </div>
     </aside>
 
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
     <!-- Main Content Area -->
     <main class="main-content">
 
         <!-- Header / Hero -->
         <header class="main-header">
             <div class="header-top">
-                <div class="version-badge">v1.7.17</div>
+                <div class="header-left">
+                    <button class="menu-toggle" onclick="toggleSidebar()">
+                        <ion-icon name="menu-outline"></ion-icon>
+                    </button>
+                    <div class="version-badge">v1.7.17</div>
+                </div>
                 <div class="header-actions">
                     <button class="lang-switch" title="Switch Language" onclick="toggleLanguage()">
                         <span style="font-size: 0.8rem; font-weight: 700;">EN</span>
@@ -269,6 +277,22 @@ public class HelloApp extends AbstractApplication {
         const savedTheme = localStorage.getItem('theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
         updateThemeIcon(savedTheme);
+
+        // Sidebar Toggle Logic
+        function toggleSidebar() {
+            if (window.innerWidth < 768) {
+                document.body.classList.toggle('sidebar-open');
+                document.body.classList.remove('sidebar-closed'); // Reset desktop state just in case
+            } else {
+                document.body.classList.toggle('sidebar-closed');
+                document.body.classList.remove('sidebar-open'); // Reset mobile state just in case
+            }
+        }
+        
+        // Close sidebar when clicking overlay (Mobile only)
+        document.querySelector('.sidebar-overlay').addEventListener('click', function() {
+            document.body.classList.remove('sidebar-open');
+        });
 
         // Language Switcher (Mock implementation for demo)
         const translations = {
