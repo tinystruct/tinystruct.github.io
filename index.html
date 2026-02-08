@@ -39,19 +39,19 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="en/getting-started.md" class="nav-link">
+                <a href="en/getting-started.html" class="nav-link">
                     <ion-icon name="rocket-outline"></ion-icon>
                     <span>Getting Started</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="en/core-concepts.md" class="nav-link">
+                <a href="en/core-concepts.html" class="nav-link">
                     <ion-icon name="book-outline"></ion-icon>
                     <span>Core Concepts</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="en/api/README.md" class="nav-link">
+                <a href="en/api/README.html" class="nav-link">
                     <ion-icon name="code-slash-outline"></ion-icon>
                     <span>API Reference</span>
                 </a>
@@ -94,7 +94,7 @@
                 </p>
 
                 <div class="hero-actions">
-                    <a href="en/getting-started.md" class="btn btn-primary">
+                    <a href="en/getting-started.html" class="btn btn-primary">
                         Get Started
                         <ion-icon name="arrow-forward-outline" style="margin-left: 0.5rem;"></ion-icon>
                     </a>
@@ -363,31 +363,33 @@ public class HelloApp extends AbstractApplication {
             sidebarLinks.forEach((link, index) => {
                 const key = sidebarKeys[index];
                 const span = link.querySelector('span');
-                if (span) {
+                if (span && t['sidebar'][key]) {
                     span.textContent = t['sidebar'][key];
                 }
 
                 // Update hrefs for documentation links
                 if (key === 'Getting Started' || key === 'Core Concepts' || key === 'API Reference') {
                     const originalHref = link.getAttribute('href');
-                    const isZh = currentLang === 'zh';
-
-                    if (isZh && originalHref.startsWith('en/')) {
-                        link.setAttribute('href', originalHref.replace('en/', 'zh/'));
-                    } else if (!isZh && originalHref.startsWith('zh/')) {
-                        link.setAttribute('href', originalHref.replace('zh/', 'en/'));
+                    if (originalHref) {
+                        if (currentLang === 'zh' && originalHref.startsWith('en/')) {
+                            link.setAttribute('href', originalHref.replace('en/', 'zh/'));
+                        } else if (currentLang === 'en' && originalHref.startsWith('zh/')) {
+                            link.setAttribute('href', originalHref.replace('zh/', 'en/'));
+                        }
                     }
                 }
+            });
 
-                // Update Hero Button Link
-                const heroBtn = document.querySelector('.btn-primary');
-                const heroHref = heroBtn.getAttribute('href');
+            // Update Hero Button Link
+            const heroBtn = document.querySelector('.btn-primary');
+            const heroHref = heroBtn.getAttribute('href');
+            if (heroHref) {
                 if (currentLang === 'zh' && heroHref.startsWith('en/')) {
                     heroBtn.setAttribute('href', heroHref.replace('en/', 'zh/'));
                 } else if (currentLang === 'en' && heroHref.startsWith('zh/')) {
                     heroBtn.setAttribute('href', heroHref.replace('zh/', 'en/'));
                 }
-            });
+            }
         }
     </script>
 </body>
