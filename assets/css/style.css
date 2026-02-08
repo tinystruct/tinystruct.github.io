@@ -561,4 +561,152 @@ footer {
     .hero h1 {
         font-size: 2.5rem;
     }
+}/* Documentation Content Styles */
+.main-content {
+    line-height: 1.6;
 }
+
+.main-content h1, 
+.main-content h2, 
+.main-content h3, 
+.main-content h4, 
+.main-content h5, 
+.main-content h6 {
+    color: var(--text-primary);
+    font-family: var(--font-heading);
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.main-content h1 {
+    font-size: 2.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.main-content h2 {
+    font-size: 1.75rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.main-content h3 {
+    font-size: 1.5rem;
+}
+
+.main-content h4 {
+    font-size: 1.25rem;
+}
+
+.main-content p {
+    margin-bottom: 1.25rem;
+    color: var(--text-secondary);
+}
+
+.main-content a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.main-content a:hover {
+    text-decoration: underline;
+}
+
+.main-content ul, 
+.main-content ol {
+    margin-bottom: 1.25rem;
+    padding-left: 2rem;
+    color: var(--text-secondary);
+}
+
+.main-content li {
+    margin-bottom: 0.5rem;
+}
+
+.main-content li > ul {
+    margin-top: 0.5rem;
+}
+
+.main-content blockquote {
+    border-left: 4px solid var(--primary-color);
+    margin: 1.5rem 0;
+    padding: 1rem 1.5rem;
+    background: rgba(99, 102, 241, 0.05);
+    border-radius: 0 0.5rem 0.5rem 0;
+    color: var(--text-secondary);
+}
+
+.main-content table {
+    width: 100%;
+    margin-bottom: 1.5rem;
+    border-collapse: collapse;
+    overflow-x: auto;
+    display: block;
+}
+
+.main-content th, 
+.main-content td {
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    text-align: left;
+}
+
+.main-content th {
+    background: rgba(99, 102, 241, 0.05);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.main-content code {
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 0.9em;
+    padding: 0.2em 0.4em;
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--primary-color);
+    border-radius: 0.25rem;
+}
+
+.main-content pre {
+    background: var(--code-bg);
+    padding: 1.25rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin-bottom: 1.5rem;
+    color: #e2e8f0;
+}
+
+.main-content pre code {
+    background: transparent;
+    padding: 0;
+    color: inherit;
+    font-size: 0.9em;
+}
+
+.main-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+    margin: 1.5rem 0;
+    border: 1px solid var(--border-color);
+}
+
+.main-content hr {
+    height: 1px;
+    background: var(--border-color);
+    border: none;
+    margin: 2rem 0;
+}
+
+/* Adjustments for Dark Mode */
+[data-theme='dark'] .main-content code {
+    background: rgba(99, 102, 241, 0.2);
+    color: #a5b4fc;
+}
+
+[data-theme='dark'] .main-content th {
+    background: rgba(255, 255, 255, 0.05);
+}
+
