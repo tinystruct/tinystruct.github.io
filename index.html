@@ -1,3 +1,503 @@
-.terminal {
-    overflow-x: auto;
-}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="A lightweight java framework designed for building efficient and scalable applications. Supports both command-line tools and APIs, enabling developers to create robust solutions with ease.">
+    <meta name="keywords" content="java, framework, lightweight, command-line, web, applications, tinystruct">
+    <meta name="author" content="James ZHOU">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <title>tinystruct framework - v1.7.17</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <!-- Icons -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    <!-- Prism for syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+</head>
+
+<body>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <a href="#" class="sidebar-brand">
+            <img src="https://avatars.githubusercontent.com/u/3723144?s=48&v=4" alt="tinystruct logo">
+            <span>tinystruct</span>
+        </a>
+
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="#" class="nav-link active">
+                    <ion-icon name="home-outline"></ion-icon>
+                    <span>Home</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="en/getting-started.html" class="nav-link">
+                    <ion-icon name="rocket-outline"></ion-icon>
+                    <span>Getting Started</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="en/core-concepts.html" class="nav-link">
+                    <ion-icon name="book-outline"></ion-icon>
+                    <span>Core Concepts</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="en/api/" class="nav-link">
+                    <ion-icon name="code-slash-outline"></ion-icon>
+                    <span>API Reference</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="https://github.com/tinystruct/tinystruct" target="_blank" class="nav-link">
+                    <ion-icon name="logo-github"></ion-icon>
+                    <span>GitHub</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <p style="font-size: 0.8rem; color: #64748b;">&copy; 2026 tinystruct.org</p>
+        </div>
+    </aside>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+        <!-- Header / Hero -->
+        <header class="main-header">
+            <div class="header-top">
+                <div class="header-left">
+                    <button class="menu-toggle" onclick="toggleSidebar()">
+                        <ion-icon name="menu-outline"></ion-icon>
+                    </button>
+                    <div class="version-badge">v1.7.17</div>
+                </div>
+                <div class="header-actions">
+                    <button class="lang-switch" title="Switch Language" onclick="toggleLanguage()">
+                        <span style="font-size: 0.8rem; font-weight: 700;">EN</span>
+                    </button>
+                    <button class="theme-toggle" title="Toggle Dark/Light Mode" onclick="toggleTheme()">
+                        <ion-icon name="moon-outline"></ion-icon>
+                    </button>
+                </div>
+            </div>
+
+            <section class="hero">
+                <h1 class="hero-title">A lightweight Java framework for modern apps</h1>
+                <p class="hero-subtitle">
+                    Build efficient, scalable applications with a unified CLI and Web architecture.
+                    Zero boilerplate, maximum performance.
+                </p>
+
+                <div class="hero-actions">
+                    <a href="en/getting-started.html" class="btn btn-primary">
+                        Get Started
+                        <ion-icon name="arrow-forward-outline" style="margin-left: 0.5rem;"></ion-icon>
+                    </a>
+                    <a href="https://github.com/tinystruct/tinystruct" target="_blank" class="btn btn-secondary">
+                        <ion-icon name="logo-github" style="margin-right: 0.5rem;"></ion-icon>
+                        View on GitHub
+                    </a>
+                </div>
+            </section>
+        </header>
+
+        <!-- Content Grid -->
+        <div class="content-wrapper">
+
+            <!-- Performance Card -->
+            <div class="card perf-card">
+                <h3>High Performance</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                    Engineered for speed with minimal overhead.
+                    Handles high-throughput workloads with ease.
+                </p>
+
+                <div class="perf-chart">
+                    <!-- Bars are purely decorative CSS -->
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div> <!-- Target -->
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+
+                    <div class="perf-stat">
+                        <div class="perf-value">86,000+</div>
+                        <div class="perf-label">Requests / Second</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Code Snippet Card -->
+            <div class="card code-card">
+                <h3>Simple & Elegant</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                    No main() method required. Just pure logic.
+                </p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <span class="language">JAVA</span>
+                    </div>
+                    <pre><code class="language-java">package com.example;
+
+import org.tinystruct.AbstractApplication;
+import org.tinystruct.system.annotation.Action;
+
+public class HelloApp extends AbstractApplication {
+
+    @Action("hello")
+    public String hello() {
+        return "Hello, World!";
+    }
+    
+    @Action("users/{id}")
+    public User getUser(String id) {
+        return userService.findById(id);
+    }
+}</code></pre>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Terminal Section -->
+        <div class="terminal-wrapper">
+            <div class="terminal" id="terminal-main">
+                <div id="output-main"></div>
+                <div class="blink" id="cursor-main"></div>
+            </div>
+        </div>
+
+        <!-- Features Grid -->
+        <section class="features-grid">
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <ion-icon name="flash-outline" size="large"></ion-icon>
+                </div>
+                <h4>Unified Architecture</h4>
+                <p>Write your logic once and expose it as both a Command Line Interface and a Web API instantly.</p>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <ion-icon name="server-outline" size="large"></ion-icon>
+                </div>
+                <h4>Multiple Servers</h4>
+                <p>Built-in support for Netty, Tomcat, and Undertow. switch between them with a simple flag.</p>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <ion-icon name="hardware-chip-outline" size="large"></ion-icon>
+                </div>
+                <h4>AI Ready (MCP)</h4>
+                <p>Native integration with Model Context Protocol for building next-gen AI applications.</p>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <ion-icon name="pulse-outline" size="large"></ion-icon>
+                </div>
+                <h4>Real-time SSE</h4>
+                <p>Push updates to clients instantly with built-in Server-Sent Events support.</p>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <ion-icon name="cube-outline" size="large"></ion-icon>
+                </div>
+                <h4>Lightweight</h4>
+                <p>Tiny footprint with minimal external dependencies. Perfect for microservices.</p>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <ion-icon name="code-working-outline" size="large"></ion-icon>
+                </div>
+                <h4>Zero Configuration</h4>
+                <p>Convention over configuration principles. Start coding immediately without XML hell.</p>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-content">
+                <p>Released under the Apache License 2.0</p>
+                <p>&copy; 2026 James ZHOU. All rights reserved.</p>
+            </div>
+        </footer>
+
+    </main>
+
+    <!-- Prism Script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+    <!-- Theme and Language Logic -->
+    <script>
+        // Theme Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = document.querySelector('.theme-toggle ion-icon');
+            if (theme === 'dark') {
+                icon.setAttribute('name', 'sunny-outline');
+            } else {
+                icon.setAttribute('name', 'moon-outline');
+            }
+        }
+
+        // Initialize Theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+
+        // Sidebar Toggle Logic
+        function toggleSidebar() {
+            if (window.innerWidth < 768) {
+                document.body.classList.toggle('sidebar-open');
+                document.body.classList.remove('sidebar-closed'); // Reset desktop state just in case
+            } else {
+                document.body.classList.toggle('sidebar-closed');
+                document.body.classList.remove('sidebar-open'); // Reset mobile state just in case
+            }
+        }
+        
+        // Close sidebar when clicking overlay (Mobile only)
+        document.querySelector('.sidebar-overlay').addEventListener('click', function() {
+            document.body.classList.remove('sidebar-open');
+        });
+
+        // Language Switcher (Mock implementation for demo)
+        const translations = {
+            'zh': {
+                'hero-title': '用于现代应用的轻量级 Java 框架',
+                'hero-subtitle': '使用统一的 CLI 和 Web 架构构建高效、可扩展的应用程序。零样板代码，极致性能。',
+                'get-started': '开始使用',
+                'view-github': '在 GitHub 上查看',
+                'features': {
+                    'unified': '统一架构',
+                    'unified-desc': '只需编写一次逻辑，即可同时作为命令行接口和 Web API 发布。',
+                    'servers': '多服务器支持',
+                    'servers-desc': '内置支持 Netty、Tomcat 和 Undertow。只需一个简单的标志即可切换。',
+                    'ai': 'AI 就绪 (MCP)',
+                    'ai-desc': '原生集成模型上下文协议 (MCP)，用于构建下一代 AI 应用程序。',
+                    'sse': '实时 SSE',
+                    'sse-desc': '内置服务器发送事件支持，可即时向客户端推送更新。',
+                    'lightweight': '轻量级',
+                    'lightweight-desc': '极小的占用空间，最少的外部依赖。微服务的完美选择。',
+                    'zero-config': '零配置',
+                    'zero-config-desc': '约定优于配置原则。无需 XML 地狱即可立即开始编码。'
+                },
+                'sidebar': {
+                    'Home': '首页',
+                    'Getting Started': '入门指南',
+                    'Core Concepts': '核心概念',
+                    'API Reference': 'API 参考',
+                    'GitHub': 'GitHub'
+                }
+            },
+            'en': {
+                'hero-title': 'A lightweight Java framework for modern apps',
+                'hero-subtitle': 'Build efficient, scalable applications with a unified CLI and Web architecture. Zero boilerplate, maximum performance.',
+                'get-started': 'Get Started',
+                'view-github': 'View on GitHub',
+                'features': {
+                    'unified': 'Unified Architecture',
+                    'unified-desc': 'Write your logic once and expose it as both a Command Line Interface and a Web API instantly.',
+                    'servers': 'Multiple Servers',
+                    'servers-desc': 'Built-in support for Netty, Tomcat, and Undertow. Switch between them with a simple flag.',
+                    'ai': 'AI Ready (MCP)',
+                    'ai-desc': 'Native integration with Model Context Protocol for building next-gen AI applications.',
+                    'sse': 'Real-time SSE',
+                    'sse-desc': 'Push updates to clients instantly with built-in Server-Sent Events support.',
+                    'lightweight': 'Lightweight',
+                    'lightweight-desc': 'Tiny footprint with minimal external dependencies. Perfect for microservices.',
+                    'zero-config': 'Zero Configuration',
+                    'zero-config-desc': 'Convention over configuration principles. Start coding immediately without XML hell.'
+                },
+                'sidebar': {
+                    'Home': 'Home',
+                    'Getting Started': 'Getting Started',
+                    'Core Concepts': 'Core Concepts',
+                    'API Reference': 'API Reference',
+                    'GitHub': 'GitHub'
+                }
+            }
+        };
+
+        let currentLang = 'en';
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'zh' : 'en';
+            document.querySelector('.lang-switch span').textContent = currentLang.toUpperCase();
+
+            // Update Text Content
+            const t = translations[currentLang];
+            document.querySelector('.hero-title').textContent = t['hero-title'];
+            document.querySelector('.hero-subtitle').textContent = t['hero-subtitle'];
+            document.querySelector('.btn-primary').childNodes[0].nodeValue = t['get-started'] + ' '; // Preserve icon space
+            document.querySelector('.btn-secondary').childNodes[2].nodeValue = ' ' + t['view-github']; // Preserve icon space
+
+            // Update Features
+            const featureItems = document.querySelectorAll('.feature-item');
+            const keys = ['unified', 'servers', 'ai', 'sse', 'lightweight', 'zero-config'];
+
+            featureItems.forEach((item, index) => {
+                const key = keys[index];
+                item.querySelector('h4').textContent = t['features'][key];
+                item.querySelector('p').textContent = t['features'][key + '-desc'];
+            });
+
+            // Update Perf Card
+            document.querySelector('.perf-card h3').textContent = currentLang === 'en' ? 'High Performance' : '极致性能';
+            document.querySelector('.perf-card p').textContent = currentLang === 'en' ?
+                'Engineered for speed with minimal overhead. Handles high-throughput workloads with ease.' :
+                '专为速度而设计，开销极小。轻松处理高吞吐量工作负载。';
+            document.querySelector('.perf-label').textContent = currentLang === 'en' ? 'Requests / Second' : '请求 / 秒';
+
+            // Update Code Card
+            document.querySelector('.code-card h3').textContent = currentLang === 'en' ? 'Simple & Elegant' : '简单优雅';
+            document.querySelector('.code-card p').textContent = currentLang === 'en' ?
+                'No main() method required. Just pure logic.' :
+                '无需 main() 方法。只需纯粹的逻辑。';
+
+            // Update Sidebar
+            const sidebarLinks = document.querySelectorAll('.nav-link');
+            const sidebarKeys = ['Home', 'Getting Started', 'Core Concepts', 'API Reference', 'GitHub'];
+
+            sidebarLinks.forEach((link, index) => {
+                const key = sidebarKeys[index];
+                const span = link.querySelector('span');
+                if (span && t['sidebar'][key]) {
+                    span.textContent = t['sidebar'][key];
+                }
+
+                // Update hrefs for documentation links
+                if (key === 'Getting Started' || key === 'Core Concepts' || key === 'API Reference') {
+                    const originalHref = link.getAttribute('href');
+                    if (originalHref) {
+                        if (currentLang === 'zh' && originalHref.startsWith('en/')) {
+                            link.setAttribute('href', originalHref.replace('en/', 'zh/'));
+                        } else if (currentLang === 'en' && originalHref.startsWith('zh/')) {
+                            link.setAttribute('href', originalHref.replace('zh/', 'en/'));
+                        }
+                    }
+                }
+            });
+
+            // Update Hero Button Link
+            const heroBtn = document.querySelector('.btn-primary');
+            const heroHref = heroBtn.getAttribute('href');
+            if (heroHref) {
+                if (currentLang === 'zh' && heroHref.startsWith('en/')) {
+                    heroBtn.setAttribute('href', heroHref.replace('en/', 'zh/'));
+                } else if (currentLang === 'en' && heroHref.startsWith('zh/')) {
+                    heroBtn.setAttribute('href', heroHref.replace('zh/', 'en/'));
+                }
+            }
+        }
+
+        // Terminal Typing Effect
+        const commands = [
+            "$ bin/dispatcher --version",
+            "  _/  '         _ _/  _     _ _/",
+            "  /  /  /) (/ _)  /  /  (/ (  /  1.7.17",
+            "           /",
+            " ",
+            "$ bin/dispatcher --help",
+            "Usage: bin/dispatcher COMMAND [OPTIONS]",
+            "Commands:",
+            "  download             \tDownload a resource from other servers",
+            "  exec                 \tTo execute native command(s)",
+            "  generate             \tPOJO object generator",
+            "  install              \tInstall a package",
+            "  open                 \tStart a default browser to open the specific URL",
+            "  say                  \tOutput words",
+            "  set                  \tSet system property",
+            "  sql-execute          \tExecutes the given SQL statement, which ",
+            "                       \tmay be an INSERT, UPDATE, DELETE, or DDL statement",
+            "  sql-query            \tExecutes the given SQL statement, which ",
+            "                       \treturns a single ResultSet object",
+            "  update               \tUpdate for the latest version",
+            " ",
+            "Options:",
+            "  --allow-remote-access\tAllow to be accessed remotely",
+            "  --help               \tHelp command",
+            "  --host               \tHost name / IP",
+            "  --import             \tImport application",
+            "  --logo               \tPrint logo",
+            "  --settings           \tPrint settings",
+            "  --version            \tPrint version",
+            " ",
+            "Run 'bin/dispatcher COMMAND --help' for more information on a command.",
+            " ",
+            "$ bin/dispatcher say --words Hello --import tinystruct.examples.example",
+            "Hello",
+            " ",
+            "# bin/dispatcher start --import org.tinystruct.system.NettyHttpServer --server-port 777",
+            " ",
+            "  _/  '         _ _/  _     _ _/",
+            "  /  /  /) (/ _)  /  /  (/ (  /  1.7.17",
+            "           /",
+            " ",
+            `${new Date().toLocaleString()} org.tinystruct.system.NettyHttpServer start`,
+            "INFO: Netty server (777) startup in 30 ms"
+        ];
+
+        const outputMain = document.getElementById('output-main');
+        const cursorMain = document.getElementById('cursor-main');
+
+        let i = 0;
+
+        function typeCommands() {
+            if (i < commands.length) {
+                const line = commands[i];
+                const textDiv = document.createElement('div');
+                textDiv.textContent = line;
+                textDiv.classList.add('fade-in');
+                outputMain.appendChild(textDiv);
+                i++;
+                
+                // Auto scroll to bottom
+                const terminal = document.getElementById('terminal-main');
+                terminal.scrollTop = terminal.scrollHeight;
+                
+                setTimeout(typeCommands, 100);
+            } else {
+                // Keep cursor blinking at the end
+            }
+        }
+
+        // Start typing after a short delay
+        setTimeout(typeCommands, 1000);
+    </script>
+</body>
+
+</html>
