@@ -535,7 +535,7 @@ footer {
 }
 
 /* Responsive */
-@media (max-width: 1024px) {
+@media (max-width: 1034px) {
     .content-wrapper {
         grid-template-columns: 1fr;
     }
@@ -555,6 +555,7 @@ footer {
         padding: 0.75rem;
     }
 
+    .nav-link ion-icon,
     .nav-link svg {
         margin-right: 0;
     }
@@ -605,6 +606,14 @@ footer {
     .hero-actions .btn {
         width: 100%;
         justify-content: center;
+    }
+
+    .features-grid {
+        padding: 0 1rem 3rem;
+    }
+
+    footer {
+        padding: 2rem 1rem;
     }
 }
 
@@ -1061,7 +1070,6 @@ footer {
 }
 
 .blink {
-    display: inline-block;
     width: 8px;
     height: 1.2em;
     background: #00ff00;
@@ -1100,7 +1108,6 @@ footer {
         min-height: 200px;
         max-height: 60vh; /* Use viewport height unit for better fit */
         /* Ensure scrollbar doesn't overlap text awkwardly */
-        scrollbar-width: thin; 
     }
 }
 
