@@ -169,9 +169,19 @@ public class HelloApp extends AbstractApplication {
         return "Hello, World!";
     }
     
-    @Action("users/{id}")
+    @Action("users")
     public User getUser(String id) {
         return userService.findById(id);
+    }
+
+    @Override
+    public void init() {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public String version() {
+        return "1.0";
     }
 }</code></pre>
                 </div>
