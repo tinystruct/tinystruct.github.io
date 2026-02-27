@@ -1,6 +1,6 @@
-# What's New in tinystruct 1.7.17
+# What's New in tinystruct 1.7.18
 
-This document highlights the new features, improvements, and changes introduced in tinystruct version 1.7.17.
+This document highlights the new features, improvements, and changes introduced in tinystruct version 1.7.18.
 
 ## Major New Features
 
@@ -154,7 +154,7 @@ bin/dispatcher start --import org.tinystruct.system.UndertowServer
 
 ### Benchmark Results
 
-Version 1.7.17 achieves exceptional performance:
+Version 1.7.18 achieves exceptional performance:
 
 ```
 Running 30s test @ http://127.0.0.1:8080/?q=say/Praise the Lord!
@@ -287,18 +287,18 @@ try (DatabaseOperator operator = new DatabaseOperator()) {
 
 ### None
 
-Version 1.7.17 maintains backward compatibility with previous 1.7.x versions. All existing code should continue to work without modifications.
+Version 1.7.18 maintains backward compatibility with previous 1.8.x versions. All existing code should continue to work without modifications.
 
 ## Migration Guide
 
-### From 1.7.15 to 1.7.17
+### From 1.7.15 to 1.7.18
 
 1. **Update Maven Dependency**
    ```xml
    <dependency>
        <groupId>org.tinystruct</groupId>
        <artifactId>tinystruct</artifactId>
-       <version>1.7.17</version>
+       <version>1.7.18</version>
    </dependency>
    ```
 
@@ -340,7 +340,7 @@ Version 1.7.17 maintains backward compatibility with previous 1.7.x versions. Al
 
 ## Conclusion
 
-Version 1.7.17 represents a significant step forward for the tinystruct framework, adding modern features like HTTP method-specific actions, AI integration, and SSE support while maintaining the framework's core philosophy of simplicity, performance, and ease of use.
+Version 1.7.18 represents a significant step forward for the tinystruct framework, adding modern features like HTTP method-specific actions, AI integration, and SSE support while maintaining the framework's core philosophy of simplicity, performance, and ease of use.
 
 The framework continues to deliver exceptional performance (86,000+ req/s) while remaining lightweight and developer-friendly. With no main() method required and unified CLI/Web support, tinystruct makes Java application development faster and more enjoyable.
 

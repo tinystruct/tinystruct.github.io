@@ -32,7 +32,7 @@ public class MyApp extends AbstractApplication {
 
     @Override
     public String version() {
-        return "1.7.17";
+        return "1.7.18";
     }
 }
 ```

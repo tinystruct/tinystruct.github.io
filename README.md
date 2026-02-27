@@ -6,7 +6,7 @@ Welcome to the tinystruct framework documentation. This documentation provides c
 
 欢迎查阅 tinystruct 框架文档。本文档为使用和开发 tinystruct 框架提供全面的指导。
 
-## What's New in v1.7.17
+## What's New in v1.7.18
 
 - **Enhanced AI Integration**: Built-in support for AI integration and plugin-based architecture
 - **MCP Server Support**: Integration with Model Context Protocol (MCP) for advanced AI capabilities
@@ -68,7 +68,7 @@ Add the dependency to your `pom.xml`:
 <dependency>
     <groupId>org.tinystruct</groupId>
     <artifactId>tinystruct</artifactId>
-    <version>1.7.17</version>
+    <version>1.7.18</version>
     <classifier>jar-with-dependencies</classifier>
 </dependency>
 ```
