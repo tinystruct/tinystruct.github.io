@@ -29,7 +29,7 @@ Add the tinystruct dependency to your project's `pom.xml` file:
 <dependency>
     <groupId>org.tinystruct</groupId>
     <artifactId>tinystruct</artifactId>
-    <version>1.7.19</version>
+    <version>1.7.21</version>
     <classifier>jar-with-dependencies</classifier>
 </dependency>
 ```
@@ -83,6 +83,14 @@ public class HelloWorldApp extends AbstractApplication {
     @Action(value = "greet", mode = Mode.HTTP_POST)
     public String greetPost() {
         return "POST: Hello!";
+    }
+
+    @Action("say")
+    public String say() throws ApplicationException {
+        if (null != getContext().getAttribute("--words"))
+            return getContext().getAttribute("--words").toString();
+
+        throw new ApplicationException("Could not find the parameter <i>words</i>.");
     }
 }
 ```
@@ -231,6 +239,7 @@ tinystruct is designed for high performance:
 - **Zero overhead** - no reflection-based scanning
 - **Direct method invocation** - no proxy layers
 - **Minimal memory footprint**
+- **AI & MCP Ready** - built-in support for AI workflows
 
 ## Next Steps
 
@@ -241,6 +250,7 @@ tinystruct is designed for high performance:
 - Dive into [Database Integration](database.md)
 - Review [Advanced Features](advanced-features.md)
 - Follow [Best Practices](best-practices.md)
+- Learn about [AI & MCP Integration](mcp-integration.md)
 
 ## Examples and Resources
 

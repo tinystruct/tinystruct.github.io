@@ -12,10 +12,16 @@ tinystruct 支持多种 Web 服务器：
 bin/dispatcher start --import org.tinystruct.system.NettyHttpServer
 ```
 
-### Tomcat 服务器
+### Undertow 服务器
 
 ```bash
-bin/dispatcher start --import org.tinystruct.system.TomcatServer
+bin/dispatcher start --import org.tinystruct.system.UndertowServer
+```
+
+### 内置 HTTP 服务器 (轻量级)
+
+```bash
+bin/dispatcher start --import org.tinystruct.system.HttpServer
 ```
 
 ## 请求处理
@@ -32,7 +38,7 @@ Tinystruct 使用智能的模式匹配系统进行路由：
 
 ### HTTP 特定方法操作
 
-1.7.17 版本新增功能，您可以使用 `mode` 参数指定操作响应的 HTTP 方法：
+1.7.21 版本新增功能，您可以使用 `mode` 参数指定操作响应的 HTTP 方法：
 
 ```java
 import org.tinystruct.system.annotation.Action.Mode;
@@ -478,6 +484,42 @@ public Object adminUsers(Request request, Response response) {
     return this;
 }
 ```
+
+## Server-Sent Events (SSE)
+
+tinystruct 原生支持 Server-Sent Events (SSE)，允许服务器通过 HTTP 向网页推送实时更新。
+
+### 创建 SSE 端点
+
+要创建 SSE 端点，可以使用 `SSEPushManager`：
+
+```java
+@Action("events")
+public void handleEvents(Request request, Response response) {
+    String sessionId = request.getSession().getId();
+    
+    // 注册客户端以接收 SSE
+    SSEPushManager.getInstance().register(sessionId, response);
+    
+    // 连接将自动保持打开状态
+}
+
+@Action("notify")
+public String notifyClient(String message, Request request) {
+    String sessionId = request.getSession().getId();
+    
+    // 向特定客户端推送数据
+    SSEPushManager.getInstance().push(sessionId, message);
+    
+    return "通知已发送";
+}
+```
+
+## Model Context Protocol (MCP) 与 AI
+
+tinystruct 现已具备 AI 能力，内置支持 Model Context Protocol (MCP)。这允许您的应用程序作为 MCP 服务器或客户端运行，实现与 AI 模型的无缝集成。
+
+有关更多详细信息，请参阅 [AI 与 MCP 集成](mcp-integration.md) 指南。
 
 ## 最佳实践
 

@@ -9,13 +9,14 @@ tinystruct is a simple yet powerful framework for Java development. It embraces 
 
 ## Key Features
 
-- **Lightweight Architecture**: Minimal overhead with maximum flexibility
-- **Dual-Mode Support**: Build both web applications and CLI tools
-- **Simple Configuration**: Easy to set up and customize
-- **High Performance**: Optimized for efficient execution
-- **Database Integration**: Built-in support for multiple databases
-- **RESTful Support**: Easy API development
-- **Command Line Tools**: Powerful CLI capabilities
+- **Modern Architecture**: No `main()` method required, applications start directly via CLI
+- **Dual-Mode Support**: CLI and Web are treated as equal citizens
+- **Built-in Servers**: Native support for Netty, Tomcat, and Undertow
+- **AI-Ready**: Designed for AI integration and Model Context Protocol (MCP)
+- **SSE Support**: Native Server-Sent Events for real-time applications
+- **High Performance**: Optimized to handle 86,000+ requests per second
+- **Minimal Configuration**: Zero-boilerplate philosophy
+- **Annotation-Based Routing**: Clean and intuitive routing with `@Action`
 
 ## Quick Start
 
@@ -27,7 +28,7 @@ Add the dependency to your pom.xml:
 <dependency>
     <groupId>org.tinystruct</groupId>
     <artifactId>tinystruct</artifactId>
-    <version>1.7.19</version>
+    <version>1.7.21</version>
     <classifier>jar-with-dependencies</classifier>
 </dependency>
 ```
@@ -57,8 +58,23 @@ public class Example extends AbstractApplication {
     public String say(String words) {
         return words;
     }
+
+    @Action(value = "hello", mode = Mode.HTTP_GET)
+    public String helloGet() {
+        return "GET";
+    }
 }
 ```
+
+## What makes tinystruct modern?
+
+1. **No `main()` method required**: Applications can be started directly using CLI commands like `bin/dispatcher`, with no boilerplate code needed.
+2. **Unified design for CLI and Web**: Unlike many frameworks, tinystruct treats CLI and Web as equal citizens. This makes it perfect for AI tasks, script automation, and hybrid applications.
+3. **Built-in lightweight HTTP server**: Whether it’s Netty or Tomcat, tinystruct integrates the server lifecycle inside the framework.
+4. **Minimal configuration philosophy**: Configuration is minimized to the essentials. No need to wire up hundreds of beans or complex XML/YAML files.
+5. **Annotation-based routing**: Clean and intuitive routing using `@Action`, eliminating complex controller hierarchies.
+6. **Performance-first architecture**: Almost zero overhead. No reflection-based bean scanning or unnecessary interceptors.
+7. **AI & MCP Integration**: Built-in support for Model Context Protocol (MCP) and AI-driven workflows.
 
 ## Documentation Contents
 
@@ -70,6 +86,7 @@ public class Example extends AbstractApplication {
 - [Database Integration](database.md)
 - [Advanced Features](advanced-features.md)
 - [Best Practices](best-practices.md)
+- [AI & MCP Integration](mcp-integration.md)
 - [API Reference](api/README.md)
 
 ## Community and Support

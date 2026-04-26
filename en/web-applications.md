@@ -12,10 +12,16 @@ tinystruct supports multiple web servers:
 bin/dispatcher start --import org.tinystruct.system.NettyHttpServer
 ```
 
-### Tomcat Server
+### Undertow Server
 
 ```bash
-bin/dispatcher start --import org.tinystruct.system.TomcatServer
+bin/dispatcher start --import org.tinystruct.system.UndertowServer
+```
+
+### Built-in HTTP Server (Minimal)
+
+```bash
+bin/dispatcher start --import org.tinystruct.system.HttpServer
 ```
 
 ## Request Handling
@@ -32,7 +38,7 @@ The framework automatically routes requests to the appropriate method based on t
 
 ### HTTP Method-Specific Actions
 
-New in version 1.7.17, you can specify which HTTP methods an action responds to using the `mode` parameter:
+New in version 1.7.21, you can specify which HTTP methods an action responds to using the `mode` parameter:
 
 ```java
 import org.tinystruct.system.annotation.Action.Mode;
@@ -478,6 +484,42 @@ public Object adminUsers(Request request, Response response) {
     return this;
 }
 ```
+
+## Server-Sent Events (SSE)
+
+tinystruct provides native support for Server-Sent Events (SSE), which allows servers to push real-time updates to web pages over HTTP.
+
+### Creating an SSE Endpoint
+
+To create an SSE endpoint, you can use the `SSEPushManager`:
+
+```java
+@Action("events")
+public void handleEvents(Request request, Response response) {
+    String sessionId = request.getSession().getId();
+    
+    // Register the client for SSE
+    SSEPushManager.getInstance().register(sessionId, response);
+    
+    // The connection will be kept open automatically
+}
+
+@Action("notify")
+public String notifyClient(String message, Request request) {
+    String sessionId = request.getSession().getId();
+    
+    // Push data to a specific client
+    SSEPushManager.getInstance().push(sessionId, message);
+    
+    return "Notification sent";
+}
+```
+
+## Model Context Protocol (MCP) & AI
+
+tinystruct is now AI-ready with built-in support for the Model Context Protocol (MCP). This allows your application to act as an MCP server or client, enabling seamless integration with AI models.
+
+For more details, see the [AI & MCP Integration](mcp-integration.md) guide.
 
 ## Best Practices
 

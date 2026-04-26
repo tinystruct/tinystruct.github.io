@@ -6,6 +6,18 @@ This guide explains how to build command-line interface (CLI) applications using
 
 tinystruct's CLI capabilities are powered by the same action mechanism used for web applications, making it easy to create both CLI tools and web interfaces with shared code.
 
+## Unified Design for CLI and Web
+
+Unlike many other frameworks that treat CLI as an afterthought, tinystruct treats CLI and Web as equal citizens. This means:
+- You can use the same `@Action` annotations for both modes.
+- Business logic is naturally shared without extra layers.
+- You can test your web actions via CLI easily.
+- It's perfect for AI-driven tasks and automation.
+
+## No main() Method Required
+
+One of the modern features of tinystruct is that it doesn't require a `main()` method in your application classes. Applications are started directly using the `bin/dispatcher` tool. This reduces boilerplate and focuses your code on the logic itself.
+
 ## Creating CLI Commands
 
 ### Basic Command

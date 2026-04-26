@@ -27,7 +27,7 @@ https://github.com/tinystruct/tinystruct-archetype
 <dependency>
     <groupId>org.tinystruct</groupId>
     <artifactId>tinystruct</artifactId>
-    <version>1.7.19</version>
+    <version>1.7.21</version>
     <classifier>jar-with-dependencies</classifier>
 </dependency>
 ```
@@ -80,6 +80,14 @@ public class HelloWorldApp extends AbstractApplication {
     @Action(value = "greet", mode = Action.Mode.HTTP_POST)
     public String greetPost() {
         return "你好 (POST)";
+    }
+
+    @Action("say")
+    public String say() throws ApplicationException {
+        if (null != getContext().getAttribute("--words"))
+            return getContext().getAttribute("--words").toString();
+
+        throw new ApplicationException("Could not find the parameter <i>words</i>.");
     }
 
 }
@@ -176,3 +184,4 @@ my-app/
 - 查看[命令行应用](cli-applications.md)
 - 理解[配置说明](configuration.md)
 - 深入[数据库集成](database.md)
+- 了解[AI 与 MCP 集成](mcp-integration.md)

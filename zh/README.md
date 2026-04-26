@@ -9,17 +9,14 @@ tinystruct 是一个简单而强大的 Java 开发框架。它秉承简单思维
 
 ## 主要特性
 
-- **轻量级架构**：最小的开销，最大的灵活性
-- **AI 集成与 MCP**：内置支持 AI 集成和 Model Context Protocol (MCP)
-- **HTTP 特定方法 Action**：支持基于 HTTP 方法（GET, POST, PUT, DELETE 等）的路由
-- **SSE 支持**：原生 Server-Sent Events 支持，用于实时应用
-- **多种服务器选项**：支持 Netty, Tomcat 和 Undertow
-- **双模式支持**：同时支持 Web 应用和命令行工具开发
 - **现代架构**：无需 `main()` 方法，通过 CLI 命令直接启动
-- **简单配置**：易于设置和自定义
+- **双模式支持**：CLI 和 Web 是平等公民，代码库统一
+- **内置服务器**：原生支持 Netty, Tomcat 和 Undertow
+- **AI 就绪**：专为 AI 集成和 Model Context Protocol (MCP) 设计
+- **SSE 支持**：原生 Server-Sent Events 支持，用于实时应用
 - **高性能**：优化的执行效率，处理超过 86,000 req/s
-- **数据库集成**：内置多数据库支持
-- **RESTful 支持**：便捷的 API 开发
+- **极简配置**：零样板代码哲学
+- **注解路由**：使用 `@Action` 进行简洁直观的路由
 
 
 ## 快速开始
@@ -32,7 +29,7 @@ tinystruct 是一个简单而强大的 Java 开发框架。它秉承简单思维
 <dependency>
     <groupId>org.tinystruct</groupId>
     <artifactId>tinystruct</artifactId>
-    <version>1.7.19</version>
+    <version>1.7.21</version>
     <classifier>jar-with-dependencies</classifier>
 </dependency>
 ```
@@ -62,8 +59,23 @@ public class Example extends AbstractApplication {
     public String say(String words) {
         return words;
     }
+
+    @Action(value = "hello", mode = Mode.HTTP_GET)
+    public String helloGet() {
+        return "GET";
+    }
 }
 ```
+
+## 为什么 tinystruct 是现代化的？
+
+1. **无需 `main()` 方法**：应用程序可以通过 `bin/dispatcher` 等 CLI 命令直接启动，无需样板代码。
+2. **CLI 和 Web 的统一设计**：与许多框架不同，tinystruct 将 CLI 和 Web 视为平等公民。这使其非常适合 AI 任务、脚本自动化和混合应用。
+3. **内置轻量级 HTTP 服务器**：无论是 Netty 还是 Tomcat，tinystruct 都将服务器生命周期集成在框架内部。
+4. **极简配置哲学**：配置被简化到极致。无需配置数百个 bean 或复杂的 XML/YAML 文件。
+5. **基于注解的路由**：使用 `@Action` 进行清晰直观的路由，消除了复杂的控制器层级。
+6. **性能优先架构**：几乎零开销。没有基于反射的 bean 扫描或不必要的拦截器。
+7. **AI 和 MCP 集成**：内置对 Model Context Protocol (MCP) 和 AI 驱动工作流的支持。
 
 ## 文档目录
 
@@ -75,6 +87,7 @@ public class Example extends AbstractApplication {
 - [数据库集成](database.md)
 - [高级特性](advanced-features.md)
 - [最佳实践](best-practices.md)
+- [AI 与 MCP 集成](mcp-integration.md)
 - [API 参考](api/README.md)
 
 ## 社区与支持
