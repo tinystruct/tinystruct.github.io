@@ -576,6 +576,166 @@ List<Book> books = book.findWhere("author = ?", "F. 司科特·菲茨杰拉德")
 
 为了清晰和精确控制，建议使用 `append()` 进行插入操作，使用 `update()` 进行更新操作，而不是依赖 `save()`。
 
+## 内置 POJO 生成器
+
+Tinystruct 包含一个内置的代码生成器，可以直接从数据库模式创建 POJO 类和 XML 映射文件。生成器支持 **MySQL**、**MSSQL**、**SQLite** 和 **H2** 数据库。
+
+### 运行生成器
+
+使用 `generate` CLI 命令调用生成器：
+
+```bash
+# 交互模式 — 生成器将提示输入表名和输出路径
+bin/dispatcher generate
+
+# 非交互模式 — 直接指定表名
+bin/dispatcher generate --tables users
+
+# 多个表（分号分隔）
+bin/dispatcher generate --tables "users;orders;products"
+```
+
+交互提示将询问：
+1. **表名** — 分号分隔（例如 `users;orders`）
+2. **基础路径** — Java 文件的放置位置（默认：从项目的包结构自动检测）
+
+### 自动包导入
+
+生成器**自动检测**表列所需的 Java 类型，并将正确的 import 语句添加到生成的 POJO 中。您无需手动指定任何包。
+
+以下类型映射将自动处理：
+
+| SQL 列类型                              | Java 类型         | 导入包                        |
+|----------------------------------------|-------------------|-----------------------------|
+| `DATETIME`、`TIMESTAMP`、`DATETIME2`    | `LocalDateTime`   | `java.time.LocalDateTime`   |
+| `DATE`                                 | `Date`            | `java.util.Date`            |
+| `TIMESTAMP`（显式）                     | `Timestamp`       | `java.sql.Timestamp`        |
+| `TIME`                                 | `Time`            | `java.sql.Time`             |
+| `VARCHAR`、`CHAR`、`TEXT`               | `String`          | *（内置）*                    |
+| `INT`、`SMALLINT`、`TINYINT`            | `int`             | *（内置）*                    |
+| `BIGINT`                               | `long`            | *（内置）*                    |
+| `FLOAT`                                | `float`           | *（内置）*                    |
+| `DOUBLE`                               | `double`          | *（内置）*                    |
+| `BLOB`、`BINARY`、`VARBINARY`           | `byte[]`          | *（内置）*                    |
+
+### 生成的输出
+
+对于每个表，生成器生成两个文件：
+
+1. **Java POJO** — 例如 `src/main/java/com/example/objects/User.java`
+2. **XML 映射** — 例如 `src/main/resources/com/example/objects/User.map.xml`
+
+#### 示例：生成的 POJO
+
+对于包含列 `id INT AUTO_INCREMENT`、`username VARCHAR(50)`、`email VARCHAR(100)`、`created_at DATETIME` 的 `users` 表：
+
+```java
+package com.example.objects;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import org.tinystruct.data.component.AbstractData;
+import org.tinystruct.data.component.Row;
+
+public class User extends AbstractData implements Serializable {
+    private static final long serialVersionUID = ...L;
+    private String username;
+    private String email;
+    private LocalDateTime createdAt;
+
+    public Integer getId() {
+        return Integer.parseInt(this.Id.toString());
+    }
+
+    public void setUsername(String username) {
+        this.username = this.setFieldAsString("username", username);
+    }
+
+    public String getUsername() {
+        return this.username;
+    }
+
+    public void setEmail(String email) {
+        this.email = this.setFieldAsString("email", email);
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = this.setFieldAsLocalDateTime("createdAt", createdAt);
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
+    }
+
+    @Override
+    public void setData(Row row) {
+        if(row.getFieldInfo("id") != null)
+            this.setId(row.getFieldInfo("id").intValue());
+        if(row.getFieldInfo("username") != null)
+            this.setUsername(row.getFieldInfo("username").stringValue());
+        if(row.getFieldInfo("email") != null)
+            this.setEmail(row.getFieldInfo("email").stringValue());
+        if(row.getFieldInfo("created_at") != null)
+            this.setCreatedAt(row.getFieldInfo("created_at").localDateTimeValue());
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder buffer = new StringBuilder();
+        buffer.append("{");
+        buffer.append("\"Id\":" + this.getId());
+        buffer.append(",\"username\":\"" + this.getUsername() + "\"");
+        buffer.append(",\"email\":\"" + this.getEmail() + "\"");
+        buffer.append(",\"createdAt\":\"" + this.getCreatedAt() + "\"");
+        buffer.append("}");
+        return buffer.toString();
+    }
+}
+```
+
+#### 示例：生成的 XML 映射
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping>
+    <class name="User" table="users">
+        <id name="Id" column="id" increment="true" generate="false" length="11" type="INT"/>
+        <property name="username" column="username" length="50" type="VARCHAR"/>
+        <property name="email" column="email" length="100" type="VARCHAR"/>
+        <property name="createdAt" column="created_at" length="0" type="DATETIME"/>
+    </class>
+</mapping>
+```
+
+### 使用生成的代码
+
+生成的类继承自 `AbstractData`，因此可以直接与 tinystruct 的 ORM 集成：
+
+```java
+// 创建
+User user = new User();
+user.setUsername("john");
+user.setEmail("john@example.com");
+user.setCreatedAt(LocalDateTime.now());
+user.append();
+
+// 读取
+User found = new User();
+found.setId(1);
+found.findOneById();
+
+// 更新
+found.setEmail("newemail@example.com");
+found.update();
+
+// 删除
+found.delete();
+```
+
 ## 最佳实践
 
 1. **连接管理**：完成后始终关闭数据库连接。

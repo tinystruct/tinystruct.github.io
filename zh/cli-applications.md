@@ -221,151 +221,30 @@ public String exportUsers() {
 
 ## 创建自定义命令
 
-### POJO 生成器示例
+### 内置 POJO 生成器
 
-```java
-@Action(
-    value = "generate-pojo",
-    description = "从数据库表生成 POJO 类",
-    options = {
-        @Argument(name = "table", description = "数据库表名"),
-        @Argument(name = "package", description = "Java 包名"),
-        @Argument(name = "output", description = "输出目录")
-    },
-    mode = Action.Mode.CLI
-)
-public String generatePojo() {
-    String table = getContext().getAttribute("--table");
-    String packageName = getContext().getAttribute("--package", "com.example.model");
-    String output = getContext().getAttribute("--output", "./src/main/java");
-    
-    if (table == null) {
-        return "请使用 --table 提供表名";
-    }
-    
-    try {
-        Repository repository = Type.MySQL.createRepository();
-        repository.connect(getConfiguration());
-        
-        // 获取表元数据
-        List<Row> columns = repository.query(
-            "SELECT COLUMN_NAME, DATA_TYPE, IS_NULLABLE " +
-            "FROM INFORMATION_SCHEMA.COLUMNS " +
-            "WHERE TABLE_NAME = ?", table);
-        
-        if (columns.isEmpty()) {
-            return "未找到表或表没有列：" + table;
-        }
-        
-        // 生成类名（将 snake_case 转换为 CamelCase）
-        String className = Arrays.stream(table.split("_"))
-            .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
-            .collect(Collectors.joining());
-        
-        // 生成 Java 代码
-        StringBuilder code = new StringBuilder();
-        code.append("package ").append(packageName).append(";\n\n");
-        code.append("public class ").append(className).append(" {\n\n");
-        
-        // 生成字段
-        for (Row column : columns) {
-            String columnName = column.getString("COLUMN_NAME");
-            String dataType = column.getString("DATA_TYPE");
-            String javaType = mapSqlTypeToJava(dataType);
-            String fieldName = toCamelCase(columnName);
-            
-            code.append("    private ").append(javaType).append(" ").append(fieldName).append(";\n");
-        }
-        
-        code.append("\n");
-        
-        // 生成 getter 和 setter
-        for (Row column : columns) {
-            String columnName = column.getString("COLUMN_NAME");
-            String dataType = column.getString("DATA_TYPE");
-            String javaType = mapSqlTypeToJava(dataType);
-            String fieldName = toCamelCase(columnName);
-            String capitalizedFieldName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-            
-            // Getter
-            code.append("    public ").append(javaType).append(" get").append(capitalizedFieldName).append("() {\n");
-            code.append("        return ").append(fieldName).append(";\n");
-            code.append("    }\n\n");
-            
-            // Setter
-            code.append("    public void set").append(capitalizedFieldName).append("(").append(javaType).append(" ").append(fieldName).append(") {\n");
-            code.append("        this.").append(fieldName).append(" = ").append(fieldName).append(";\n");
-            code.append("    }\n\n");
-        }
-        
-        code.append("}");
-        
-        // 写入文件
-        String packagePath = packageName.replace('.', '/');
-        Path outputPath = Paths.get(output, packagePath, className + ".java");
-        Files.createDirectories(outputPath.getParent());
-        Files.write(outputPath, code.toString().getBytes());
-        
-        return "已在 " + outputPath + " 生成 " + className + ".java";
-    } catch (Exception e) {
-        return "生成 POJO 时出错：" + e.getMessage();
-    }
-}
+Tinystruct 包含一个内置的 `generate` 命令，可以直接从数据库模式创建 POJO 类和 XML 映射文件。它自动检测列定义中的 Java 类型并添加所需的 import 语句 — 无需手动指定包。
 
-private String toCamelCase(String snakeCase) {
-    StringBuilder result = new StringBuilder();
-    boolean nextUpper = false;
-    
-    for (char c : snakeCase.toCharArray()) {
-        if (c == '_') {
-            nextUpper = true;
-        } else {
-            if (nextUpper) {
-                result.append(Character.toUpperCase(c));
-                nextUpper = false;
-            } else {
-                result.append(Character.toLowerCase(c));
-            }
-        }
-    }
-    
-    return result.toString();
-}
+```bash
+# 交互模式 — 提示输入表名和输出路径
+bin/dispatcher generate
 
-private String mapSqlTypeToJava(String sqlType) {
-    switch (sqlType.toUpperCase()) {
-        case "VARCHAR":
-        case "CHAR":
-        case "TEXT":
-            return "String";
-        case "INT":
-        case "SMALLINT":
-        case "TINYINT":
-            return "Integer";
-        case "BIGINT":
-            return "Long";
-        case "DECIMAL":
-        case "NUMERIC":
-            return "BigDecimal";
-        case "FLOAT":
-            return "Float";
-        case "DOUBLE":
-            return "Double";
-        case "BOOLEAN":
-        case "BIT":
-            return "Boolean";
-        case "DATE":
-            return "LocalDate";
-        case "TIME":
-            return "LocalTime";
-        case "DATETIME":
-        case "TIMESTAMP":
-            return "LocalDateTime";
-        default:
-            return "Object";
-    }
-}
+# 非交互模式 — 直接指定表名
+bin/dispatcher generate --tables users
+
+# 多个表（分号分隔）
+bin/dispatcher generate --tables "users;orders;products"
 ```
+
+生成器：
+- 支持 **MySQL**、**MSSQL**、**SQLite** 和 **H2** 数据库
+- **自动导入** `java.time.LocalDateTime`、`java.util.Date`、`java.sql.Timestamp` 和 `java.sql.Time`（基于列类型）
+- 同时生成 **Java POJO** 和 **XML 映射文件**
+- 从源代码树自动检测项目的基础包
+- 自动将表名单数化作为类名（例如 `users` → `User`）
+
+完整详情和生成代码示例，请参阅[数据库集成 — 内置 POJO 生成器](database.md#内置-pojo-生成器)部分。
+
 
 ## 最佳实践
 

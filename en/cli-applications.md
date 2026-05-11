@@ -221,151 +221,30 @@ public String exportUsers() {
 
 ## Creating Custom Commands
 
-### POJO Generator Example
+### Built-in POJO Generator
 
-```java
-@Action(
-    value = "generate-pojo",
-    description = "Generate POJO class from database table",
-    options = {
-        @Argument(name = "table", description = "Database table name"),
-        @Argument(name = "package", description = "Java package name"),
-        @Argument(name = "output", description = "Output directory")
-    },
-    mode = Action.Mode.CLI
-)
-public String generatePojo() {
-    String table = getContext().getAttribute("--table");
-    String packageName = getContext().getAttribute("--package", "com.example.model");
-    String output = getContext().getAttribute("--output", "./src/main/java");
-    
-    if (table == null) {
-        return "Please provide a table name with --table";
-    }
-    
-    try {
-        Repository repository = Type.MySQL.createRepository();
-        repository.connect(getConfiguration());
-        
-        // Get table metadata
-        List<Row> columns = repository.query(
-            "SELECT COLUMN_NAME, DATA_TYPE, IS_NULLABLE " +
-            "FROM INFORMATION_SCHEMA.COLUMNS " +
-            "WHERE TABLE_NAME = ?", table);
-        
-        if (columns.isEmpty()) {
-            return "Table not found or has no columns: " + table;
-        }
-        
-        // Generate class name (convert snake_case to CamelCase)
-        String className = Arrays.stream(table.split("_"))
-            .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
-            .collect(Collectors.joining());
-        
-        // Generate Java code
-        StringBuilder code = new StringBuilder();
-        code.append("package ").append(packageName).append(";\n\n");
-        code.append("public class ").append(className).append(" {\n\n");
-        
-        // Generate fields
-        for (Row column : columns) {
-            String columnName = column.getString("COLUMN_NAME");
-            String dataType = column.getString("DATA_TYPE");
-            String javaType = mapSqlTypeToJava(dataType);
-            String fieldName = toCamelCase(columnName);
-            
-            code.append("    private ").append(javaType).append(" ").append(fieldName).append(";\n");
-        }
-        
-        code.append("\n");
-        
-        // Generate getters and setters
-        for (Row column : columns) {
-            String columnName = column.getString("COLUMN_NAME");
-            String dataType = column.getString("DATA_TYPE");
-            String javaType = mapSqlTypeToJava(dataType);
-            String fieldName = toCamelCase(columnName);
-            String capitalizedFieldName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-            
-            // Getter
-            code.append("    public ").append(javaType).append(" get").append(capitalizedFieldName).append("() {\n");
-            code.append("        return ").append(fieldName).append(";\n");
-            code.append("    }\n\n");
-            
-            // Setter
-            code.append("    public void set").append(capitalizedFieldName).append("(").append(javaType).append(" ").append(fieldName).append(") {\n");
-            code.append("        this.").append(fieldName).append(" = ").append(fieldName).append(";\n");
-            code.append("    }\n\n");
-        }
-        
-        code.append("}");
-        
-        // Write to file
-        String packagePath = packageName.replace('.', '/');
-        Path outputPath = Paths.get(output, packagePath, className + ".java");
-        Files.createDirectories(outputPath.getParent());
-        Files.write(outputPath, code.toString().getBytes());
-        
-        return "Generated " + className + ".java in " + outputPath;
-    } catch (Exception e) {
-        return "Error generating POJO: " + e.getMessage();
-    }
-}
+Tinystruct includes a built-in `generate` command that creates POJO classes and XML mapping files directly from your database schema. It automatically detects Java types from column definitions and adds the required import statements — no manual import specification is needed.
 
-private String toCamelCase(String snakeCase) {
-    StringBuilder result = new StringBuilder();
-    boolean nextUpper = false;
-    
-    for (char c : snakeCase.toCharArray()) {
-        if (c == '_') {
-            nextUpper = true;
-        } else {
-            if (nextUpper) {
-                result.append(Character.toUpperCase(c));
-                nextUpper = false;
-            } else {
-                result.append(Character.toLowerCase(c));
-            }
-        }
-    }
-    
-    return result.toString();
-}
+```bash
+# Interactive mode — prompts for table names and output path
+bin/dispatcher generate
 
-private String mapSqlTypeToJava(String sqlType) {
-    switch (sqlType.toUpperCase()) {
-        case "VARCHAR":
-        case "CHAR":
-        case "TEXT":
-            return "String";
-        case "INT":
-        case "SMALLINT":
-        case "TINYINT":
-            return "Integer";
-        case "BIGINT":
-            return "Long";
-        case "DECIMAL":
-        case "NUMERIC":
-            return "BigDecimal";
-        case "FLOAT":
-            return "Float";
-        case "DOUBLE":
-            return "Double";
-        case "BOOLEAN":
-        case "BIT":
-            return "Boolean";
-        case "DATE":
-            return "LocalDate";
-        case "TIME":
-            return "LocalTime";
-        case "DATETIME":
-        case "TIMESTAMP":
-            return "LocalDateTime";
-        default:
-            return "Object";
-    }
-}
+# Non-interactive — specify tables directly
+bin/dispatcher generate --tables users
+
+# Multiple tables (semicolon-delimited)
+bin/dispatcher generate --tables "users;orders;products"
 ```
+
+The generator:
+- Supports **MySQL**, **MSSQL**, **SQLite**, and **H2** databases
+- **Automatically imports** `java.time.LocalDateTime`, `java.util.Date`, `java.sql.Timestamp`, and `java.sql.Time` based on column types
+- Generates both the **Java POJO** and the **XML mapping file**
+- Auto-detects the project's base package from your source tree
+- Singularizes table names for class names (e.g. `users` → `User`)
+
+For full details and generated code examples, see the [Database Integration — Built-in POJO Generator](database.md#built-in-pojo-generator) section.
+
 
 ## Best Practices
 

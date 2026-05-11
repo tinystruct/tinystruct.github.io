@@ -576,6 +576,166 @@ In the tinystruct framework, there are distinct methods for different database o
 
 For clarity and precise control, it's recommended to use `append()` for inserts and `update()` for updates rather than relying on `save()`.
 
+## Built-in POJO Generator
+
+Tinystruct includes a built-in code generator that creates POJO classes and XML mapping files directly from your database schema. The generator supports **MySQL**, **MSSQL**, **SQLite**, and **H2** databases.
+
+### Running the Generator
+
+Use the `generate` CLI command to invoke the generator:
+
+```bash
+# Interactive mode — the generator will prompt for table names and output path
+bin/dispatcher generate
+
+# Non-interactive — specify tables directly
+bin/dispatcher generate --tables users
+
+# Multiple tables at once (semicolon-delimited)
+bin/dispatcher generate --tables "users;orders;products"
+```
+
+The interactive prompts will ask for:
+1. **Table name(s)** — semicolon-delimited (e.g. `users;orders`)
+2. **Base path** — where to place Java files (default: auto-detected from your project's package structure)
+
+### Automatic Package Imports
+
+The generator **automatically detects** the Java types required by your table columns and adds the correct import statements to the generated POJO. You do not need to specify any packages manually.
+
+The following type mappings are handled automatically:
+
+| SQL Column Type                        | Java Type         | Import                      |
+|----------------------------------------|-------------------|-----------------------------|
+| `DATETIME`, `TIMESTAMP`, `DATETIME2`   | `LocalDateTime`   | `java.time.LocalDateTime`   |
+| `DATE`                                 | `Date`            | `java.util.Date`            |
+| `TIMESTAMP` (explicit)                 | `Timestamp`       | `java.sql.Timestamp`        |
+| `TIME`                                 | `Time`            | `java.sql.Time`             |
+| `VARCHAR`, `CHAR`, `TEXT`              | `String`          | *(built-in)*                |
+| `INT`, `SMALLINT`, `TINYINT`           | `int`             | *(built-in)*                |
+| `BIGINT`                               | `long`            | *(built-in)*                |
+| `FLOAT`                                | `float`           | *(built-in)*                |
+| `DOUBLE`                               | `double`          | *(built-in)*                |
+| `BLOB`, `BINARY`, `VARBINARY`          | `byte[]`          | *(built-in)*                |
+
+### Generated Output
+
+For each table, the generator produces two files:
+
+1. **Java POJO** — e.g. `src/main/java/com/example/objects/User.java`
+2. **XML Mapping** — e.g. `src/main/resources/com/example/objects/User.map.xml`
+
+#### Example: Generated POJO
+
+For a table `users` with columns `id INT AUTO_INCREMENT`, `username VARCHAR(50)`, `email VARCHAR(100)`, `created_at DATETIME`:
+
+```java
+package com.example.objects;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import org.tinystruct.data.component.AbstractData;
+import org.tinystruct.data.component.Row;
+
+public class User extends AbstractData implements Serializable {
+    private static final long serialVersionUID = ...L;
+    private String username;
+    private String email;
+    private LocalDateTime createdAt;
+
+    public Integer getId() {
+        return Integer.parseInt(this.Id.toString());
+    }
+
+    public void setUsername(String username) {
+        this.username = this.setFieldAsString("username", username);
+    }
+
+    public String getUsername() {
+        return this.username;
+    }
+
+    public void setEmail(String email) {
+        this.email = this.setFieldAsString("email", email);
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = this.setFieldAsLocalDateTime("createdAt", createdAt);
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
+    }
+
+    @Override
+    public void setData(Row row) {
+        if(row.getFieldInfo("id") != null)
+            this.setId(row.getFieldInfo("id").intValue());
+        if(row.getFieldInfo("username") != null)
+            this.setUsername(row.getFieldInfo("username").stringValue());
+        if(row.getFieldInfo("email") != null)
+            this.setEmail(row.getFieldInfo("email").stringValue());
+        if(row.getFieldInfo("created_at") != null)
+            this.setCreatedAt(row.getFieldInfo("created_at").localDateTimeValue());
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder buffer = new StringBuilder();
+        buffer.append("{");
+        buffer.append("\"Id\":" + this.getId());
+        buffer.append(",\"username\":\"" + this.getUsername() + "\"");
+        buffer.append(",\"email\":\"" + this.getEmail() + "\"");
+        buffer.append(",\"createdAt\":\"" + this.getCreatedAt() + "\"");
+        buffer.append("}");
+        return buffer.toString();
+    }
+}
+```
+
+#### Example: Generated XML Mapping
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping>
+    <class name="User" table="users">
+        <id name="Id" column="id" increment="true" generate="false" length="11" type="INT"/>
+        <property name="username" column="username" length="50" type="VARCHAR"/>
+        <property name="email" column="email" length="100" type="VARCHAR"/>
+        <property name="createdAt" column="created_at" length="0" type="DATETIME"/>
+    </class>
+</mapping>
+```
+
+### Using the Generated Code
+
+The generated classes extend `AbstractData`, so they integrate directly with tinystruct's ORM:
+
+```java
+// Create
+User user = new User();
+user.setUsername("john");
+user.setEmail("john@example.com");
+user.setCreatedAt(LocalDateTime.now());
+user.append();
+
+// Read
+User found = new User();
+found.setId(1);
+found.findOneById();
+
+// Update
+found.setEmail("newemail@example.com");
+found.update();
+
+// Delete
+found.delete();
+```
+
 ## Best Practices
 
 1. **Connection Management**: Always close your database connections when done.

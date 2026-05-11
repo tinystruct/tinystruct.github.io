@@ -9,6 +9,7 @@
 * [数据库集成](database.md)
 * [高级特性](advanced-features.md)
 * [最佳实践](best-practices.md)
+* [1.7.23 新特性](whats-new-1.7.23.md)
 
 ## API 参考
 * [Action API](api/action.md)
