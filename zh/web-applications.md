@@ -38,7 +38,7 @@ Tinystruct 使用智能的模式匹配系统进行路由：
 
 ### HTTP 特定方法操作
 
-1.7.21 版本新增功能，您可以使用 `mode` 参数指定操作响应的 HTTP 方法：
+1.7.23 版本新增功能，您可以使用 `mode` 参数指定操作响应的 HTTP 方法：
 
 ```java
 import org.tinystruct.system.annotation.Action.Mode;

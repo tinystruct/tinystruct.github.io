@@ -38,7 +38,7 @@ The framework automatically routes requests to the appropriate method based on t
 
 ### HTTP Method-Specific Actions
 
-New in version 1.7.21, you can specify which HTTP methods an action responds to using the `mode` parameter:
+New in version 1.7.23, you can specify which HTTP methods an action responds to using the `mode` parameter:
 
 ```java
 import org.tinystruct.system.annotation.Action.Mode;
