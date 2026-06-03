@@ -9,7 +9,7 @@
     <meta name="keywords" content="java, framework, lightweight, command-line, web, applications, tinystruct">
     <meta name="author" content="James ZHOU">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <title>tinystruct framework - v1.7.23</title>
+    <title>tinystruct framework - v1.7.25</title>
 
     <!-- Styles -->
     <link rel="stylesheet" href="assets/css/style.css">
@@ -82,7 +82,7 @@
                     <button class="menu-toggle" onclick="toggleSidebar()">
                         <ion-icon name="menu-outline"></ion-icon>
                     </button>
-                    <div class="version-badge">v1.7.23</div>
+                    <div class="version-badge">v1.7.25</div>
                 </div>
                 <div class="header-actions">
                     <button class="lang-switch" title="Switch Language" onclick="toggleLanguage()">
@@ -160,6 +160,7 @@
                     <pre><code class="language-java">package com.example;
 
 import org.tinystruct.AbstractApplication;
+import org.tinystruct.data.component.Builder;
 import org.tinystruct.system.annotation.Action;
 
 public class HelloApp extends AbstractApplication {
@@ -168,22 +169,24 @@ public class HelloApp extends AbstractApplication {
     public String hello() {
         return "Hello, World!";
     }
-    
+
     @Action("users")
-    public User getUser(String id) {
-        return userService.findById(id);
+    public Builder getUser(String id) {
+    //  userService.findById(id);
+        return new Builder();
     }
 
     @Override
     public void init() {
-        // TODO Auto-generated method stub
+        this.setTemplateRequired(false);
     }
 
     @Override
     public String version() {
         return "1.0";
     }
-}</code></pre>
+}
+</code></pre>
                 </div>
             </div>
 
@@ -438,7 +441,7 @@ public class HelloApp extends AbstractApplication {
         const commands = [
             "$ bin/dispatcher --version",
             "  _/  '         _ _/  _     _ _/",
-            "  /  /  /) (/ _)  /  /  (/ (  /  1.7.23",
+            "  /  /  /) (/ _)  /  /  (/ (  /  1.7.25",
             "           /",
             " ",
             "$ bin/dispatcher --help",
@@ -472,7 +475,7 @@ public class HelloApp extends AbstractApplication {
             "# bin/dispatcher start --import org.tinystruct.system.NettyHttpServer --server-port 777",
             " ",
             "  _/  '         _ _/  _     _ _/",
-            "  /  /  /) (/ _)  /  /  (/ (  /  1.7.23",
+            "  /  /  /) (/ _)  /  /  (/ (  /  1.7.25",
             "           /",
             " ",
             `${new Date().toLocaleString()} org.tinystruct.system.NettyHttpServer start`,

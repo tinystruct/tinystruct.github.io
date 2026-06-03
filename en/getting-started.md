@@ -29,7 +29,7 @@ Add the tinystruct dependency to your project's `pom.xml` file:
 <dependency>
     <groupId>org.tinystruct</groupId>
     <artifactId>tinystruct</artifactId>
-    <version>1.7.23</version>
+    <version>1.7.25</version>
     <classifier>jar-with-dependencies</classifier>
 </dependency>
 ```

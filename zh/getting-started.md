@@ -27,7 +27,7 @@ https://github.com/tinystruct/tinystruct-archetype
 <dependency>
     <groupId>org.tinystruct</groupId>
     <artifactId>tinystruct</artifactId>
-    <version>1.7.23</version>
+    <version>1.7.25</version>
     <classifier>jar-with-dependencies</classifier>
 </dependency>
 ```
