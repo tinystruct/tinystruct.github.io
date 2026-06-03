@@ -170,10 +170,16 @@ public class HelloApp extends AbstractApplication {
         return "Hello, World!";
     }
 
-    @Action("users")
+    @Action("user")
     public Builder getUser(String id) {
     //  userService.findById(id);
         return new Builder();
+    }
+
+    @Action("users")
+    public Builders getUsers() {
+    //  userService.findAll();
+        return new Builders();
     }
 
     @Override
