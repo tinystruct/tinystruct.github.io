@@ -472,21 +472,18 @@ public class HelloApp extends AbstractApplication {
             "$ bin/dispatcher say --words Hello --import tinystruct.examples.example",
             "Hello",
             " ",
-            "# bin/dispatcher start --import org.tinystruct.system.NettyHttpServer --server-port 777",
+            "# bin/dispatcher start --import org.tinystruct.system.HttpServer --server-port 777",
             " ",
             "  _/  '         _ _/  _     _ _/",
             "  /  /  /) (/ _)  /  /  (/ (  /  1.7.25",
             "           /",
             " ",
-            `${new Date().toLocaleString()} org.tinystruct.system.NettyHttpServer start`,
-            "INFO: Netty server (777) startup in 30 ms"
+            `${new Date().toLocaleString()} org.tinystruct.system.HttpServer start`,
+            "INFO: Http server (777) startup in 30 ms"
         ];
 
         const outputMain = document.getElementById('output-main');
-        const cursorMain = document.getElementById('cursor-main');
-
         let i = 0;
-
         function typeCommands() {
             if (i < commands.length) {
                 const line = commands[i];
