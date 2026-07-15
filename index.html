@@ -222,7 +222,7 @@ public class HelloApp extends AbstractApplication {
                     <ion-icon name="server-outline" size="large"></ion-icon>
                 </div>
                 <h4>Multiple Servers</h4>
-                <p>HttpServer is the built-in default, but also supports Tomcat, Netty HTTP server, and Undertow.</p>
+                <p>HttpServer is the built-in default, but also supports <a href="https://github.com/tinystruct/tinystruct-tomcat-server" target="_blank">Tomcat</a>, <a href="https://github.com/tinystruct/tinystruct-netty-http-server" target="_blank">Netty</a> HTTP server, and <a href="https://github.com/tinystruct/tinystruct-undertow-server" target="_blank">Undertow</a>.</p>
             </div>
 
             <div class="feature-item">
@@ -325,7 +325,7 @@ public class HelloApp extends AbstractApplication {
                     'unified': '统一架构',
                     'unified-desc': '只需编写一次逻辑，即可同时作为命令行接口和 Web API 发布。',
                     'servers': '多服务器支持',
-                    'servers-desc': '默认内置 HttpServer，同时也支持 Tomcat、Netty HTTP server 和 Undertow。',
+                    'servers-desc': '默认内置 HttpServer，同时也支持 <a href="https://github.com/tinystruct/tinystruct-tomcat-server" target="_blank">Tomcat</a>、<a href="https://github.com/tinystruct/tinystruct-netty-http-server" target="_blank">Netty</a> HTTP server 和 <a href="https://github.com/tinystruct/tinystruct-undertow-server" target="_blank">Undertow</a>。',
                     'ai': 'AI 就绪 (MCP)',
                     'ai-desc': '原生集成模型上下文协议 (MCP)，用于构建下一代 AI 应用程序。',
                     'sse': '实时 SSE',
@@ -352,7 +352,7 @@ public class HelloApp extends AbstractApplication {
                     'unified': 'Unified Architecture',
                     'unified-desc': 'Write your logic once and expose it as both a Command Line Interface and a Web API instantly.',
                     'servers': 'Multiple Servers',
-                    'servers-desc': 'HttpServer is the built-in default, but also supports Tomcat, Netty HTTP server, and Undertow.',
+                    'servers-desc': 'HttpServer is the built-in default, but also supports <a href="https://github.com/tinystruct/tinystruct-tomcat-server" target="_blank">Tomcat</a>, <a href="https://github.com/tinystruct/tinystruct-netty-http-server" target="_blank">Netty</a> HTTP server, and <a href="https://github.com/tinystruct/tinystruct-undertow-server" target="_blank">Undertow</a>.',
                     'ai': 'AI Ready (MCP)',
                     'ai-desc': 'Native integration with Model Context Protocol for building next-gen AI applications.',
                     'sse': 'Real-time SSE',
@@ -392,7 +392,7 @@ public class HelloApp extends AbstractApplication {
             featureItems.forEach((item, index) => {
                 const key = keys[index];
                 item.querySelector('h4').textContent = t['features'][key];
-                item.querySelector('p').textContent = t['features'][key + '-desc'];
+                item.querySelector('p').innerHTML = t['features'][key + '-desc'];
             });
 
             // Update Perf Card
