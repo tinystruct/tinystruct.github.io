@@ -117,35 +117,84 @@
         <!-- Content Grid -->
         <div class="content-wrapper">
 
-            <!-- Performance Card -->
-            <div class="card perf-card">
-                <h3>High Performance</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 2rem;">
-                    Engineered for speed with minimal overhead.
-                    Handles high-throughput workloads with ease.
-                </p>
+            <div class="left-column" style="display: flex; flex-direction: column; gap: 2rem;">
+                <!-- Performance Card -->
+                <div class="card perf-card">
+                    <h3>High Performance</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                        Engineered for speed with minimal overhead.
+                        Handles high-throughput workloads with ease.
+                    </p>
 
-                <div class="perf-chart">
-                    <!-- Bars are purely decorative CSS -->
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div> <!-- Target -->
-                    <div class="bar"></div>
-                    <div class="bar"></div>
+                    <div class="perf-chart">
+                        <!-- Bars are purely decorative CSS -->
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div> <!-- Target -->
+                        <div class="bar"></div>
+                        <div class="bar"></div>
 
-                    <div class="perf-stat">
-                        <div class="perf-value">86,000+</div>
-                        <div class="perf-label">Requests / Second</div>
+                        <div class="perf-stat">
+                            <div class="perf-value">86,000+</div>
+                            <div class="perf-label">Requests / Second</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Code Snippet Card: HelloApp -->
+                <div class="card code-card" id="hello-app-card">
+                    <h3>Simple & Elegant</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        No main() method required. Just pure logic.
+                    </p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="dots">
+                                <span class="dot red"></span>
+                                <span class="dot yellow"></span>
+                                <span class="dot green"></span>
+                            </div>
+                            <span class="language">JAVA</span>
+                        </div>
+                        <pre><code class="language-java">package com.example;
+
+import org.tinystruct.AbstractApplication;
+import org.tinystruct.data.component.Builder;
+import org.tinystruct.data.component.Builders;
+import org.tinystruct.system.annotation.Action;
+
+public class HelloApp extends AbstractApplication {
+    @Action("hello")
+    public String hello() {
+        return "Hello, World!";
+    }
+
+    @Action("user")
+    public Builder getUser(String id) {
+        // Query from database
+        // ...
+        return new Builder();
+    }
+    
+    @Override
+    public void init() {
+        this.setTemplateRequired(false);
+    }
+    
+    @Override
+    public String version() { return "1.0"; }
+}</code></pre>
                     </div>
                 </div>
             </div>
 
-            <!-- Code Snippet Card -->
-            <div class="card code-card">
-                <h3>Simple & Elegant</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
-                    No main() method required. Just pure logic.
+            <!-- Code Snippet Card: MCP Server -->
+            <div class="card code-card" id="mcp-server-card">
+                <h3 id="mcp-title">AI Ready (MCP)</h3>
+                <p id="mcp-desc" style="color: var(--text-secondary); margin-bottom: 1rem;">
+                    Expose POJOs directly to AI models. No MCPTool subclass required.
                 </p>
 
                 <div class="code-block">
@@ -159,41 +208,29 @@
                     </div>
                     <pre><code class="language-java">package com.example;
 
-import org.tinystruct.AbstractApplication;
-import org.tinystruct.data.component.Builder;
-import org.tinystruct.data.component.Builders;
+import org.tinystruct.mcp.MCPServer;
 import org.tinystruct.system.annotation.Action;
+import org.tinystruct.system.annotation.Argument;
 
-public class HelloApp extends AbstractApplication {
-
-    @Action("hello")
-    public String hello() {
-        return "Hello, World!";
-    }
-
-    @Action("user")
-    public Builder getUser(String id) {
-    //  userService.findById(id);
-        return new Builder();
-    }
-
-    @Action("users")
-    public Builders getUsers() {
-    //  userService.findAll();
-        return new Builders();
-    }
-
+// Run with: bin/dispatcher start --import org.tinystruct.system.HttpServer --import com.example.HelloMCPServer
+public class HelloMCPServer extends MCPServer {
     @Override
     public void init() {
-        this.setTemplateRequired(false);
+        super.init();
+        
+        // Registering a plain object directly — no MCPTool subclass needed
+        this.registerTool(new StringHelper());
     }
-
-    @Override
-    public String version() {
-        return "1.0";
+    
+    public static class StringHelper {
+        @Action(value = "string/uppercase", description = "Convert to uppercase", arguments = {
+            @Argument(key = "text", description = "The text to convert", type = "string")
+        })
+        public String toUpperCase(String text) {
+            return text == null ? null : text.toUpperCase();
+        }
     }
-}
-</code></pre>
+}</code></pre>
                 </div>
             </div>
 
@@ -222,7 +259,11 @@ public class HelloApp extends AbstractApplication {
                     <ion-icon name="server-outline" size="large"></ion-icon>
                 </div>
                 <h4>Multiple Servers</h4>
-                <p>HttpServer is the built-in default, but also supports <a href="https://github.com/tinystruct/tinystruct-tomcat-server" target="_blank">Tomcat</a>, <a href="https://github.com/tinystruct/tinystruct-netty-http-server" target="_blank">Netty</a> HTTP server, and <a href="https://github.com/tinystruct/tinystruct-undertow-server" target="_blank">Undertow</a>.</p>
+                <p>HttpServer is the built-in default, but also supports <a
+                        href="https://github.com/tinystruct/tinystruct-tomcat-server" target="_blank">Tomcat</a>, <a
+                        href="https://github.com/tinystruct/tinystruct-netty-http-server" target="_blank">Netty</a> HTTP
+                    server, and <a href="https://github.com/tinystruct/tinystruct-undertow-server"
+                        target="_blank">Undertow</a>.</p>
             </div>
 
             <div class="feature-item">
@@ -308,9 +349,9 @@ public class HelloApp extends AbstractApplication {
                 document.body.classList.remove('sidebar-open'); // Reset mobile state just in case
             }
         }
-        
+
         // Close sidebar when clicking overlay (Mobile only)
-        document.querySelector('.sidebar-overlay').addEventListener('click', function() {
+        document.querySelector('.sidebar-overlay').addEventListener('click', function () {
             document.body.classList.remove('sidebar-open');
         });
 
@@ -402,11 +443,19 @@ public class HelloApp extends AbstractApplication {
                 '专为速度而设计，开销极小。轻松处理高吞吐量工作负载。';
             document.querySelector('.perf-label').textContent = currentLang === 'en' ? 'Requests / Second' : '请求 / 秒';
 
-            // Update Code Card
-            document.querySelector('.code-card h3').textContent = currentLang === 'en' ? 'Simple & Elegant' : '简单优雅';
-            document.querySelector('.code-card p').textContent = currentLang === 'en' ?
+            // Update Code Cards
+            document.querySelector('#hello-app-card h3').textContent = currentLang === 'en' ? 'Simple & Elegant' : '简单优雅';
+            document.querySelector('#hello-app-card p').textContent = currentLang === 'en' ?
                 'No main() method required. Just pure logic.' :
                 '无需 main() 方法。只需纯粹的逻辑。';
+
+            const mcpTitle = document.querySelector('#mcp-title');
+            if (mcpTitle) {
+                mcpTitle.textContent = currentLang === 'en' ? 'AI Ready (MCP)' : 'AI 就绪 (MCP)';
+                document.querySelector('#mcp-desc').textContent = currentLang === 'en' ?
+                    'Expose POJOs directly to AI models. No MCPTool subclass required.' :
+                    '将普通对象直接暴露给AI模型，无需继承 MCPTool。';
+            }
 
             // Update Sidebar
             const sidebarLinks = document.querySelectorAll('.nav-link');
@@ -499,11 +548,11 @@ public class HelloApp extends AbstractApplication {
                 textDiv.classList.add('fade-in');
                 outputMain.appendChild(textDiv);
                 i++;
-                
+
                 // Auto scroll to bottom
                 const terminal = document.getElementById('terminal-main');
                 terminal.scrollTop = terminal.scrollHeight;
-                
+
                 setTimeout(typeCommands, 100);
             } else {
                 // Keep cursor blinking at the end
