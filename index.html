@@ -222,12 +222,18 @@ public class HelloMCPServer extends MCPServer {
         this.registerTool(new StringHelper());
     }
     
-    public static class StringHelper {
+    public class StringHelper {
         @Action(value = "string/uppercase", description = "Convert to uppercase", arguments = {
             @Argument(key = "text", description = "The text to convert", type = "string")
         })
         public String toUpperCase(String text) {
             return text == null ? null : text.toUpperCase();
+        }
+
+        @Action(value = "string/reverse", description = "Reverse a string")
+        public String reverse() {
+            Object text = getContext().getAttribute("text");
+            return text != null ? new StringBuilder(text.toString()).reverse().toString() : "";
         }
     }
 }</code></pre>
