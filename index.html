@@ -212,7 +212,8 @@ import org.tinystruct.mcp.MCPServer;
 import org.tinystruct.system.annotation.Action;
 import org.tinystruct.system.annotation.Argument;
 
-// Run with: bin/dispatcher start --import org.tinystruct.system.HttpServer --import com.example.HelloMCPServer
+// Run with: bin/dispatcher start --import org.tinystruct.system.HttpServer \
+//                        --import com.example.HelloMCPServer
 public class HelloMCPServer extends MCPServer {
     @Override
     public void init() {
@@ -223,14 +224,18 @@ public class HelloMCPServer extends MCPServer {
     }
     
     public class StringHelper {
-        @Action(value = "string/uppercase", description = "Convert to uppercase", arguments = {
+        @Action(value = "string/uppercase", description = "Convert to uppercase",
+                arguments = {
             @Argument(key = "text", description = "The text to convert", type = "string")
         })
         public String toUpperCase(String text) {
             return text == null ? null : text.toUpperCase();
         }
 
-        @Action(value = "string/reverse", description = "Reverse a string")
+        @Action(value = "string/reverse", description = "Reverse a string",
+                arguments = {
+            @Argument(key = "text", description = "The text to reverse", type = "string")
+        })
         public String reverse() {
             Object text = getContext().getAttribute("text");
             return text != null ? new StringBuilder(text.toString()).reverse().toString() : "";
