@@ -292,6 +292,12 @@ img, video {
     min-width: 0;
 }
 
+.left-column {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+}
+
 /* Cards */
 .card {
     background: var(--card-bg);
@@ -303,6 +309,7 @@ img, video {
     margin-bottom: 2rem;
     min-width: 0;
     width: 100%;
+    max-width: 100%;
 }
 
 .card h3 {
