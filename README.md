@@ -6,16 +6,16 @@ Welcome to the tinystruct framework documentation. This documentation provides c
 
 欢迎查阅 tinystruct 框架文档。本文档为使用和开发 tinystruct 框架提供全面的指导。
 
-## What's New in v1.7.18
+## What's New in v1.7.29
 
-- **Enhanced AI Integration**: Built-in support for AI integration and plugin-based architecture
-- **MCP Server Support**: Integration with Model Context Protocol (MCP) for advanced AI capabilities
-- **Improved Performance**: Handling over 86,000 requests per second with ultra-low latency (~17ms)
-- **HTTP Method-Specific Actions**: Support for HTTP method-specific routing (GET, POST, PUT, DELETE, etc.)
-- **Modern Architecture**: No `main()` method required - start applications directly with CLI commands
-- **Modular Design**: Plugin-based architecture for extensibility
-- **Multiple Server Options**: Support for Netty, Tomcat, and Undertow
-- **SSE Support**: Built-in Server-Sent Events support for real-time applications
+- **Asymmetric RSA & Configurable JWT Security**: RSA public/private key pairs and flexible configuration via `application.properties`
+- **Advanced HTTP Server Security**: Host header filtering (`server.name`), path traversal prevention, and secure cookies
+- **Decoupled Architecture**: Domain-independent `HttpServer` and `SSEPushManager` for seamless multi-domain deployments
+- **Enhanced MCP & AI Support**: Overloaded tool methods, schema merging, idle session watchdogs, and auto-cleanup
+- **ANSI Console Logging**: Modern color-coded console logs with Java 9+ `StackWalker` caller tracing
+- **Configurable HTTP Timeouts**: Custom connect and read timeouts on `URLRequest` and `HTTPHandler`
+- **High Performance**: Handling over 86,000 requests per second with ultra-low latency (~17ms)
+- **Detailed Release Notes**: See [What's New in 1.7.29](en/whats-new-1.7.29.md) ([中文版](zh/whats-new-1.7.29.md))
 
 ## Choose Your Language / 选择语言
 
@@ -28,6 +28,7 @@ Welcome to the tinystruct framework documentation. This documentation provides c
 - [Database Integration](en/database.md)
 - [Advanced Features](en/advanced-features.md)
 - [Best Practices](en/best-practices.md)
+- [What's New in 1.7.29](en/whats-new-1.7.29.md)
 - API Reference
   - [Application API](en/api/application.md)
   - [Action API](en/api/action.md)
@@ -43,6 +44,7 @@ Welcome to the tinystruct framework documentation. This documentation provides c
 - [数据库集成](zh/database.md)
 - [高级特性](zh/advanced-features.md)
 - [最佳实践](zh/best-practices.md)
+- [1.7.29 新特性](zh/whats-new-1.7.29.md)
 - API参考
   - [应用程序 API](zh/api/application.md)
   - [动作 API](zh/api/action.md)
@@ -68,7 +70,7 @@ Add the dependency to your `pom.xml`:
 <dependency>
     <groupId>org.tinystruct</groupId>
     <artifactId>tinystruct</artifactId>
-    <version>1.7.19</version>
+    <version>1.7.29</version>
     <classifier>jar-with-dependencies</classifier>
 </dependency>
 ```

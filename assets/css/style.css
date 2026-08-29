@@ -172,6 +172,83 @@ img, video {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Version / Release Notes nav group */
+.nav-group-toggle {
+    width: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    /* inherits .nav-link styles */
+    justify-content: flex-start;
+}
+
+.nav-group-toggle .nav-chevron {
+    margin-left: auto;
+    margin-right: 0;
+    width: 16px;
+    height: 16px;
+    font-size: 1rem;
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+}
+
+.nav-group.open > .nav-group-toggle .nav-chevron {
+    transform: rotate(90deg);
+}
+
+.nav-submenu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease, opacity 0.25s ease;
+    opacity: 0;
+}
+
+.nav-group.open > .nav-submenu {
+    max-height: 300px;
+    opacity: 1;
+}
+
+.nav-sublink {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 1rem 0.5rem 2.8rem;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 0.4rem;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.nav-sublink:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: var(--sidebar-text-hover);
+}
+
+.version-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    background: rgba(99, 102, 241, 0.3);
+    color: #a5b4fc;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.version-tag.latest {
+    background: rgba(16, 185, 129, 0.25);
+    color: #6ee7b7;
+}
+
 /* Main Content */
 .main-content {
     margin-left: var(--sidebar-width);
@@ -378,6 +455,51 @@ img, video {
     color: #64748b;
     font-size: 0.8rem;
     text-transform: uppercase;
+}
+
+.code-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.copy-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease, background-color 0.2s ease, opacity 0.2s ease, transform 0.15s ease;
+    opacity: 0;
+    line-height: 1;
+}
+
+.code-block:hover .copy-btn,
+.code-block:focus-within .copy-btn {
+    opacity: 1;
+}
+
+.copy-btn:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.copy-btn:active {
+    transform: scale(0.92);
+}
+
+.copy-btn.copied {
+    color: #10b981;
+    opacity: 1;
+}
+
+.copy-btn ion-icon {
+    font-size: 1.1rem;
+    pointer-events: none;
 }
 
 /* Performance Chart Placeholder */

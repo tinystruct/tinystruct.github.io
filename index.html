@@ -9,7 +9,7 @@
     <meta name="keywords" content="java, framework, lightweight, command-line, web, applications, tinystruct">
     <meta name="author" content="James ZHOU">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <title>tinystruct framework - v1.7.28</title>
+    <title>tinystruct framework - v1.7.29</title>
 
     <!-- Styles -->
     <link rel="stylesheet" href="assets/css/style.css">
@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
 </head>
 
-<body>
+<body class="sidebar-closed">
 
     <!-- Sidebar Navigation -->
     <aside class="sidebar">
@@ -56,6 +56,36 @@
                     <span>API Reference</span>
                 </a>
             </li>
+
+            <!-- Release Notes Collapsible Group -->
+            <li class="nav-item nav-group" id="release-notes-group">
+                <button class="nav-link nav-group-toggle" onclick="toggleNavGroup('release-notes-group')" aria-expanded="false">
+                    <ion-icon name="newspaper-outline"></ion-icon>
+                    <span>Release Notes</span>
+                    <ion-icon name="chevron-forward-outline" class="nav-chevron"></ion-icon>
+                </button>
+                <ul class="nav-submenu" id="release-notes-submenu">
+                    <li>
+                        <a href="en/whats-new-1.7.29.html" class="nav-sublink">
+                            <span class="version-tag latest">v1.7.29</span>
+                            <span>Latest</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="en/whats-new-1.7.23.html" class="nav-sublink">
+                            <span class="version-tag">v1.7.23</span>
+                            <span>POJO Generator</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="en/whats-new-1.7.18.html" class="nav-sublink">
+                            <span class="version-tag">v1.7.18</span>
+                            <span>MCP &amp; SSE</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
             <li class="nav-item">
                 <a href="https://github.com/tinystruct/tinystruct" target="_blank" class="nav-link">
                     <ion-icon name="logo-github"></ion-icon>
@@ -82,7 +112,7 @@
                     <button class="menu-toggle" onclick="toggleSidebar()">
                         <ion-icon name="menu-outline"></ion-icon>
                     </button>
-                    <div class="version-badge">v1.7.28</div>
+                    <div class="version-badge">v1.7.29</div>
                 </div>
                 <div class="header-actions">
                     <button class="lang-switch" title="Switch Language" onclick="toggleLanguage()">
@@ -156,7 +186,12 @@
                                 <span class="dot yellow"></span>
                                 <span class="dot green"></span>
                             </div>
-                            <span class="language">JAVA</span>
+                            <div class="code-actions">
+                                <span class="language">JAVA</span>
+                                <button class="copy-btn" title="Copy code" aria-label="Copy code">
+                                    <ion-icon name="copy-outline"></ion-icon>
+                                </button>
+                            </div>
                         </div>
                         <pre><code class="language-java">package com.example;
 
@@ -204,7 +239,12 @@ public class HelloApp extends AbstractApplication {
                             <span class="dot yellow"></span>
                             <span class="dot green"></span>
                         </div>
-                        <span class="language">JAVA</span>
+                        <div class="code-actions">
+                            <span class="language">JAVA</span>
+                            <button class="copy-btn" title="Copy code" aria-label="Copy code">
+                                <ion-icon name="copy-outline"></ion-icon>
+                            </button>
+                        </div>
                     </div>
                     <pre><code class="language-java">package com.example;
 
@@ -361,10 +401,25 @@ public class HelloMCPServer extends MCPServer {
             }
         }
 
+        // Sidebar is hidden by default (sidebar-closed on body) on desktop.
+        // On mobile, the CSS already hides it via transform; ensure no leftover class.
+        if (window.innerWidth < 768) {
+            document.body.classList.remove('sidebar-closed');
+        }
+
         // Close sidebar when clicking overlay (Mobile only)
         document.querySelector('.sidebar-overlay').addEventListener('click', function () {
             document.body.classList.remove('sidebar-open');
         });
+
+        // Collapsible nav group toggle
+        function toggleNavGroup(groupId) {
+            const group = document.getElementById(groupId);
+            if (!group) return;
+            const isOpen = group.classList.toggle('open');
+            const btn = group.querySelector('.nav-group-toggle');
+            if (btn) btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        }
 
         // Language Switcher (Mock implementation for demo)
         const translations = {
@@ -508,7 +563,7 @@ public class HelloMCPServer extends MCPServer {
         const commands = [
             "$ bin/dispatcher --version",
             "  _/  '         _ _/  _     _ _/",
-            "  /  /  /) (/ _)  /  /  (/ (  /  1.7.28",
+            "  /  /  /) (/ _)  /  /  (/ (  /  1.7.29",
             "           /",
             " ",
             "$ bin/dispatcher --help",
@@ -542,7 +597,7 @@ public class HelloMCPServer extends MCPServer {
             "# bin/dispatcher start --import org.tinystruct.system.HttpServer --server-port 777",
             " ",
             "  _/  '         _ _/  _     _ _/",
-            "  /  /  /) (/ _)  /  /  (/ (  /  1.7.28",
+            "  /  /  /) (/ _)  /  /  (/ (  /  1.7.29",
             "           /",
             " ",
             `${new Date().toLocaleString()} org.tinystruct.system.HttpServer start`,
@@ -572,6 +627,61 @@ public class HelloMCPServer extends MCPServer {
 
         // Start typing after a short delay
         setTimeout(typeCommands, 1000);
+
+        // Copy Button Handler for Code Blocks
+        function initCopyButtons() {
+            document.querySelectorAll('.copy-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const codeBlock = btn.closest('.code-block');
+                    if (!codeBlock) return;
+                    const codeEl = codeBlock.querySelector('pre code') || codeBlock.querySelector('pre');
+                    if (!codeEl) return;
+                    const textToCopy = codeEl.innerText || codeEl.textContent;
+
+                    try {
+                        if (navigator.clipboard && window.isSecureContext) {
+                            await navigator.clipboard.writeText(textToCopy);
+                        } else {
+                            const textarea = document.createElement('textarea');
+                            textarea.value = textToCopy;
+                            textarea.style.position = 'fixed';
+                            textarea.style.left = '-999999px';
+                            textarea.style.top = '-999999px';
+                            document.body.appendChild(textarea);
+                            textarea.focus();
+                            textarea.select();
+                            document.execCommand('copy');
+                            textarea.remove();
+                        }
+
+                        btn.classList.add('copied');
+                        const icon = btn.querySelector('ion-icon');
+                        if (icon) {
+                            icon.setAttribute('name', 'checkmark-outline');
+                        }
+                        const originalTitle = btn.getAttribute('title') || 'Copy code';
+                        btn.setAttribute('title', 'Copied!');
+
+                        setTimeout(() => {
+                            btn.classList.remove('copied');
+                            if (icon) {
+                                icon.setAttribute('name', 'copy-outline');
+                            }
+                            btn.setAttribute('title', originalTitle);
+                        }, 2000);
+                    } catch (err) {
+                        console.error('Failed to copy code: ', err);
+                    }
+                });
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initCopyButtons);
+        } else {
+            initCopyButtons();
+        }
     </script>
 </body>
 
