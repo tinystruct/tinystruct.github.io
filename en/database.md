@@ -1,30 +1,38 @@
-# Database Integration in Tinystruct
+﻿# Database Integration in Tinystruct
 
-This guide explains how to integrate and work with databases in Tinystruct applications.
+This guide explains how to integrate and work with databases in Tinystruct applications,
+using the [bible-online](https://github.com/m0ver/bible-online) project as a real-world reference.
 
 ## Supported Databases
 
 Tinystruct provides built-in support for multiple database systems:
 
-- MySQL
 - SQLite
+- MySQL
 - H2
-- Redis
 - Microsoft SQL Server
+- Redis
 
 ## Configuration
 
 ### Database Properties
 
-Configure your database connection in your properties file:
+Configure your database connection in `application.properties`:
 
 ```properties
+# SQLite Configuration (used by bible-online)
+driver=org.sqlite.JDBC
+database.url=jdbc:sqlite:src/main/resources/bible.db
+database.user=
+database.password=
+database.connections.max=1
+
 # MySQL Configuration
-driver=com.mysql.cj.jdbc.Driver
-database.url=jdbc:mysql://localhost:3306/mydb?useSSL=false&serverTimezone=UTC
-database.user=root
-database.password=password
-database.connections.max=10
+# driver=com.mysql.cj.jdbc.Driver
+# database.url=jdbc:mysql://localhost:3306/mydb?useSSL=false&serverTimezone=UTC
+# database.user=root
+# database.password=password
+# database.connections.max=10
 
 # H2 Configuration
 # driver=org.h2.Driver
@@ -32,725 +40,701 @@ database.connections.max=10
 # database.user=sa
 # database.password=
 # database.connections.max=10
-
-# SQLite Configuration
-# driver=org.sqlite.JDBC
-# database.url=jdbc:sqlite:mydb.sqlite
-# database.user=
-# database.password=
-# database.connections.max=10
 ```
+
+> **Tip:** `database.connections.max=1` is correct for an embedded SQLite file. For shared servers like MySQL, set it to `10` or higher.
+
+You can also define a named database profile by wrapping settings in a section header:
+
+```properties
+[database]
+driver=com.mysql.cj.jdbc.Driver
+database.url=jdbc:mysql://localhost:3306/mydb
+database.user=root
+database.password=secret
+database.connections.max=10
+```
+
+---
 
 ## Database Access Approaches
 
-Tinystruct offers several approaches for database access:
+Tinystruct offers two complementary approaches:
 
-1. **DatabaseOperator**: A convenient utility class for database operations
-2. **Direct Repository API**: Using the Repository interface for raw SQL queries and updates
-3. **Object Mapping**: Using mapped Java objects with XML configuration for a more object-oriented approach
+1. **Object Mapping (`AbstractData`)** 鈥?The primary ORM-style approach. Define a model class, an XML mapping file, and call built-in CRUD methods.
+2. **`DatabaseOperator`** 鈥?A lower-level utility for raw SQL, aggregations, or operations spanning multiple tables.
 
-## DatabaseOperator
-
-The `DatabaseOperator` class provides a convenient way to perform database operations without directly managing Repository instances. It handles connection management, statement preparation, and resource cleanup automatically.
-
-### Creating a DatabaseOperator
-
-```java
-// Default constructor - gets connection from ConnectionManager
-DatabaseOperator operator = new DatabaseOperator();
-
-// With specific database
-DatabaseOperator operator = new DatabaseOperator("myDatabase");
-
-// With existing connection
-Connection connection = getConnection();
-DatabaseOperator operator = new DatabaseOperator(connection);
-```
-
-### Executing Queries
-
-```java
-// Simple query without parameters
-ResultSet results = operator.query("SELECT * FROM users");
-
-// Query with parameters (using prepared statement)
-PreparedStatement stmt = operator.preparedStatement("SELECT * FROM users WHERE id = ?", new Object[]{1});
-ResultSet results = operator.executeQuery(stmt);
-
-// Process results
-while (results.next()) {
-    int id = results.getInt("id");
-    String name = results.getString("name");
-    // Process row data
-}
-```
-
-### Executing Updates
-
-```java
-// Simple update without parameters
-int rowsAffected = operator.update("UPDATE users SET status = 'active'");
-
-// Update with parameters
-PreparedStatement stmt = operator.preparedStatement(
-    "UPDATE users SET name = ? WHERE id = ?",
-    new Object[]{"John Doe", 1}
-);
-int rowsAffected = operator.executeUpdate(stmt);
-
-// Execute statement that might be query or update
-boolean isResultSet = operator.execute("CALL some_procedure()");
-```
-
-### Resource Management
-
-```java
-// Using try-with-resources for automatic cleanup
-try (DatabaseOperator operator = new DatabaseOperator()) {
-    ResultSet results = operator.query("SELECT * FROM users");
-    // Process results
-} // Automatically closes ResultSet, PreparedStatement, and returns Connection to pool
-```
-
-### SQL Injection Protection
-
-The DatabaseOperator includes built-in SQL injection detection:
-
-```java
-// SQL injection is checked by default
-DatabaseOperator operator = new DatabaseOperator();
-
-// Disable SQL injection checking (e.g., for CLI tools)
-operator.disableSafeCheck();
-```
-
-## Repository API
-
-Tinystruct also uses the Repository pattern for direct database operations. The Repository interface provides methods for executing queries and updates.
-
-### Creating a Repository
-
-```java
-// Create a MySQL repository
-Repository repository = Type.MySQL.createRepository();
-
-// Create an H2 repository
-Repository repository = Type.H2.createRepository();
-
-// Create a SQLite repository
-Repository repository = Type.SQLite.createRepository();
-```
-
-### Executing Queries
-
-```java
-@Action("users")
-public String getUser(Integer id, Request request, Response response) {
-    try {
-        // Create a DatabaseOperator instance
-        DatabaseOperator operator = new DatabaseOperator();
-
-        // Execute query with parameter
-        ResultSet results = operator.query("SELECT id, name, email FROM users WHERE id = " + id);
-
-        // Set content type to JSON
-        response.headers().add(Header.CONTENT_TYPE.set("application/json"));
-
-        if (!results.next()) {
-            // Create error response
-            Builder builder = new Builder();
-            builder.put("error", "User not found");
-            return builder.toString();
-        }
-
-        // Create success response
-        Builder builder = new Builder();
-        builder.put("id", results.getInt("id"));
-        builder.put("name", results.getString("name"));
-        builder.put("email", results.getString("email"));
-
-        return builder.toString();
-    } catch (Exception e) {
-        // Set content type to JSON
-        response.headers().add(Header.CONTENT_TYPE.set("application/json"));
-
-        // Create error response
-        Builder builder = new Builder();
-        builder.put("error", e.getMessage());
-        return builder.toString();
-    }
-}
-```
-
-### Executing Updates
-
-```java
-@Action("users/create")
-public String createUser(Request request, Response response) {
-    try {
-        String name = request.getParameter("name");
-        String email = request.getParameter("email");
-
-        if (name == null || email == null) {
-            response.headers().add(Header.CONTENT_TYPE.set("application/json"));
-            Builder builder = new Builder();
-            builder.put("error", "Name and email are required");
-            return builder.toString();
-        }
-
-        // Create a DatabaseOperator instance
-        DatabaseOperator operator = new DatabaseOperator();
-
-        // Execute update with parameters
-        PreparedStatement stmt = operator.preparedStatement(
-            "INSERT INTO users (name, email) VALUES (?, ?)",
-            new Object[]{name, email}
-        );
-        int result = operator.executeUpdate(stmt);
-
-        // Set content type to JSON
-        response.headers().add(Header.CONTENT_TYPE.set("application/json"));
-
-        // Create success response
-        Builder builder = new Builder();
-        builder.put("success", true);
-        builder.put("rowsAffected", result);
-
-        return builder.toString();
-    } catch (Exception e) {
-        // Set content type to JSON
-        response.headers().add(Header.CONTENT_TYPE.set("application/json"));
-
-        // Create error response
-        Builder builder = new Builder();
-        builder.put("error", e.getMessage());
-        return builder.toString();
-    }
-}
-```
-
-### Transactions
-
-Tinystruct provides comprehensive transaction support through the `DatabaseOperator` class.
-
-#### Basic Transaction Usage
-
-```java
-try (DatabaseOperator operator = new DatabaseOperator()) {
-    // Begin transaction
-    operator.beginTransaction();
-
-    try {
-        // Execute database operations
-        PreparedStatement stmt1 = operator.preparedStatement(
-            "INSERT INTO users (name) VALUES (?)",
-            new Object[]{"John"}
-        );
-        operator.executeUpdate(stmt1);
-
-        PreparedStatement stmt2 = operator.preparedStatement(
-            "UPDATE settings SET value = ? WHERE name = ?",
-            new Object[]{"new_value", "setting_name"}
-        );
-        operator.executeUpdate(stmt2);
-
-        // Commit transaction if all operations succeed
-        operator.commitTransaction();
-
-    } catch (Exception e) {
-        // Rollback transaction if any operation fails
-        operator.rollbackTransaction();
-        throw e;
-    }
-}
-```
-
-#### Example: Fund Transfer with Transactions
-
-```java
-@Action("transfer")
-public String transferFunds(Request request, Response response) {
-    int fromAccount = Integer.parseInt(request.getParameter("from"));
-    int toAccount = Integer.parseInt(request.getParameter("to"));
-    double amount = Double.parseDouble(request.getParameter("amount"));
-
-    try (DatabaseOperator operator = new DatabaseOperator()) {
-        // Begin transaction
-        operator.beginTransaction();
-
-        try {
-            // Deduct from source account
-            PreparedStatement stmt1 = operator.preparedStatement(
-                "UPDATE accounts SET balance = balance - ? WHERE id = ? AND balance >= ?",
-                new Object[]{amount, fromAccount, amount}
-            );
-            int result1 = operator.executeUpdate(stmt1);
-
-            if (result1 == 0) {
-                operator.rollbackTransaction();
-
-                response.headers().add(Header.CONTENT_TYPE.set("application/json"));
-                Builder builder = new Builder();
-                builder.put("error", "Insufficient funds");
-                return builder.toString();
-            }
-
-            // Add to destination account
-            PreparedStatement stmt2 = operator.preparedStatement(
-                "UPDATE accounts SET balance = balance + ? WHERE id = ?",
-                new Object[]{amount, toAccount}
-            );
-            int result2 = operator.executeUpdate(stmt2);
-
-            if (result2 == 0) {
-                operator.rollbackTransaction();
-
-                response.headers().add(Header.CONTENT_TYPE.set("application/json"));
-                Builder builder = new Builder();
-                builder.put("error", "Destination account not found");
-                return builder.toString();
-            }
-
-            // Log the transaction
-            PreparedStatement stmt3 = operator.preparedStatement(
-                "INSERT INTO transactions (from_account, to_account, amount, date) VALUES (?, ?, ?, NOW())",
-                new Object[]{fromAccount, toAccount, amount}
-            );
-            operator.executeUpdate(stmt3);
-
-            // Commit the transaction
-            operator.commitTransaction();
-
-            response.headers().add(Header.CONTENT_TYPE.set("application/json"));
-            Builder builder = new Builder();
-            builder.put("success", true);
-            return builder.toString();
-        } catch (Exception e) {
-            // Rollback on error
-            operator.rollbackTransaction();
-            throw e;
-        }
-    } catch (Exception e) {
-        response.headers().add(Header.CONTENT_TYPE.set("application/json"));
-        Builder builder = new Builder();
-        builder.put("error", e.getMessage());
-        return builder.toString();
-    }
-}
-```
-
-#### Using Savepoints
-
-Savepoints allow you to create points within a transaction that you can roll back to without rolling back the entire transaction.
-
-```java
-try (DatabaseOperator operator = new DatabaseOperator()) {
-    // Begin transaction
-    operator.beginTransaction();
-
-    // Execute first operation
-    PreparedStatement stmt1 = operator.preparedStatement(
-        "INSERT INTO users (name) VALUES (?)",
-        new Object[]{"John"}
-    );
-    operator.executeUpdate(stmt1);
-
-    // Create savepoint after first operation
-    Savepoint savepoint = operator.createSavepoint("AFTER_INSERT");
-
-    try {
-        // Execute second operation
-        PreparedStatement stmt2 = operator.preparedStatement(
-            "UPDATE settings SET value = ? WHERE name = ?",
-            new Object[]{"new_value", "setting_name"}
-        );
-        operator.executeUpdate(stmt2);
-    } catch (Exception e) {
-        // If second operation fails, roll back to savepoint
-        operator.rollbackTransaction(savepoint);
-
-        // Try alternative operation
-        PreparedStatement altStmt = operator.preparedStatement(
-            "INSERT INTO logs (message) VALUES (?)",
-            new Object[]{"Operation failed"}
-        );
-        operator.executeUpdate(altStmt);
-    }
-
-    // Commit transaction
-    operator.commitTransaction();
-}
-```
-
-#### Transaction Methods
-
-The `DatabaseOperator` class provides the following transaction-related methods:
-
-- `beginTransaction()`: Begins a new transaction
-- `commitTransaction()`: Commits the current transaction
-- `rollbackTransaction()`: Rolls back the entire transaction
-- `rollbackTransaction(Savepoint)`: Rolls back to a specific savepoint
-- `createSavepoint(String)`: Creates a named savepoint
-- `releaseSavepoint(Savepoint)`: Releases a savepoint
-- `isInTransaction()`: Checks if a transaction is active
-
-#### Transaction Best Practices
-
-1. Always use try-with-resources to ensure proper closure of the `DatabaseOperator`
-2. Wrap transaction operations in a try-catch block
-3. Always commit or rollback transactions explicitly
-4. Use savepoints for complex operations where partial rollbacks might be needed
-5. Keep transactions as short as possible to avoid locking resources for extended periods
-6. Handle exceptions appropriately, ensuring transactions are rolled back on errors
-
-Note: If a `DatabaseOperator` with an active transaction is closed without explicitly committing or rolling back the transaction, the transaction will be automatically rolled back to ensure data integrity.
+---
 
 ## Object Mapping Approach
 
-Tinystruct also supports an object-oriented approach to database access using Java objects mapped to database tables via XML configuration files.
+This is the **recommended approach** for working with database entities. It combines a Java POJO with an XML mapping file to provide transparent CRUD operations.
 
 ### 1. Define a Model Class
 
-Create a Java class that represents your database entity:
+Extend `AbstractData` and use `setFieldAs*` helper methods in every setter. These helpers register the field with the ORM so `append()`, `update()`, and `delete()` know what to persist.
 
 ```java
 package custom.objects;
 
-import org.tinystruct.data.component.AbstractData;
-
-public class Book extends AbstractData {
-    private int id;
-    private String name;
-    private String author;
-    private String content;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-}
-```
-
-### 2. Create an XML Mapping File
-
-Create an XML file that maps the Java class to a database table. Place this file in the resources directory with a path that matches the package structure of your model class:
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<mapping>
-    <class name="custom.objects.Book" table="books">
-        <property name="id" column="id" type="int" identifier="true"/>
-        <property name="name" column="name" type="string"/>
-        <property name="author" column="author" type="string"/>
-        <property name="content" column="content" type="string"/>
-    </class>
-</mapping>
-```
-
-### 3. Using the Mapped Object
-
-```java
-@Action("books")
-public String getBooks(Request request, Response response) {
-    try {
-        // Create a new Book instance
-        Book book = new Book();
-
-        // Find all books
-        List<Book> books = book.findAll();
-
-        // Set content type to JSON
-        response.headers().add(Header.CONTENT_TYPE.set("application/json"));
-
-        // Create JSON response
-        Builder builder = new Builder();
-        builder.put("books", books);
-
-        return builder.toString();
-    } catch (Exception e) {
-        // Handle error
-        response.setStatus(ResponseStatus.INTERNAL_SERVER_ERROR);
-
-        Builder builder = new Builder();
-        builder.put("error", e.getMessage());
-
-        return builder.toString();
-    }
-}
-
-@Action("books")
-public String getBook(Integer id, Request request, Response response) {
-    try {
-        // Create a new Book instance
-        Book book = new Book();
-
-        // Set the ID to search for
-        book.setId(id);
-
-        // Find the book by ID
-        book.findOneById();
-
-        // Set content type to JSON
-        response.headers().add(Header.CONTENT_TYPE.set("application/json"));
-
-        // Create JSON response
-        Builder builder = new Builder();
-        builder.put("book", book);
-
-        return builder.toString();
-    } catch (Exception e) {
-        // Handle error
-        response.setStatus(ResponseStatus.INTERNAL_SERVER_ERROR);
-
-        Builder builder = new Builder();
-        builder.put("error", e.getMessage());
-
-        return builder.toString();
-    }
-}
-```
-
-### 4. CRUD Operations
-
-```java
-// Create a new book
-Book newBook = new Book();
-newBook.setName("The Great Gatsby");
-newBook.setAuthor("F. Scott Fitzgerald");
-newBook.setContent("In my younger and more vulnerable years...");
-newBook.append(); // Insert a new record into database
-
-// Find a book by ID
-Book book = new Book();
-book.setId(1);
-book.findOneById(); // Find by ID
-
-// Update a book
-book.setName("Updated Title");
-book.update();
-
-// Delete a book
-book.delete(); // Delete the record
-
-// Find all books
-List<Book> allBooks = book.findAll();
-
-// Find books with conditions
-List<Book> books = book.findWhere("author = ?", "F. Scott Fitzgerald");
-```
-
-### Important Note on Data Operations
-
-In the tinystruct framework, there are distinct methods for different database operations:
-
-- `append()`: Use this method specifically for inserting new records into the database.
-- `update()`: Use this method specifically for updating existing records in the database.
-- `save()`: This method determines whether to insert or update based on whether the record exists. It's a convenience method that internally calls either `append()` or `update()` as appropriate.
-
-For clarity and precise control, it's recommended to use `append()` for inserts and `update()` for updates rather than relying on `save()`.
-
-## Built-in POJO Generator
-
-Tinystruct includes a built-in code generator that creates POJO classes and XML mapping files directly from your database schema. The generator supports **MySQL**, **MSSQL**, **SQLite**, and **H2** databases.
-
-### Running the Generator
-
-Use the `generate` CLI command to invoke the generator:
-
-```bash
-# Interactive mode — the generator will prompt for table names and output path
-bin/dispatcher generate
-
-# Non-interactive — specify tables directly
-bin/dispatcher generate --tables users
-
-# Multiple tables at once (semicolon-delimited)
-bin/dispatcher generate --tables "users;orders;products"
-```
-
-The interactive prompts will ask for:
-1. **Table name(s)** — semicolon-delimited (e.g. `users;orders`)
-2. **Base path** — where to place Java files (default: auto-detected from your project's package structure)
-
-### Automatic Package Imports
-
-The generator **automatically detects** the Java types required by your table columns and adds the correct import statements to the generated POJO. You do not need to specify any packages manually.
-
-The following type mappings are handled automatically:
-
-| SQL Column Type                        | Java Type         | Import                      |
-|----------------------------------------|-------------------|-----------------------------|
-| `DATETIME`, `TIMESTAMP`, `DATETIME2`   | `LocalDateTime`   | `java.time.LocalDateTime`   |
-| `DATE`                                 | `Date`            | `java.util.Date`            |
-| `TIMESTAMP` (explicit)                 | `Timestamp`       | `java.sql.Timestamp`        |
-| `TIME`                                 | `Time`            | `java.sql.Time`             |
-| `VARCHAR`, `CHAR`, `TEXT`              | `String`          | *(built-in)*                |
-| `INT`, `SMALLINT`, `TINYINT`           | `int`             | *(built-in)*                |
-| `BIGINT`                               | `long`            | *(built-in)*                |
-| `FLOAT`                                | `float`           | *(built-in)*                |
-| `DOUBLE`                               | `double`          | *(built-in)*                |
-| `BLOB`, `BINARY`, `VARBINARY`          | `byte[]`          | *(built-in)*                |
-
-### Generated Output
-
-For each table, the generator produces two files:
-
-1. **Java POJO** — e.g. `src/main/java/com/example/objects/User.java`
-2. **XML Mapping** — e.g. `src/main/resources/com/example/objects/User.map.xml`
-
-#### Example: Generated POJO
-
-For a table `users` with columns `id INT AUTO_INCREMENT`, `username VARCHAR(50)`, `email VARCHAR(100)`, `created_at DATETIME`:
-
-```java
-package com.example.objects;
-
-import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.Date;
 import org.tinystruct.data.component.AbstractData;
 import org.tinystruct.data.component.Row;
 
-public class User extends AbstractData implements Serializable {
-    private static final long serialVersionUID = ...L;
-    private String username;
+public class User extends AbstractData {
     private String email;
-    private LocalDateTime createdAt;
+    private String username;
+    private String password;
+    private String nickname;
+    private int gender;
+    private String firstName;
+    private String lastName;
+    private String country;
+    private String city;
+    private Date lastloginTime;
+    private Date registrationTime;
+    private boolean status;
 
-    public Integer getId() {
-        return Integer.parseInt(this.Id.toString());
+    // Returns the auto-generated UUID string
+    public String getId() {
+        return String.valueOf(this.Id);
     }
+
+    // Setters MUST call setFieldAs* to register the value with the ORM
+    public void setEmail(String email) {
+        this.email = this.setFieldAsString("email", email);
+    }
+    public String getEmail() { return this.email; }
 
     public void setUsername(String username) {
         this.username = this.setFieldAsString("username", username);
     }
+    public String getUsername() { return this.username; }
 
-    public String getUsername() {
-        return this.username;
+    public void setPassword(String password) {
+        this.password = this.setFieldAsString("password", password);
     }
+    public String getPassword() { return this.password; }
 
-    public void setEmail(String email) {
-        this.email = this.setFieldAsString("email", email);
+    public void setNickname(String nickname) {
+        this.nickname = this.setFieldAsString("nickname", nickname);
     }
+    public String getNickname() { return this.nickname; }
 
-    public String getEmail() {
-        return this.email;
+    public void setGender(int gender) {
+        this.gender = this.setFieldAsInt("gender", gender);
     }
+    public int getGender() { return this.gender; }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = this.setFieldAsLocalDateTime("createdAt", createdAt);
+    public void setFirstName(String firstName) {
+        this.firstName = this.setFieldAsString("firstName", firstName);
     }
+    public String getFirstName() { return this.firstName; }
 
-    public LocalDateTime getCreatedAt() {
-        return this.createdAt;
+    public void setLastName(String lastName) {
+        this.lastName = this.setFieldAsString("lastName", lastName);
     }
+    public String getLastName() { return this.lastName; }
 
+    public void setCountry(String country) {
+        this.country = this.setFieldAsString("country", country);
+    }
+    public String getCountry() { return this.country; }
+
+    public void setCity(String city) {
+        this.city = this.setFieldAsString("city", city);
+    }
+    public String getCity() { return this.city; }
+
+    public void setLastloginTime(Date lastloginTime) {
+        this.lastloginTime = this.setFieldAsDate("lastloginTime", lastloginTime);
+    }
+    public Date getLastloginTime() { return this.lastloginTime; }
+
+    public void setRegistrationTime(Date registrationTime) {
+        this.registrationTime = this.setFieldAsDate("registrationTime", registrationTime);
+    }
+    public Date getRegistrationTime() { return this.registrationTime; }
+
+    public void setStatus(boolean status) {
+        this.status = this.setFieldAsBoolean("status", status);
+    }
+    public boolean getStatus() { return this.status; }
+
+    // setData() maps database column names (snake_case) to Java fields
     @Override
     public void setData(Row row) {
-        if(row.getFieldInfo("id") != null)
-            this.setId(row.getFieldInfo("id").intValue());
-        if(row.getFieldInfo("username") != null)
-            this.setUsername(row.getFieldInfo("username").stringValue());
-        if(row.getFieldInfo("email") != null)
+        if (row.getFieldInfo("id") != null)
+            this.setId(row.getFieldInfo("id").stringValue());
+        if (row.getFieldInfo("email") != null)
             this.setEmail(row.getFieldInfo("email").stringValue());
-        if(row.getFieldInfo("created_at") != null)
-            this.setCreatedAt(row.getFieldInfo("created_at").localDateTimeValue());
+        if (row.getFieldInfo("username") != null)
+            this.setUsername(row.getFieldInfo("username").stringValue());
+        if (row.getFieldInfo("password") != null)
+            this.setPassword(row.getFieldInfo("password").stringValue());
+        if (row.getFieldInfo("nickname") != null)
+            this.setNickname(row.getFieldInfo("nickname").stringValue());
+        if (row.getFieldInfo("gender") != null)
+            this.setGender(row.getFieldInfo("gender").intValue());
+        if (row.getFieldInfo("first_name") != null)
+            this.setFirstName(row.getFieldInfo("first_name").stringValue());
+        if (row.getFieldInfo("last_name") != null)
+            this.setLastName(row.getFieldInfo("last_name").stringValue());
+        if (row.getFieldInfo("country") != null)
+            this.setCountry(row.getFieldInfo("country").stringValue());
+        if (row.getFieldInfo("city") != null)
+            this.setCity(row.getFieldInfo("city").stringValue());
+        if (row.getFieldInfo("lastlogin_time") != null)
+            this.setLastloginTime(row.getFieldInfo("lastlogin_time").dateValue());
+        if (row.getFieldInfo("registration_time") != null)
+            this.setRegistrationTime(row.getFieldInfo("registration_time").dateValue());
+        if (row.getFieldInfo("status") != null)
+            this.setStatus(row.getFieldInfo("status").booleanValue());
     }
 
     @Override
     public String toString() {
-        StringBuilder buffer = new StringBuilder();
+        StringBuffer buffer = new StringBuffer();
         buffer.append("{");
-        buffer.append("\"Id\":" + this.getId());
-        buffer.append(",\"username\":\"" + this.getUsername() + "\"");
+        buffer.append("\"Id\":\"" + this.getId() + "\"");
         buffer.append(",\"email\":\"" + this.getEmail() + "\"");
-        buffer.append(",\"createdAt\":\"" + this.getCreatedAt() + "\"");
+        buffer.append(",\"username\":\"" + this.getUsername() + "\"");
+        buffer.append(",\"nickname\":\"" + this.getNickname() + "\"");
+        buffer.append(",\"gender\":" + this.getGender());
+        buffer.append(",\"firstName\":\"" + this.getFirstName() + "\"");
+        buffer.append(",\"lastName\":\"" + this.getLastName() + "\"");
+        buffer.append(",\"country\":\"" + this.getCountry() + "\"");
+        buffer.append(",\"city\":\"" + this.getCity() + "\"");
+        buffer.append(",\"lastloginTime\":\"" + this.getLastloginTime() + "\"");
+        buffer.append(",\"registrationTime\":\"" + this.getRegistrationTime() + "\"");
+        buffer.append(",\"status\":" + this.getStatus());
         buffer.append("}");
         return buffer.toString();
     }
 }
 ```
 
-#### Example: Generated XML Mapping
+#### Available `setFieldAs*` Methods
+
+| Method | Java Type | XML `type` |
+|---|---|---|
+| `setFieldAsString(name, value)` | `String` | `varchar`, `longtext` |
+| `setFieldAsInt(name, value)` | `int` | `int` |
+| `setFieldAsDate(name, value)` | `java.util.Date` | `datetime` |
+| `setFieldAsBoolean(name, value)` | `boolean` | `bit` |
+| `setFieldAsLocalDateTime(name, value)` | `LocalDateTime` | `DATETIME` |
+
+### 2. Create an XML Mapping File
+
+Place the file in `src/main/resources` under a path mirroring your Java package. For `custom.objects.User` the file goes at:
+
+```
+src/main/resources/custom/objects/User.map.xml
+```
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
+
 <mapping>
-    <class name="User" table="users">
-        <id name="Id" column="id" increment="true" generate="false" length="11" type="INT"/>
-        <property name="username" column="username" length="50" type="VARCHAR"/>
-        <property name="email" column="email" length="100" type="VARCHAR"/>
-        <property name="createdAt" column="created_at" length="0" type="DATETIME"/>
-    </class>
+ <class name="User" table="User">
+  <id name="Id" column="id" increment="false" generate="true" length="50" type="varchar"/>
+  <property name="email"            column="email"             length="50"  type="varchar"/>
+  <property name="username"         column="username"          length="50"  type="varchar"/>
+  <property name="password"         column="password"          length="15"  type="varchar"/>
+  <property name="nickname"         column="nickname"          length="50"  type="varchar"/>
+  <property name="gender"           column="gender"            length="4"   type="int"/>
+  <property name="firstName"        column="first_name"        length="10"  type="varchar"/>
+  <property name="lastName"         column="last_name"         length="10"  type="varchar"/>
+  <property name="country"          column="country"           length="50"  type="varchar"/>
+  <property name="city"             column="city"              length="50"  type="varchar"/>
+  <property name="lastloginTime"    column="lastlogin_time"    length="0"   type="datetime"/>
+  <property name="registrationTime" column="registration_time" length="0"   type="datetime"/>
+  <property name="status"           column="status"            length="1"   type="bit"/>
+ </class>
 </mapping>
 ```
 
-### Using the Generated Code
+#### XML Mapping Key Attributes
 
-The generated classes extend `AbstractData`, so they integrate directly with tinystruct's ORM:
+| Attribute | Meaning |
+|---|---|
+| `name` on `<class>` | Simple class name only (no package prefix) |
+| `table` | Database table name |
+| `name` on `<property>` | Java property name (camelCase) |
+| `column` | Database column name (typically snake_case) |
+| `type` | SQL column type (`varchar`, `int`, `datetime`, `bit`, `longtext`, ...) |
+| `length` | Column length; use `0` for variable-length types (`datetime`, `longtext`) |
+| `increment="false"` on `<id>` | ID is not a numeric auto-increment |
+| `generate="true"` on `<id>` | Framework auto-generates a UUID on `append()` |
+
+> **UUID IDs**: bible-online uses `generate="true"` with `type="varchar"` for all entities. You never set the ID before calling `append()` 鈥?the framework generates a UUID automatically, and you can read it back immediately via `getId()`.
+
+Here are two shorter mapping examples from the project:
+
+**`bible.map.xml`** (verse table):
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mapping>
+ <class name="bible" table="bible">
+  <id name="Id" column="id" increment="false" generate="true" length="48" type="varchar"/>
+  <property name="bookId"    column="book_id"    length="4" type="int"/>
+  <property name="chapterId" column="chapter_id" length="4" type="int"/>
+  <property name="partId"    column="part_id"    length="4" type="int"/>
+  <property name="content"   column="content"    length="0" type="longtext"/>
+ </class>
+</mapping>
+```
+
+**`book.map.xml`**:
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mapping>
+ <class name="book" table="book">
+  <id name="Id" column="id" increment="false" generate="true" length="50" type="varchar"/>
+  <property name="bookId"   column="book_id"   length="4"   type="int"/>
+  <property name="bookName" column="book_name" length="255" type="varchar"/>
+  <property name="language" column="language"  length="10"  type="varchar"/>
+ </class>
+</mapping>
+```
+
+### 3. CRUD Operations
+
+#### Create 鈥?`append()`
 
 ```java
-// Create
 User user = new User();
-user.setUsername("john");
-user.setEmail("john@example.com");
-user.setCreatedAt(LocalDateTime.now());
-user.append();
-
-// Read
-User found = new User();
-found.setId(1);
-found.findOneById();
-
-// Update
-found.setEmail("newemail@example.com");
-found.update();
-
-// Delete
-found.delete();
+user.setNickname(request.getParameter("nickname"));
+user.setEmail(request.getParameter("email"));
+user.setPassword(new Security(user.getEmail())
+        .encodePassword(request.getParameter("password")));
+user.setFirstName(request.getParameter("first-name"));
+user.setLastName(request.getParameter("last-name"));
+user.setGender(Integer.parseInt(request.getParameter("gender")));
+user.setCountry(request.getParameter("country"));
+user.setCity(request.getParameter("city"));
+user.setLastloginTime(new Date());
+user.setRegistrationTime(new Date());
+user.append();  // INSERT; user.getId() now holds the generated UUID
 ```
+
+#### Read 鈥?`findOneById()`
+
+```java
+User user = new User();
+user.setId(someId);   // UUID string
+user.findOneById();   // SELECT ... WHERE id = ?
+System.out.println(user.getEmail());
+```
+
+#### Find with Conditions 鈥?`findWith()`
+
+`findWith` is the primary query method. It accepts a parameterized WHERE / ORDER BY clause and a values array, and returns a `Table` (list of `Row` objects).
+
+```java
+// Find by username
+User u = new User();
+Table list = u.findWith("WHERE username=? AND status='1'",
+        new Object[]{"james"});
+
+if (list.size() > 0) {
+    u.setData(list.get(0));  // hydrate the object from the first row
+}
+```
+
+```java
+// Find books for a specific locale
+book b = new book();
+Table table = b.findWith("WHERE book_id=? AND language=?",
+        new Object[]{bookId, "en_US"});
+
+if (!table.isEmpty()) {
+    b.setData(table.get(0));
+}
+```
+
+#### Find All 鈥?`findAll()`
+
+```java
+book b = new book();
+Table list = b.findAll();
+
+Iterator<Row> iter = list.iterator();
+while (iter.hasNext()) {
+    b.setData(iter.next());
+    System.out.println(b.getBookName() + " (" + b.getLanguage() + ")");
+}
+```
+
+#### Count / Aggregate 鈥?`setRequestFields()`
+
+Use `setRequestFields()` to override the SELECT projection before calling `findWith()`. This is how bible-online checks for duplicate emails and retrieves chapter counts:
+
+```java
+// Guard against duplicate email during registration
+int count = user
+    .setRequestFields("count(*) as p")
+    .findWith("WHERE email=?", new Object[]{email})
+    .get(0).getFieldInfo("p").intValue();
+
+if (count > 0) {
+    throw new ApplicationException("Email already registered.");
+}
+```
+
+```java
+// Get the highest chapter number for a book
+bible bible = new bible();
+int maxChapter = bible
+    .setRequestFields("max(chapter_id) as max_chapter")
+    .findWith("WHERE book_id=?", new Object[]{bookId})
+    .get(0).get(0).get("max_chapter").intValue();
+```
+
+#### Dynamic Table Switching 鈥?`setTableName()`
+
+When one model maps to multiple structurally identical tables (e.g., different Bible translation versions), call `setTableName()` to switch the target at runtime:
+
+```java
+bible bible = new bible();
+bible.setTableName("zh_CN");   // default: Chinese Simplified
+
+if (request.getParameter("version") != null) {
+    switch (request.getParameter("version")) {
+        case "NIV": bible.setTableName("NIV"); break;
+        case "ESV": bible.setTableName("ESV"); break;
+        case "KJV": bible.setTableName("KJV"); break;
+    }
+}
+
+// Query the selected version
+Table verses = bible
+    .setRequestFields("*")
+    .findWith("WHERE book_id=? AND chapter_id=? ORDER BY part_id",
+              new Object[]{bookId, chapterId});
+```
+
+This pattern lets you maintain separate translation tables (`NIV`, `ESV`, `KJV`, `zh_CN`, `zh_TW`, ...) while sharing a single model class and mapping file.
+
+#### Update 鈥?`update()`
+
+```java
+// Record the login timestamp after successful authentication
+user.setLastloginTime(new Date());
+user.update();   // UPDATE ... WHERE id = ?
+```
+
+#### Delete 鈥?`delete()`
+
+```java
+user.delete();   // DELETE FROM ... WHERE id = ?
+```
+
+#### Upsert Pattern (check-then-write)
+
+A common pattern in bible-online is to check for an existing record before deciding to insert or update:
+
+```java
+Log log = new Log();
+Table logs = log.findWith("WHERE user_id=?",
+        new Object[]{currentUser.getId()});
+
+if (!logs.isEmpty()) {
+    log.setData(logs.get(0));
+    log.setDate(new Date());
+    log.update();              // record exists 鈥?update it
+} else {
+    log.setUserId(currentUser.getId());
+    log.setAction("Login Successful");
+    log.setActionType(0);
+    log.setDate(new Date());
+    log.append();              // no record yet 鈥?insert it
+}
+```
+
+### 4. Working with `Table` and `Row`
+
+`findWith()` and `findAll()` return a `Table`, an indexed list of `Row` objects. A `Row` maps column names to `Field` values.
+
+```java
+Table table = bible.findWith(
+    "WHERE book_id=? AND chapter_id=? ORDER BY part_id",
+    new Object[]{bookId, chapterId});
+
+for (int i = 0; i < table.size(); i++) {
+    Row row = table.get(i);
+    bible.setData(row);
+    System.out.println(bible.getContent());
+}
+```
+
+You can also read `Field` values directly without hydrating a model object:
+
+```java
+Row row = table.get(0);
+int     maxChapter = row.getFieldInfo("max_chapter").intValue();
+String  email      = row.getFieldInfo("email").stringValue();
+Date    created    = row.getFieldInfo("registration_time").dateValue();
+boolean active     = row.getFieldInfo("status").booleanValue();
+```
+
+### 5. Multi-Entity Workflow (User Registration)
+
+The following example, drawn from bible-online's `register` application, shows how multiple `AbstractData` objects collaborate in a single workflow:
+
+```java
+public boolean append(Request request) throws ApplicationException {
+    // 1. Build the User object from request parameters
+    User user = new User();
+    user.setNickname(request.getParameter("nickname"));
+    user.setEmail(request.getParameter("email"));
+    user.setPassword(new Security(user.getEmail())
+            .encodePassword(request.getParameter("password")));
+    user.setFirstName(request.getParameter("first-name"));
+    user.setLastName(request.getParameter("last-name"));
+    user.setGender(Integer.parseInt(request.getParameter("gender")));
+    user.setCountry(request.getParameter("country"));
+    user.setCity(request.getParameter("city"));
+    user.setLastloginTime(new Date());
+    user.setRegistrationTime(new Date());
+
+    // 2. Guard against duplicate emails
+    int count = user
+        .setRequestFields("count(*) as p")
+        .findWith("WHERE email=?", new Object[]{user.getEmail()})
+        .get(0).getFieldInfo("p").intValue();
+
+    if (count > 0) {
+        throw new ApplicationException("Email already registered.");
+    }
+
+    // 3. Insert the user record (UUID is generated automatically)
+    user.append();
+
+    // 4. Assign the new user to the default member group
+    Member member = new Member();
+    member.setUserId(user.getId());  // user.getId() returns the new UUID
+    member.setGroupId("386e27c2-5db6-4f63-b28d-68a4adec2fd6");
+    member.append();
+
+    return true;
+}
+```
+
+---
+
+## In-Memory Caching with `Cache`
+
+For read-heavy, rarely-changing data (book metadata, chapter counts), bible-online uses tinystruct's built-in `Cache` singleton to avoid repeated database queries:
+
+```java
+private static final Cache data = Cache.getInstance();
+
+// Try cache before hitting the database
+String cacheKey = "book:" + bookId + ":lang:" + lang;
+book book;
+
+if (data.get(cacheKey) != null) {
+    book = (book) data.get(cacheKey);
+} else {
+    book = new book();
+    Table table = book.findWith("WHERE book_id=? AND language=?",
+            new Object[]{bookId, lang});
+    if (!table.isEmpty()) {
+        book.setData(table.get(0));
+    }
+    data.set(cacheKey, book);  // warm the cache for subsequent requests
+}
+```
+
+The same pattern applies to aggregate results:
+
+```java
+String maxChapterKey = "book:" + bookId + ":max_chapter";
+int maxChapter;
+
+if (data.get(maxChapterKey) != null) {
+    maxChapter = (int) data.get(maxChapterKey);
+} else {
+    maxChapter = bible
+        .setRequestFields("max(chapter_id) as max_chapter")
+        .findWith("WHERE book_id=?", new Object[]{bookId})
+        .get(0).get(0).get("max_chapter").intValue();
+    data.set(maxChapterKey, maxChapter);
+}
+```
+
+Use `Cache` for data that:
+- Is read very frequently
+- Changes rarely within a process lifecycle
+- Is small enough to live safely in heap memory
+
+---
+
+## DatabaseOperator
+
+For raw SQL, multi-table joins, or anything not covered by the object-mapping API, use `DatabaseOperator`.
+
+### Creating a DatabaseOperator
+
+```java
+// Default 鈥?borrows a connection from the ConnectionManager pool
+DatabaseOperator operator = new DatabaseOperator();
+
+// Named profile (matches a [section] in application.properties)
+DatabaseOperator operator = new DatabaseOperator("myDatabase");
+
+// From an existing connection
+DatabaseOperator operator = new DatabaseOperator(connection);
+```
+
+### Executing Queries
+
+```java
+// Parameterized query (always preferred over string concatenation)
+PreparedStatement stmt = operator.preparedStatement(
+    "SELECT id, username, email FROM User WHERE id = ?",
+    new Object[]{userId}
+);
+ResultSet results = operator.executeQuery(stmt);
+
+while (results.next()) {
+    String email = results.getString("email");
+}
+```
+
+### Executing Updates
+
+```java
+PreparedStatement stmt = operator.preparedStatement(
+    "INSERT INTO User (username, email) VALUES (?, ?)",
+    new Object[]{"james", "james@example.com"}
+);
+int rowsAffected = operator.executeUpdate(stmt);
+```
+
+### Resource Management
+
+Always use try-with-resources so the connection is returned to the pool:
+
+```java
+try (DatabaseOperator operator = new DatabaseOperator()) {
+    ResultSet results = operator.query("SELECT * FROM User");
+    // process results
+} // closes ResultSet, PreparedStatement, and releases the connection
+```
+
+### SQL Injection Protection
+
+`DatabaseOperator` checks for injection patterns by default. Disable only for trusted internal tools:
+
+```java
+operator.disableSafeCheck();
+```
+
+### Transactions
+
+```java
+try (DatabaseOperator operator = new DatabaseOperator()) {
+    operator.beginTransaction();
+    try {
+        PreparedStatement s1 = operator.preparedStatement(
+            "UPDATE accounts SET balance = balance - ? WHERE id = ?",
+            new Object[]{amount, fromId}
+        );
+        operator.executeUpdate(s1);
+
+        PreparedStatement s2 = operator.preparedStatement(
+            "UPDATE accounts SET balance = balance + ? WHERE id = ?",
+            new Object[]{amount, toId}
+        );
+        operator.executeUpdate(s2);
+
+        operator.commitTransaction();
+    } catch (Exception e) {
+        operator.rollbackTransaction();
+        throw e;
+    }
+}
+```
+
+#### Transaction Methods
+
+| Method | Description |
+|---|---|
+| `beginTransaction()` | Start a new transaction |
+| `commitTransaction()` | Commit the current transaction |
+| `rollbackTransaction()` | Roll back the entire transaction |
+| `rollbackTransaction(Savepoint)` | Roll back to a specific savepoint |
+| `createSavepoint(String)` | Create a named savepoint |
+| `releaseSavepoint(Savepoint)` | Release a savepoint |
+| `isInTransaction()` | Returns `true` if a transaction is active |
+
+> If a `DatabaseOperator` is closed while a transaction is active, the transaction is **automatically rolled back** to protect data integrity.
+
+---
+
+## Built-in POJO Generator
+
+Tinystruct includes a code generator that produces model classes and XML mapping files directly from your database schema. Supports **MySQL**, **MSSQL**, **SQLite**, and **H2**.
+
+### Running the Generator
+
+```bash
+# Interactive mode
+bin/dispatcher generate
+
+# Non-interactive 鈥?single table
+bin/dispatcher generate --tables users
+
+# Multiple tables (semicolon-delimited)
+bin/dispatcher generate --tables "users;orders;products"
+```
+
+### Automatic Type Mappings
+
+| SQL Column Type | Java Type | `setFieldAs*` Method |
+|---|---|---|
+| `VARCHAR`, `CHAR`, `TEXT` | `String` | `setFieldAsString` |
+| `INT`, `SMALLINT`, `TINYINT` | `int` | `setFieldAsInt` |
+| `BIGINT` | `long` | *(raw field)* |
+| `FLOAT` | `float` | *(raw field)* |
+| `DOUBLE` | `double` | *(raw field)* |
+| `DATETIME`, `TIMESTAMP` | `LocalDateTime` | `setFieldAsLocalDateTime` |
+| `DATE` | `java.util.Date` | `setFieldAsDate` |
+| `BIT`, `BOOLEAN` | `boolean` | `setFieldAsBoolean` |
+| `BLOB`, `BINARY`, `VARBINARY` | `byte[]` | *(raw field)* |
+
+The generator produces two files per table:
+
+1. **Java POJO** 鈥?e.g. `src/main/java/custom/objects/User.java`
+2. **XML Mapping** 鈥?e.g. `src/main/resources/custom/objects/User.map.xml`
+
+---
 
 ## Best Practices
 
-1. **Connection Management**: Always close your database connections when done.
+1. **Always call `setFieldAs*` in every setter.** Without it, the ORM does not know the field needs persisting, and `append()` / `update()` will silently skip it.
 
-2. **Parameterized Queries**: Use parameterized queries to prevent SQL injection.
+2. **Use database column names in `setData()`.** `row.getFieldInfo()` keys must be actual database column names (snake_case), not Java property names.
 
-3. **Transactions**: Use transactions for operations that require atomicity.
+3. **Always use parameterized queries.** Pass values through the `Object[]` parameter of `findWith()` or `preparedStatement()`. Never concatenate user input into SQL strings.
 
-4. **Error Handling**: Implement proper error handling for database operations.
+4. **Cache stable reference data.** Use `Cache.getInstance()` to avoid repeated lookups for rarely-changing data (book lists, chapter counts, locale metadata).
 
-5. **Connection Pooling**: Configure appropriate connection pool settings for your application's needs.
+5. **Use `setTableName()` for versioned tables.** When one model covers multiple structurally identical tables (e.g. Bible translation versions), switch at runtime with `setTableName()`.
 
-6. **Object Mapping**: Use the object mapping approach for cleaner, more maintainable code when working with database entities.
+6. **Use `setRequestFields()` for aggregate queries.** Override the SELECT projection (e.g. `"count(*) as n"`, `"max(chapter_id) as max_chapter"`) before calling `findWith()`.
 
-7. **XML Mapping Files**: Keep your XML mapping files organized in a directory structure that matches your Java package structure.
+7. **UUID IDs are generated automatically.** When `generate="true"` is in the XML mapping, `append()` writes a new UUID into the table and `getId()` returns it immediately. Never set the ID yourself before inserting.
+
+8. **Wrap `DatabaseOperator` in try-with-resources.** This guarantees the connection is returned to the pool even if an exception is thrown.
+
+9. **Match the mapping file path to the Java package.** A class `custom.objects.User` requires its mapping at `custom/objects/User.map.xml` on the classpath root.
+
+---
 
 ## Next Steps
 
