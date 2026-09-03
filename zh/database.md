@@ -1,8 +1,10 @@
-﻿# Tinystruct 鏁版嵁搴撻泦鎴?
-鏈寚鍗椾互 [bible-online](https://github.com/m0ver/bible-online) 椤圭洰涓哄弬鑰冿紝浠嬬粛濡備綍鍦?Tinystruct 搴旂敤绋嬪簭涓泦鎴愬拰浣跨敤鏁版嵁搴撱€?
-## 鏀寔鐨勬暟鎹簱
+# Tinystruct 数据库集成
 
-Tinystruct 鍐呯疆鏀寔浠ヤ笅鏁版嵁搴撶郴缁燂細
+本指南以 [bible-online](https://github.com/m0ver/bible-online) 项目为参考，介绍如何在 Tinystruct 应用程序中集成和使用数据库。
+
+## 支持的数据库
+
+Tinystruct 内置支持以下数据库系统：
 
 - SQLite
 - MySQL
@@ -10,25 +12,28 @@ Tinystruct 鍐呯疆鏀寔浠ヤ笅鏁版嵁搴撶郴缁燂細
 - Microsoft SQL Server
 - Redis
 
-## 閰嶇疆
+## 配置
 
-### 鏁版嵁搴撳睘鎬?
-鍦?`application.properties` 涓厤缃暟鎹簱杩炴帴锛?
+### 数据库属性
+
+在 `application.properties` 中配置数据库连接：
+
 ```properties
-# SQLite 閰嶇疆锛坆ible-online 瀹為檯浣跨敤锛?driver=org.sqlite.JDBC
+# SQLite 配置（bible-online 实际使用）
+driver=org.sqlite.JDBC
 database.url=jdbc:sqlite:src/main/resources/bible.db
 database.user=
 database.password=
 database.connections.max=1
 
-# MySQL 閰嶇疆
+# MySQL 配置
 # driver=com.mysql.cj.jdbc.Driver
 # database.url=jdbc:mysql://localhost:3306/mydb?useSSL=false&serverTimezone=UTC
 # database.user=root
 # database.password=password
 # database.connections.max=10
 
-# H2 閰嶇疆
+# H2 配置
 # driver=org.h2.Driver
 # database.url=jdbc:h2:~/test
 # database.user=sa
@@ -36,8 +41,9 @@ database.connections.max=1
 # database.connections.max=10
 ```
 
-> **鎻愮ず锛?* 宓屽叆寮?SQLite 浣跨敤 `database.connections.max=1` 鍗冲彲锛汳ySQL 绛夊叡浜湇鍔″櫒寤鸿璁剧疆涓?`10` 鎴栨洿楂樸€?
-涔熷彲閫氳繃閰嶇疆鑺傚ご瀹氫箟鍛藉悕鏁版嵁搴撻厤缃細
+> **提示：** 嵌入式 SQLite 使用 `database.connections.max=1` 即可；MySQL 等共享服务器建议设置为 `10` 或更高。
+
+也可通过配置节头定义命名数据库配置：
 
 ```properties
 [database]
@@ -50,16 +56,23 @@ database.connections.max=10
 
 ---
 
-## 鏁版嵁搴撹闂柟寮?
-Tinystruct 鎻愪緵涓ょ浜掕ˉ鐨勬暟鎹簱璁块棶鏂瑰紡锛?
-1. **瀵硅薄鏄犲皠锛坄AbstractData`锛?* 鈥?鎺ㄨ崘鏂瑰紡銆傚畾涔夋ā鍨嬬被鍜?XML 鏄犲皠鏂囦欢锛岃皟鐢ㄥ唴缃?CRUD 鏂规硶銆?2. **`DatabaseOperator`** 鈥?搴曞眰宸ュ叿锛岄€傜敤浜庡師濮?SQL銆佽仛鍚堟煡璇㈡垨璺ㄨ〃鎿嶄綔銆?
+## 数据库访问方式
+
+Tinystruct 提供两种互补的数据库访问方式：
+
+1. **对象映射（`AbstractData`）** - 推荐方式。定义模型类和 XML 映射文件，调用内置 CRUD 方法。
+2. **`DatabaseOperator`** - 底层工具，适用于原始 SQL、聚合查询或跨表操作。
+
 ---
 
-## 瀵硅薄鏄犲皠鏂瑰紡
+## 对象映射方式
 
-杩欐槸鍦?Tinystruct 涓搷浣滄暟鎹簱瀹炰綋鐨?*鎺ㄨ崘鏂瑰紡**銆傚皢 Java POJO 涓?XML 鏄犲皠鏂囦欢缁撳悎锛屾彁渚涢€忔槑鐨?CRUD 鎿嶄綔銆?
-### 1. 瀹氫箟妯″瀷绫?
-妯″瀷绫荤户鎵?`AbstractData`锛屽苟鍦ㄦ瘡涓?setter 涓娇鐢?`setFieldAs*` 杈呭姪鏂规硶銆傝繖浜涙柟娉曡礋璐ｅ皢瀛楁娉ㄥ唽鍒?ORM锛屼娇 `append()`銆乣update()` 鍜?`delete()` 鐭ラ亾鍝簺瀛楁闇€瑕佹寔涔呭寲銆?
+这是在 Tinystruct 中操作数据库实体的**推荐方式**。将 Java POJO 与 XML 映射文件结合，提供透明的 CRUD 操作。
+
+### 1. 定义模型类
+
+模型类继承 `AbstractData`，并在每个 setter 中使用 `setFieldAs*` 辅助方法。这些方法负责将字段注册到 ORM，使 `append()`、`update()` 和 `delete()` 知道哪些字段需要持久化。
+
 ```java
 package custom.objects;
 
@@ -81,11 +94,12 @@ public class User extends AbstractData {
     private Date registrationTime;
     private boolean status;
 
-    // 杩斿洖鑷姩鐢熸垚鐨?UUID 瀛楃涓?    public String getId() {
+    // 返回自动生成的 UUID 字符串
+    public String getId() {
         return String.valueOf(this.Id);
     }
 
-    // setter 蹇呴』璋冪敤 setFieldAs* 灏嗗€兼敞鍐屽埌 ORM
+    // setter 必须调用 setFieldAs* 将值注册到 ORM
     public void setEmail(String email) {
         this.email = this.setFieldAsString("email", email);
     }
@@ -146,7 +160,7 @@ public class User extends AbstractData {
     }
     public boolean getStatus() { return this.status; }
 
-    // setData() 灏嗘暟鎹簱鍒楀悕锛坰nake_case锛夋槧灏勫埌 Java 瀛楁
+    // setData() 将数据库列名（snake_case）映射到 Java 字段
     @Override
     public void setData(Row row) {
         if (row.getFieldInfo("id") != null)
@@ -199,19 +213,19 @@ public class User extends AbstractData {
 }
 ```
 
-#### 鍙敤鐨?`setFieldAs*` 鏂规硶
+#### 可用的 `setFieldAs*` 方法
 
-| 鏂规硶 | Java 绫诲瀷 | XML `type` |
+| 方法 | Java 类型 | XML `type` |
 |---|---|---|
-| `setFieldAsString(name, value)` | `String` | `varchar`銆乣longtext` |
+| `setFieldAsString(name, value)` | `String` | `varchar`、`longtext` |
 | `setFieldAsInt(name, value)` | `int` | `int` |
 | `setFieldAsDate(name, value)` | `java.util.Date` | `datetime` |
 | `setFieldAsBoolean(name, value)` | `boolean` | `bit` |
 | `setFieldAsLocalDateTime(name, value)` | `LocalDateTime` | `DATETIME` |
 
-### 2. 鍒涘缓 XML 鏄犲皠鏂囦欢
+### 2. 创建 XML 映射文件
 
-灏嗘槧灏勬枃浠舵斁鍦?`src/main/resources` 涓嬶紝璺緞涓?Java 鍖呰矾寰勪竴鑷淬€備緥濡?`custom.objects.User` 绫诲搴旓細
+将映射文件放在 `src/main/resources` 下，路径与 Java 包路径一致。例如 `custom.objects.User` 类对应：
 
 ```
 src/main/resources/custom/objects/User.map.xml
@@ -239,21 +253,24 @@ src/main/resources/custom/objects/User.map.xml
 </mapping>
 ```
 
-#### XML 鏄犲皠鍏抽敭灞炴€?
-| 灞炴€?| 鍚箟 |
-|---|---|
-| `<class>` 鐨?`name` | 绠€鍗曠被鍚嶏紙鏃犲寘鍓嶇紑锛?|
-| `table` | 鏁版嵁搴撹〃鍚?|
-| `<property>` 鐨?`name` | Java 灞炴€у悕锛坈amelCase锛?|
-| `column` | 鏁版嵁搴撳垪鍚嶏紙閫氬父涓?snake_case锛?|
-| `type` | SQL 鍒楃被鍨嬶紙`varchar`銆乣int`銆乣datetime`銆乣bit`銆乣longtext` 绛夛級 |
-| `length` | 鍒楅暱搴︼紱`datetime`銆乣longtext` 绛夊彲鍙橀暱绫诲瀷濉?`0` |
-| `<id>` 鐨?`increment="false"` | ID 涓嶆槸鏁板€煎瀷鑷 |
-| `<id>` 鐨?`generate="true"` | 璋冪敤 `append()` 鏃舵鏋惰嚜鍔ㄧ敓鎴?UUID |
+#### XML 映射关键属性
 
-> **UUID 涓婚敭**锛歜ible-online 鎵€鏈夊疄浣撳潎浣跨敤 `generate="true"` + `type="varchar"` 浣滀负涓婚敭銆傝皟鐢?`append()` 鍓嶆棤闇€鎵嬪姩璁剧疆 ID鈥斺€旀鏋惰嚜鍔ㄧ敓鎴?UUID锛屼箣鍚庡彲閫氳繃 `getId()` 璇诲彇銆?
-浠ヤ笅鏄」鐩腑鏇寸畝鍗曠殑鏄犲皠绀轰緥锛?
-**`bible.map.xml`**锛堢粡鏂囪〃锛夛細
+| 属性 | 含义 |
+|---|---|
+| `<class>` 的 `name` | 简单类名（无包前缀） |
+| `table` | 数据库表名 |
+| `<property>` 的 `name` | Java 属性名（camelCase） |
+| `column` | 数据库列名（通常为 snake_case） |
+| `type` | SQL 列类型（`varchar`、`int`、`datetime`、`bit`、`longtext` 等） |
+| `length` | 列长度；`datetime`、`longtext` 等可变长类型填 `0` |
+| `<id>` 的 `increment="false"` | ID 不是数值型自增 |
+| `<id>` 的 `generate="true"` | 调用 `append()` 时框架自动生成 UUID |
+
+> **UUID 主键**：bible-online 所有实体均使用 `generate="true"` + `type="varchar"` 作为主键。调用 `append()` 前无需手动设置 ID - 框架自动生成 UUID，之后可通过 `getId()` 读取。
+
+以下是项目中更简单的映射示例：
+
+**`bible.map.xml`**（经文表）：
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 
@@ -268,7 +285,8 @@ src/main/resources/custom/objects/User.map.xml
 </mapping>
 ```
 
-**`book.map.xml`**锛?```xml
+**`book.map.xml`**：
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 
 <mapping>
@@ -281,12 +299,12 @@ src/main/resources/custom/objects/User.map.xml
 </mapping>
 ```
 
-### 3. CRUD 鎿嶄綔
+### 3. CRUD 操作
 
-#### 鏂板 鈥?`append()`
+#### 新增 - `append()`
 
 ```java
-// 娉ㄥ唽鏂扮敤鎴凤紝UUID 鑷姩鐢熸垚
+// 注册新用户，UUID 自动生成
 User user = new User();
 user.setNickname(request.getParameter("nickname"));
 user.setEmail(request.getParameter("email"));
@@ -299,32 +317,35 @@ user.setCountry(request.getParameter("country"));
 user.setCity(request.getParameter("city"));
 user.setLastloginTime(new Date());
 user.setRegistrationTime(new Date());
-user.append();  // INSERT锛泆ser.getId() 杩斿洖鏂扮敓鎴愮殑 UUID
+user.append();  // INSERT；user.getId() 返回新生成的 UUID
 ```
 
-#### 鏌ヨ 鈥?`findOneById()`
+#### 查询 - `findOneById()`
 
 ```java
 User user = new User();
-user.setId(someId);   // 浼犲叆 UUID 瀛楃涓?user.findOneById();   // SELECT ... WHERE id = ?
+user.setId(someId);   // 传入 UUID 字符串
+user.findOneById();   // SELECT ... WHERE id = ?
 System.out.println(user.getEmail());
 ```
 
-#### 鏉′欢鏌ヨ 鈥?`findWith()`
+#### 条件查询 - `findWith()`
 
-`findWith` 鏄?Tinystruct 鐨勪富瑕佹煡璇㈡柟娉曘€傛帴鍙楀弬鏁板寲鐨?WHERE/ORDER BY 瀛愬彞鍜屽€兼暟缁勶紝杩斿洖 `Table`锛坄Row` 瀵硅薄鐨勫垪琛級銆?
+`findWith` 是 Tinystruct 的主要查询方法。接受参数化的 WHERE/ORDER BY 子句和值数组，返回 `Table`（`Row` 对象的列表）。
+
 ```java
-// 鎸夌敤鎴峰悕鏌ユ壘
+// 按用户名查找
 User u = new User();
 Table list = u.findWith("WHERE username=? AND status='1'",
         new Object[]{"james"});
 
 if (list.size() > 0) {
-    u.setData(list.get(0));  // 鐢ㄧ涓€琛屾暟鎹～鍏呭璞?}
+    u.setData(list.get(0));  // 用第一行数据填充对象
+}
 ```
 
 ```java
-// 鎸夎瑷€鏌ユ壘涔︾洰
+// 按语言查找书目
 book b = new book();
 Table table = b.findWith("WHERE book_id=? AND language=?",
         new Object[]{bookId, "zh_CN"});
@@ -334,7 +355,7 @@ if (!table.isEmpty()) {
 }
 ```
 
-#### 鏌ヨ鍏ㄩ儴 鈥?`findAll()`
+#### 查询全部 - `findAll()`
 
 ```java
 book b = new book();
@@ -347,36 +368,39 @@ while (iter.hasNext()) {
 }
 ```
 
-#### 鑱氬悎鏌ヨ 鈥?`setRequestFields()`
+#### 聚合查询 - `setRequestFields()`
 
-璋冪敤 `findWith()` 鍓嶄娇鐢?`setRequestFields()` 瑕嗙洊 SELECT 鎶曞奖銆俠ible-online 閫氳繃姝ゆ柟寮忔鏌ラ偖绠辨槸鍚﹂噸澶嶅強鑾峰彇鏈€澶х珷鑺傛暟锛?
+调用 `findWith()` 前使用 `setRequestFields()` 覆盖 SELECT 投影。bible-online 通过此方式检查邮箱是否重复及获取最大章节数：
+
 ```java
-// 娉ㄥ唽鍓嶆鏌ラ偖绠辨槸鍚﹀凡瀛樺湪
+// 注册前检查邮箱是否已存在
 int count = user
     .setRequestFields("count(*) as p")
     .findWith("WHERE email=?", new Object[]{email})
     .get(0).getFieldInfo("p").intValue();
 
 if (count > 0) {
-    throw new ApplicationException("閭宸茶娉ㄥ唽銆?);
+    throw new ApplicationException("邮箱已被注册。");
 }
 ```
 
 ```java
-// 鑾峰彇鏌愪功鐨勬渶澶х珷鑺傜紪鍙?bible bible = new bible();
+// 获取某书的最大章节编号
+bible bible = new bible();
 int maxChapter = bible
     .setRequestFields("max(chapter_id) as max_chapter")
     .findWith("WHERE book_id=?", new Object[]{bookId})
     .get(0).get(0).get("max_chapter").intValue();
 ```
 
-#### 鍔ㄦ€佸垏鎹㈣〃 鈥?`setTableName()`
+#### 动态切换表 - `setTableName()`
 
-褰撳悓涓€妯″瀷绫诲搴斿寮犵粨鏋勭浉鍚岀殑琛紙濡備笉鍚岀増鏈殑鍦ｇ粡璇戞枃琛級锛屽湪杩愯鏃惰皟鐢?`setTableName()` 鍒囨崲鐩爣琛細
+当同一模型类对应多张结构相同的表（如不同版本的圣经译文表），在运行时调用 `setTableName()` 切换目标表：
 
 ```java
 bible bible = new bible();
-bible.setTableName("zh_CN");   // 榛樿锛氱畝浣撲腑鏂?
+bible.setTableName("zh_CN");   // 默认：简体中文
+
 if (request.getParameter("version") != null) {
     switch (request.getParameter("version")) {
         case "NIV": bible.setTableName("NIV"); break;
@@ -385,50 +409,56 @@ if (request.getParameter("version") != null) {
     }
 }
 
-// 鏌ヨ鎵€閫夌増鏈殑缁忔枃
+// 查询所选版本的经文
 Table verses = bible
     .setRequestFields("*")
     .findWith("WHERE book_id=? AND chapter_id=? ORDER BY part_id",
               new Object[]{bookId, chapterId});
 ```
 
-姝ゆā寮忎娇鎮ㄥ彲浠ョ淮鎶ゅ寮犵嫭绔嬭瘧鏂囪〃锛坄NIV`銆乣ESV`銆乣KJV`銆乣zh_CN`銆乣zh_TW` 绛夛級锛屽悓鏃跺叡鐢ㄤ竴涓ā鍨嬬被鍜屾槧灏勬枃浠躲€?
-#### 鏇存柊 鈥?`update()`
+此模式使您可以维护多张独立译文表（`NIV`、`ESV`、`KJV`、`zh_CN`、`zh_TW` 等），同时共用一个模型类和映射文件。
+
+#### 更新 - `update()`
 
 ```java
-// 鐧诲綍鎴愬姛鍚庢洿鏂扮櫥褰曟椂闂?user.setLastloginTime(new Date());
+// 登录成功后更新登录时间
+user.setLastloginTime(new Date());
 user.update();   // UPDATE ... WHERE id = ?
 ```
 
-#### 鍒犻櫎 鈥?`delete()`
+#### 删除 - `delete()`
 
 ```java
 user.delete();   // DELETE FROM ... WHERE id = ?
 ```
 
-#### 瀛樺湪鍒欐洿鏂般€佷笉瀛樺湪鍒欐柊澧炴ā寮?
-bible-online 涓父瑙佺殑鍋氭硶鏄厛鏌ヨ璁板綍鏄惁瀛樺湪锛屽啀鍐冲畾鎻掑叆杩樻槸鏇存柊锛?
+#### 存在则更新、不存在则新增模式
+
+bible-online 中常见的做法是先查询记录是否存在，再决定插入还是更新：
+
 ```java
-// 鏇存柊鎴栨柊澧炵櫥褰曟棩蹇?Log log = new Log();
+// 更新或新增登录日志
+Log log = new Log();
 Table logs = log.findWith("WHERE user_id=?",
         new Object[]{currentUser.getId()});
 
 if (!logs.isEmpty()) {
     log.setData(logs.get(0));
     log.setDate(new Date());
-    log.update();              // 璁板綍瀛樺湪锛屾洿鏂板畠
+    log.update();              // 记录存在，更新它
 } else {
     log.setUserId(currentUser.getId());
-    log.setAction("鐧诲綍鎴愬姛");
+    log.setAction("登录成功");
     log.setActionType(0);
     log.setDate(new Date());
-    log.append();              // 灏氭棤璁板綍锛屾彃鍏ュ畠
+    log.append();              // 尚无记录，插入它
 }
 ```
 
-### 4. `Table` 涓?`Row` API
+### 4. `Table` 与 `Row` API
 
-`findWith()` 鍜?`findAll()` 杩斿洖 `Table`锛坄Row` 瀵硅薄鐨勬湁搴忓垪琛級銆俙Row` 鏄垪鍚嶅埌 `Field` 鍊肩殑鏄犲皠銆?
+`findWith()` 和 `findAll()` 返回 `Table`（`Row` 对象的有序列表）。`Row` 是列名到 `Field` 值的映射。
+
 ```java
 Table table = bible.findWith(
     "WHERE book_id=? AND chapter_id=? ORDER BY part_id",
@@ -436,11 +466,13 @@ Table table = bible.findWith(
 
 for (int i = 0; i < table.size(); i++) {
     Row row = table.get(i);
-    bible.setData(row);            // 鐢ㄨ琛屾暟鎹～鍏呮ā鍨?    System.out.println(bible.getContent());
+    bible.setData(row);            // 用该行数据填充模型
+    System.out.println(bible.getContent());
 }
 ```
 
-涔熷彲浠ョ洿鎺ヤ粠 `Row` 璇诲彇 `Field` 鍊硷紝鏃犻渶濉厖妯″瀷瀵硅薄锛?
+也可以直接从 `Row` 读取 `Field` 值，无需填充模型对象：
+
 ```java
 Row row = table.get(0);
 int     maxChapter = row.getFieldInfo("max_chapter").intValue();
@@ -449,12 +481,13 @@ Date    created    = row.getFieldInfo("registration_time").dateValue();
 boolean active     = row.getFieldInfo("status").booleanValue();
 ```
 
-### 5. 澶氬疄浣撳崗浣滅ず渚嬶紙鐢ㄦ埛娉ㄥ唽锛?
-浠ヤ笅绀轰緥鏉ヨ嚜 bible-online 鐨?`register` 搴旂敤锛屽睍绀哄涓?`AbstractData` 瀵硅薄濡備綍鍦ㄥ悓涓€娴佺▼涓崗浣滐細
+### 5. 多实体协作示例（用户注册）
+
+以下示例来自 bible-online 的 `register` 应用，展示多个 `AbstractData` 对象如何在同一流程中协作：
 
 ```java
 public boolean append(Request request) throws ApplicationException {
-    // 1. 鏍规嵁璇锋眰鍙傛暟鏋勫缓 User 瀵硅薄
+    // 1. 根据请求参数构建 User 对象
     User user = new User();
     user.setNickname(request.getParameter("nickname"));
     user.setEmail(request.getParameter("email"));
@@ -468,20 +501,22 @@ public boolean append(Request request) throws ApplicationException {
     user.setLastloginTime(new Date());
     user.setRegistrationTime(new Date());
 
-    // 2. 闃叉閲嶅娉ㄥ唽
+    // 2. 防止重复注册
     int count = user
         .setRequestFields("count(*) as p")
         .findWith("WHERE email=?", new Object[]{user.getEmail()})
         .get(0).getFieldInfo("p").intValue();
 
     if (count > 0) {
-        throw new ApplicationException("閭宸茶娉ㄥ唽銆?);
+        throw new ApplicationException("邮箱已被注册。");
     }
 
-    // 3. 鎻掑叆鐢ㄦ埛璁板綍锛圲UID 鑷姩鐢熸垚锛?    user.append();
+    // 3. 插入用户记录（UUID 自动生成）
+    user.append();
 
-    // 4. 灏嗘柊鐢ㄦ埛鍔犲叆榛樿鎴愬憳缁?    Member member = new Member();
-    member.setUserId(user.getId());  // user.getId() 杩斿洖鏂扮敓鎴愮殑 UUID
+    // 4. 将新用户加入默认成员组
+    Member member = new Member();
+    member.setUserId(user.getId());  // user.getId() 返回新生成的 UUID
     member.setGroupId("386e27c2-5db6-4f63-b28d-68a4adec2fd6");
     member.append();
 
@@ -491,14 +526,15 @@ public boolean append(Request request) throws ApplicationException {
 
 ---
 
-## 鍐呭瓨缂撳瓨 鈥?`Cache`
+## 内存缓存 - `Cache`
 
-瀵逛簬璇婚鐜囬珮銆佸彉鍖栬緝灏戠殑鏁版嵁锛堝涔︾洰鍏冩暟鎹€佺珷鑺傛暟閲忥級锛宐ible-online 浣跨敤 Tinystruct 鍐呯疆鐨?`Cache` 鍗曚緥閬垮厤閲嶅鏌ヨ鏁版嵁搴擄細
+对于读频率高、变化较少的数据（如书目元数据、章节数量），bible-online 使用 Tinystruct 内置的 `Cache` 单例避免重复查询数据库：
 
 ```java
 private static final Cache data = Cache.getInstance();
 
-// 浼樺厛浠庣紦瀛樿鍙?String cacheKey = "book:" + bookId + ":lang:" + lang;
+// 优先从缓存读取
+String cacheKey = "book:" + bookId + ":lang:" + lang;
 book book;
 
 if (data.get(cacheKey) != null) {
@@ -510,10 +546,11 @@ if (data.get(cacheKey) != null) {
     if (!table.isEmpty()) {
         book.setData(table.get(0));
     }
-    data.set(cacheKey, book);  // 鍐欏叆缂撳瓨渚涘悗缁姹備娇鐢?}
+    data.set(cacheKey, book);  // 写入缓存供后续请求使用
+}
 ```
 
-鑱氬悎缁撴灉鍚屾牱閫傜敤姝ゆā寮忥細
+聚合结果同样适用此模式：
 
 ```java
 String maxChapterKey = "book:" + bookId + ":max_chapter";
@@ -530,32 +567,34 @@ if (data.get(maxChapterKey) != null) {
 }
 ```
 
-閫傚悎浣跨敤 `Cache` 鐨勬暟鎹壒寰侊細
-- 璇诲彇闈炲父棰戠箒
-- 鍦ㄨ繘绋嬬敓鍛藉懆鏈熷唴鍩烘湰涓嶅彉
-- 鏁版嵁閲忓皬锛岄€傚悎鏀惧湪鍫嗗唴瀛樹腑
+适合使用 `Cache` 的数据特征：
+- 读取非常频繁
+- 在进程生命周期内基本不变
+- 数据量小，适合放在堆内存中
 
 ---
 
 ## DatabaseOperator
 
-瀵逛簬鍘熷 SQL銆佸琛ㄨ繛鎺ワ紝鎴栧璞℃槧灏?API 鏃犳硶瑕嗙洊鐨勬搷浣滐紝浣跨敤 `DatabaseOperator`銆?
-### 鍒涘缓 DatabaseOperator
+对于原始 SQL、多表连接，或对象映射 API 无法覆盖的操作，使用 `DatabaseOperator`。
+
+### 创建 DatabaseOperator
 
 ```java
-// 榛樿鈥斺€斾粠杩炴帴姹犲€熺敤涓€涓繛鎺?DatabaseOperator operator = new DatabaseOperator();
+// 默认 - 从连接池借用一个连接
+DatabaseOperator operator = new DatabaseOperator();
 
-// 鍛藉悕閰嶇疆锛堝搴?application.properties 涓殑 [鑺俔 鍚嶏級
+// 命名配置（对应 application.properties 中的 [节] 名）
 DatabaseOperator operator = new DatabaseOperator("myDatabase");
 
-// 浣跨敤鐜版湁杩炴帴
+// 使用现有连接
 DatabaseOperator operator = new DatabaseOperator(connection);
 ```
 
-### 鎵ц鏌ヨ
+### 执行查询
 
 ```java
-// 鍙傛暟鍖栨煡璇紙濮嬬粓浼樹簬瀛楃涓叉嫾鎺ワ級
+// 参数化查询（始终优于字符串拼接）
 PreparedStatement stmt = operator.preparedStatement(
     "SELECT id, username, email FROM User WHERE id = ?",
     new Object[]{userId}
@@ -567,7 +606,7 @@ while (results.next()) {
 }
 ```
 
-### 鎵ц鏇存柊
+### 执行更新
 
 ```java
 PreparedStatement stmt = operator.preparedStatement(
@@ -577,24 +616,26 @@ PreparedStatement stmt = operator.preparedStatement(
 int rowsAffected = operator.executeUpdate(stmt);
 ```
 
-### 璧勬簮绠＄悊
+### 资源管理
 
-浣跨敤 try-with-resources 纭繚杩炴帴褰掕繕杩炴帴姹狅細
+使用 try-with-resources 确保连接归还连接池：
 
 ```java
 try (DatabaseOperator operator = new DatabaseOperator()) {
     ResultSet results = operator.query("SELECT * FROM User");
-    // 澶勭悊缁撴灉
-} // 鑷姩鍏抽棴 ResultSet銆丳reparedStatement 骞堕噴鏀捐繛鎺?```
+    // 处理结果
+} // 自动关闭 ResultSet、PreparedStatement 并释放连接
+```
 
-### SQL 娉ㄥ叆淇濇姢
+### SQL 注入保护
 
-`DatabaseOperator` 榛樿妫€娴?SQL 娉ㄥ叆銆備粎鍦ㄥ彲淇″唴閮ㄥ伐鍏蜂腑绂佺敤锛?
+`DatabaseOperator` 默认检测 SQL 注入。仅在可信内部工具中禁用：
+
 ```java
 operator.disableSafeCheck();
 ```
 
-### 浜嬪姟
+### 事务
 
 ```java
 try (DatabaseOperator operator = new DatabaseOperator()) {
@@ -620,68 +661,84 @@ try (DatabaseOperator operator = new DatabaseOperator()) {
 }
 ```
 
-#### 浜嬪姟鏂规硶
+#### 事务方法
 
-| 鏂规硶 | 璇存槑 |
+| 方法 | 说明 |
 |---|---|
-| `beginTransaction()` | 寮€濮嬫柊浜嬪姟 |
-| `commitTransaction()` | 鎻愪氦褰撳墠浜嬪姟 |
-| `rollbackTransaction()` | 鍥炴粴鏁翠釜浜嬪姟 |
-| `rollbackTransaction(Savepoint)` | 鍥炴粴鍒版寚瀹氫繚瀛樼偣 |
-| `createSavepoint(String)` | 鍒涘缓鍛藉悕淇濆瓨鐐?|
-| `releaseSavepoint(Savepoint)` | 閲婃斁淇濆瓨鐐?|
-| `isInTransaction()` | 杩斿洖浜嬪姟鏄惁澶勪簬娲诲姩鐘舵€?|
+| `beginTransaction()` | 开始新事务 |
+| `commitTransaction()` | 提交当前事务 |
+| `rollbackTransaction()` | 回滚整个事务 |
+| `rollbackTransaction(Savepoint)` | 回滚到指定保存点 |
+| `createSavepoint(String)` | 创建命名保存点 |
+| `releaseSavepoint(Savepoint)` | 释放保存点 |
+| `isInTransaction()` | 返回事务是否处于活动状态 |
 
-> 鑻?`DatabaseOperator` 鍦ㄤ簨鍔℃湭鎻愪氦鎴栧洖婊氱殑鎯呭喌涓嬭鍏抽棴锛屼簨鍔″皢**鑷姩鍥炴粴**浠ヤ繚鎶ゆ暟鎹畬鏁存€с€?
+> 若 `DatabaseOperator` 在事务未提交或回滚的情况下被关闭，事务将**自动回滚**以保护数据完整性。
+
 ---
 
-## 鍐呯疆 POJO 鐢熸垚鍣?
-Tinystruct 鍐呯疆浠ｇ爜鐢熸垚鍣紝鍙洿鎺ヤ粠鏁版嵁搴撴ā寮忕敓鎴愭ā鍨嬬被鍜?XML 鏄犲皠鏂囦欢銆傛敮鎸?**MySQL**銆?*MSSQL**銆?*SQLite** 鍜?**H2**銆?
-### 杩愯鐢熸垚鍣?
+## 内置 POJO 生成器
+
+Tinystruct 内置代码生成器，可直接从数据库模式生成模型类和 XML 映射文件。支持 **MySQL**、**MSSQL**、**SQLite** 和 **H2**。
+
+### 运行生成器
+
 ```bash
-# 浜や簰妯″紡鈥斺€旀彁绀鸿緭鍏ヨ〃鍚嶅拰杈撳嚭璺緞
+# 交互模式 - 提示输入表名和输出路径
 bin/dispatcher generate
 
-# 闈炰氦浜掓ā寮忊€斺€旀寚瀹氬崟寮犺〃
+# 非交互模式 - 指定单张表
 bin/dispatcher generate --tables users
 
-# 澶氬紶琛紙鍒嗗彿鍒嗛殧锛?bin/dispatcher generate --tables "users;orders;products"
+# 多张表（分号分隔）
+bin/dispatcher generate --tables "users;orders;products"
 ```
 
-### 鑷姩绫诲瀷鏄犲皠
+### 自动类型映射
 
-| SQL 鍒楃被鍨?| Java 绫诲瀷 | `setFieldAs*` 鏂规硶 |
+| SQL 列类型 | Java 类型 | `setFieldAs*` 方法 |
 |---|---|---|
-| `VARCHAR`銆乣CHAR`銆乣TEXT` | `String` | `setFieldAsString` |
-| `INT`銆乣SMALLINT`銆乣TINYINT` | `int` | `setFieldAsInt` |
-| `BIGINT` | `long` | *锛堝師濮嬪瓧娈碉級* |
-| `FLOAT` | `float` | *锛堝師濮嬪瓧娈碉級* |
-| `DOUBLE` | `double` | *锛堝師濮嬪瓧娈碉級* |
-| `DATETIME`銆乣TIMESTAMP` | `LocalDateTime` | `setFieldAsLocalDateTime` |
+| `VARCHAR`、`CHAR`、`TEXT` | `String` | `setFieldAsString` |
+| `INT`、`SMALLINT`、`TINYINT` | `int` | `setFieldAsInt` |
+| `BIGINT` | `long` | *（原始字段）* |
+| `FLOAT` | `float` | *（原始字段）* |
+| `DOUBLE` | `double` | *（原始字段）* |
+| `DATETIME`、`TIMESTAMP` | `LocalDateTime` | `setFieldAsLocalDateTime` |
 | `DATE` | `java.util.Date` | `setFieldAsDate` |
-| `BIT`銆乣BOOLEAN` | `boolean` | `setFieldAsBoolean` |
-| `BLOB`銆乣BINARY`銆乣VARBINARY` | `byte[]` | *锛堝師濮嬪瓧娈碉級* |
+| `BIT`、`BOOLEAN` | `boolean` | `setFieldAsBoolean` |
+| `BLOB`、`BINARY`、`VARBINARY` | `byte[]` | *（原始字段）* |
 
-姣忓紶琛ㄧ敓鎴愪袱涓枃浠讹細
+每张表生成两个文件：
 
-1. **Java POJO** 鈥?渚嬪 `src/main/java/custom/objects/User.java`
-2. **XML 鏄犲皠** 鈥?渚嬪 `src/main/resources/custom/objects/User.map.xml`
+1. **Java POJO** - 例如 `src/main/java/custom/objects/User.java`
+2. **XML 映射** - 例如 `src/main/resources/custom/objects/User.map.xml`
 
 ---
 
-## 鏈€浣冲疄璺?
-1. **setter 涓繀椤昏皟鐢?`setFieldAs*`銆?* 鑻ユ湭璋冪敤锛孫RM 涓嶇煡閬撹瀛楁闇€瑕佹寔涔呭寲锛宍append()` / `update()` 灏嗛潤榛樿烦杩囪瀛楁銆?
-2. **`setData()` 涓娇鐢ㄦ暟鎹簱鍒楀悕銆?* `row.getFieldInfo()` 鐨勯敭蹇呴』鏄疄闄呮暟鎹簱鍒楀悕锛坰nake_case锛夛紝鑰岄潪 Java 灞炴€у悕銆?
-3. **濮嬬粓浣跨敤鍙傛暟鍖栨煡璇€?* 閫氳繃 `findWith()` 鎴?`preparedStatement()` 鐨?`Object[]` 鍙傛暟浼犻€掑€硷紝缁濅笉灏嗙敤鎴疯緭鍏ユ嫾鎺ヨ繘 SQL 瀛楃涓层€?
-4. **缂撳瓨绋冲畾鐨勫弬鑰冩暟鎹€?* 浣跨敤 `Cache.getInstance()` 缂撳瓨璺ㄨ姹傚熀鏈笉鍙樼殑鏁版嵁锛堝涔︾洰鍒楄〃銆佺珷鑺傛暟閲忋€佽瑷€鍏冩暟鎹級銆?
-5. **浣跨敤 `setTableName()` 澶勭悊鐗堟湰鍖栬〃銆?* 褰撲竴涓ā鍨嬪搴斿寮犵粨鏋勭浉鍚岀殑琛紙濡傚湥缁忓悇璇戞枃鐗堟湰锛夛紝閫氳繃 `setTableName()` 鍦ㄨ繍琛屾椂鍒囨崲銆?
-6. **浣跨敤 `setRequestFields()` 杩涜鑱氬悎鏌ヨ銆?* 鍦ㄨ皟鐢?`findWith()` 鍓嶈鐩?SELECT 鎶曞奖锛堝 `"count(*) as n"`銆乣"max(chapter_id) as max_chapter"`锛夈€?
-7. **UUID 鑷姩鐢熸垚銆?* XML 鏄犲皠涓缃?`generate="true"` 鍚庯紝`append()` 浼氳嚜鍔ㄥ啓鍏?UUID 骞跺彲閫氳繃 `getId()` 绔嬪嵆璇诲彇锛屾棤闇€鎵嬪姩璁剧疆涓婚敭銆?
-8. **鐢?try-with-resources 鍖呰９ `DatabaseOperator`銆?* 鍗充娇鎶涘嚭寮傚父锛屼篃鑳界‘淇濊繛鎺ュ綊杩樿繛鎺ユ睜銆?
-9. **鏄犲皠鏂囦欢璺緞椤讳笌 Java 鍖呰矾寰勪竴鑷淬€?* `custom.objects.User` 绫诲搴旂殑鏄犲皠鏂囦欢璺緞涓虹被璺緞鏍圭洰褰曚笅鐨?`custom/objects/User.map.xml`銆?
+## 最佳实践
+
+1. **setter 中必须调用 `setFieldAs*`。** 若未调用，ORM 不知道该字段需要持久化，`append()` / `update()` 将静默跳过该字段。
+
+2. **`setData()` 中使用数据库列名。** `row.getFieldInfo()` 的键必须是实际数据库列名（snake_case），而非 Java 属性名。
+
+3. **始终使用参数化查询。** 通过 `findWith()` 或 `preparedStatement()` 的 `Object[]` 参数传递值，绝不将用户输入拼接进 SQL 字符串。
+
+4. **缓存稳定的参考数据。** 使用 `Cache.getInstance()` 缓存跨请求基本不变的数据（如书目列表、章节数量、语言元数据）。
+
+5. **使用 `setTableName()` 处理版本化表。** 当一个模型对应多张结构相同的表（如圣经各译文版本），通过 `setTableName()` 在运行时切换。
+
+6. **使用 `setRequestFields()` 进行聚合查询。** 在调用 `findWith()` 前覆盖 SELECT 投影（如 `"count(*) as n"`、`"max(chapter_id) as max_chapter"`）。
+
+7. **UUID 自动生成。** XML 映射中设置 `generate="true"` 后，`append()` 会自动写入 UUID 并可通过 `getId()` 立即读取，无需手动设置主键。
+
+8. **用 try-with-resources 包裹 `DatabaseOperator`。** 即使抛出异常，也能确保连接归还连接池。
+
+9. **映射文件路径须与 Java 包路径一致。** `custom.objects.User` 类对应的映射文件路径为类路径根目录下的 `custom/objects/User.map.xml`。
+
 ---
 
-## 涓嬩竴姝?
-- 浜嗚В[楂樼骇鐗规€(advanced-features.md)
-- 鎺㈢储[鏈€浣冲疄璺礭(best-practices.md)
-- 鏌ョ湅[鏁版嵁搴?API 鍙傝€僝(api/database.md)
+## 下一步
+
+- 了解[高级特性](advanced-features.md)
+- 探索[最佳实践](best-practices.md)
+- 查看[数据库 API 参考](api/database.md)

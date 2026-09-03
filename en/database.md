@@ -1,4 +1,4 @@
-﻿# Database Integration in Tinystruct
+# Database Integration in Tinystruct
 
 This guide explains how to integrate and work with databases in Tinystruct applications,
 using the [bible-online](https://github.com/m0ver/bible-online) project as a real-world reference.
@@ -61,8 +61,8 @@ database.connections.max=10
 
 Tinystruct offers two complementary approaches:
 
-1. **Object Mapping (`AbstractData`)** 鈥?The primary ORM-style approach. Define a model class, an XML mapping file, and call built-in CRUD methods.
-2. **`DatabaseOperator`** 鈥?A lower-level utility for raw SQL, aggregations, or operations spanning multiple tables.
+1. **Object Mapping (`AbstractData`)** - The primary ORM-style approach. Define a model class, an XML mapping file, and call built-in CRUD methods.
+2. **`DatabaseOperator`** - A lower-level utility for raw SQL, aggregations, or operations spanning multiple tables.
 
 ---
 
@@ -267,7 +267,7 @@ src/main/resources/custom/objects/User.map.xml
 | `increment="false"` on `<id>` | ID is not a numeric auto-increment |
 | `generate="true"` on `<id>` | Framework auto-generates a UUID on `append()` |
 
-> **UUID IDs**: bible-online uses `generate="true"` with `type="varchar"` for all entities. You never set the ID before calling `append()` 鈥?the framework generates a UUID automatically, and you can read it back immediately via `getId()`.
+> **UUID IDs**: bible-online uses `generate="true"` with `type="varchar"` for all entities. You never set the ID before calling `append()` - the framework generates a UUID automatically, and you can read it back immediately via `getId()`.
 
 Here are two shorter mapping examples from the project:
 
@@ -302,7 +302,7 @@ Here are two shorter mapping examples from the project:
 
 ### 3. CRUD Operations
 
-#### Create 鈥?`append()`
+#### Create - `append()`
 
 ```java
 User user = new User();
@@ -320,7 +320,7 @@ user.setRegistrationTime(new Date());
 user.append();  // INSERT; user.getId() now holds the generated UUID
 ```
 
-#### Read 鈥?`findOneById()`
+#### Read - `findOneById()`
 
 ```java
 User user = new User();
@@ -329,7 +329,7 @@ user.findOneById();   // SELECT ... WHERE id = ?
 System.out.println(user.getEmail());
 ```
 
-#### Find with Conditions 鈥?`findWith()`
+#### Find with Conditions - `findWith()`
 
 `findWith` is the primary query method. It accepts a parameterized WHERE / ORDER BY clause and a values array, and returns a `Table` (list of `Row` objects).
 
@@ -355,7 +355,7 @@ if (!table.isEmpty()) {
 }
 ```
 
-#### Find All 鈥?`findAll()`
+#### Find All - `findAll()`
 
 ```java
 book b = new book();
@@ -368,7 +368,7 @@ while (iter.hasNext()) {
 }
 ```
 
-#### Count / Aggregate 鈥?`setRequestFields()`
+#### Count / Aggregate - `setRequestFields()`
 
 Use `setRequestFields()` to override the SELECT projection before calling `findWith()`. This is how bible-online checks for duplicate emails and retrieves chapter counts:
 
@@ -393,7 +393,7 @@ int maxChapter = bible
     .get(0).get(0).get("max_chapter").intValue();
 ```
 
-#### Dynamic Table Switching 鈥?`setTableName()`
+#### Dynamic Table Switching - `setTableName()`
 
 When one model maps to multiple structurally identical tables (e.g., different Bible translation versions), call `setTableName()` to switch the target at runtime:
 
@@ -418,7 +418,7 @@ Table verses = bible
 
 This pattern lets you maintain separate translation tables (`NIV`, `ESV`, `KJV`, `zh_CN`, `zh_TW`, ...) while sharing a single model class and mapping file.
 
-#### Update 鈥?`update()`
+#### Update - `update()`
 
 ```java
 // Record the login timestamp after successful authentication
@@ -426,7 +426,7 @@ user.setLastloginTime(new Date());
 user.update();   // UPDATE ... WHERE id = ?
 ```
 
-#### Delete 鈥?`delete()`
+#### Delete - `delete()`
 
 ```java
 user.delete();   // DELETE FROM ... WHERE id = ?
@@ -444,13 +444,13 @@ Table logs = log.findWith("WHERE user_id=?",
 if (!logs.isEmpty()) {
     log.setData(logs.get(0));
     log.setDate(new Date());
-    log.update();              // record exists 鈥?update it
+    log.update();              // record exists - update it
 } else {
     log.setUserId(currentUser.getId());
     log.setAction("Login Successful");
     log.setActionType(0);
     log.setDate(new Date());
-    log.append();              // no record yet 鈥?insert it
+    log.append();              // no record yet - insert it
 }
 ```
 
@@ -580,7 +580,7 @@ For raw SQL, multi-table joins, or anything not covered by the object-mapping AP
 ### Creating a DatabaseOperator
 
 ```java
-// Default 鈥?borrows a connection from the ConnectionManager pool
+// Default - borrows a connection from the ConnectionManager pool
 DatabaseOperator operator = new DatabaseOperator();
 
 // Named profile (matches a [section] in application.properties)
@@ -686,7 +686,7 @@ Tinystruct includes a code generator that produces model classes and XML mapping
 # Interactive mode
 bin/dispatcher generate
 
-# Non-interactive 鈥?single table
+# Non-interactive - single table
 bin/dispatcher generate --tables users
 
 # Multiple tables (semicolon-delimited)
@@ -709,8 +709,8 @@ bin/dispatcher generate --tables "users;orders;products"
 
 The generator produces two files per table:
 
-1. **Java POJO** 鈥?e.g. `src/main/java/custom/objects/User.java`
-2. **XML Mapping** 鈥?e.g. `src/main/resources/custom/objects/User.map.xml`
+1. **Java POJO** - e.g. `src/main/java/custom/objects/User.java`
+2. **XML Mapping** - e.g. `src/main/resources/custom/objects/User.map.xml`
 
 ---
 
