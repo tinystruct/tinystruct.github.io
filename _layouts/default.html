@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="tinystruct framework documentation">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <!-- Page Title -->
+    <title>{{ page.title | default: "tinystruct framework documentation" }}</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/assets/css/style.css">
+
+    <!-- Icons -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    <!-- Prism for syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+    
+    <style>
+        .doc-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+        .doc-content h1, .doc-content h2, .doc-content h3 {
+            color: var(--text-primary);
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .doc-content p, .doc-content li {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+        .doc-content a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .doc-content a:hover {
+            text-decoration: underline;
+        }
+        .doc-content pre {
+            background: #1d1f21;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+        }
+        .doc-content code {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(125, 125, 125, 0.1);
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        .doc-content pre code {
+            background: none;
+            padding: 0;
+            color: #c5c8c6;
+        }
+        .doc-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+        .doc-content th, .doc-content td {
+            border: 1px solid var(--border-color);
+            padding: 0.75rem;
+            text-align: left;
+        }
+        .doc-content th {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        .doc-content blockquote {
+            border-left: 4px solid var(--primary-color);
+            margin: 0 0 1.5rem 0;
+            padding: 0.5rem 1rem;
+            background: var(--bg-hover);
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+
+<body class="sidebar-closed">
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <a href="/" class="sidebar-brand">
+            <img src="https://avatars.githubusercontent.com/u/3723144?s=48&v=4" alt="tinystruct logo">
+            <span>tinystruct</span>
+        </a>
+
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="/" class="nav-link">
+                    <ion-icon name="home-outline"></ion-icon>
+                    <span>Home</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a href="/en/getting-started.html" class="nav-link">
+                    <ion-icon name="rocket-outline"></ion-icon>
+                    <span>Getting Started</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/en/core-concepts.html" class="nav-link">
+                    <ion-icon name="book-outline"></ion-icon>
+                    <span>Core Concepts</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/en/api/" class="nav-link">
+                    <ion-icon name="code-slash-outline"></ion-icon>
+                    <span>API Reference</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="https://github.com/tinystruct/tinystruct" target="_blank" class="nav-link">
+                    <ion-icon name="logo-github"></ion-icon>
+                    <span>GitHub</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <p style="font-size: 0.8rem; color: #64748b;">&copy; 2026 James ZHOU</p>
+        </div>
+    </aside>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+        <!-- Header -->
+        <header class="main-header" style="min-height: auto; padding-bottom: 2rem;">
+            <div class="header-top">
+                <div class="header-left">
+                    <button class="menu-toggle" onclick="toggleSidebar()">
+                        <ion-icon name="menu-outline"></ion-icon>
+                    </button>
+                    <div class="version-badge">v1.7.30</div>
+                </div>
+                <div class="header-actions">
+                    <button class="theme-toggle" title="Toggle Dark/Light Mode" onclick="toggleTheme()">
+                        <ion-icon name="moon-outline"></ion-icon>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="content-wrapper" style="max-width: 900px; margin: 0 auto; width: 100%;">
+            <article class="doc-content">
+                {{ content }}
+            </article>
+        </div>
+
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-properties.min.js"></script>
+    
+    <script>
+        // Sidebar Toggle
+        function toggleSidebar() {
+            document.body.classList.toggle('sidebar-closed');
+        }
+        
+        // Theme Toggle (Dark/Light)
+        function toggleTheme() {
+            const isDark = document.body.hasAttribute('data-theme');
+            if (isDark) {
+                document.body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            }
+            updateThemeIcon();
+        }
+        
+        function updateThemeIcon() {
+            const icon = document.querySelector('.theme-toggle ion-icon');
+            if (document.body.hasAttribute('data-theme')) {
+                icon.setAttribute('name', 'sunny-outline');
+            } else {
+                icon.setAttribute('name', 'moon-outline');
+            }
+        }
+        
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'dark'; // Default to dark based on style.css
+        if (savedTheme === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+        }
+        updateThemeIcon();
+    </script>
+</body>
+</html>
