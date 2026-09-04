@@ -84,6 +84,34 @@
             background: var(--bg-hover);
             color: var(--text-secondary);
         }
+        /* Tables scroll horizontally on narrow screens */
+        .doc-content table {
+            display: block;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            white-space: nowrap;
+        }
+        /* Responsive padding — tablet */
+        @media (max-width: 768px) {
+            .doc-content {
+                padding: 1.25rem;
+                border-radius: 0.5rem;
+            }
+            .doc-content h1 { font-size: 1.75rem; }
+            .doc-content h2 { font-size: 1.35rem; }
+            .doc-content h3 { font-size: 1.15rem; }
+            .doc-content pre  { font-size: 0.82rem; }
+        }
+        /* Responsive padding — phone */
+        @media (max-width: 480px) {
+            .doc-content {
+                padding: 1rem 0.875rem;
+                border-radius: 0.375rem;
+            }
+            .doc-content h1 { font-size: 1.5rem; }
+            .doc-content h2 { font-size: 1.25rem; }
+            .doc-content pre  { font-size: 0.78rem; }
+        }
     </style>
 </head>
 
@@ -159,7 +187,7 @@
         </header>
 
         <!-- Content Area -->
-        <div class="content-wrapper" style="max-width: 900px; margin: 0 auto; width: 100%;">
+        <div class="content-wrapper" style="max-width: 900px; margin: 0 auto; width: 100%; display: block;">
             <article class="doc-content">
                 {{ content }}
             </article>

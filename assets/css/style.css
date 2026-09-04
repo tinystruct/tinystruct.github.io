@@ -696,13 +696,15 @@ footer {
 }
 
 @media (max-width: 768px) {
+    /* Sidebar is controlled by sidebar-closed toggle — keep it flex but off-screen */
     .sidebar {
-        display: none;
-        /* Mobile menu needed */
+        display: flex !important;
+        transform: translateX(-100%);
     }
 
+    /* Content always full-width on mobile regardless of sidebar state */
     .main-content {
-        margin-left: 0;
+        margin-left: 0 !important;
         width: 100%;
     }
 
@@ -720,6 +722,10 @@ footer {
     .hero h1 {
         font-size: 2rem;
         margin-bottom: 1rem;
+    }
+
+    .hero p {
+        font-size: 1.1rem;
     }
 
     .card {
@@ -740,6 +746,7 @@ footer {
 
     .features-grid {
         padding: 0 1rem 3rem;
+        grid-template-columns: 1fr;
     }
 
     footer {
@@ -1137,11 +1144,27 @@ footer {
 }
 
 /* Adjust padding on larger screens */
-@media (min-width: 768px) {
+@media (min-width: 1025px) {
     .markdown-body {
         padding: 2rem 4rem;
-        /* More generous padding for desktop reading */
     }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .markdown-body {
+        padding: 1.5rem 2.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .markdown-body {
+        padding: 0.875rem;
+    }
+    .markdown-body h1 { font-size: 1.6rem; }
+    .markdown-body h2 { font-size: 1.3rem; }
+    .markdown-body h3 { font-size: 1.1rem; }
+    .markdown-body pre { font-size: 0.8rem; }
+    .markdown-body blockquote { padding: 0.5rem 0.875rem; }
 }
 
 /* Terminal Block */
@@ -1249,6 +1272,13 @@ footer {
     gap: 1rem;
 }
 
+/* Ensure the overlay is always hidden on desktop */
+@media (min-width: 769px) {
+    .sidebar-overlay {
+        display: none;
+    }
+}
+
 .menu-toggle {
     display: flex; /* Always visible now */
     background: rgba(255, 255, 255, 0.2);
@@ -1301,23 +1331,93 @@ body.sidebar-closed .main-content {
     margin-left: 0;
 }
 
-/* Mobile Styles */
+/* Mobile Sidebar Open/Close — aligned with toggleSidebar() which toggles 'sidebar-closed' */
 @media (max-width: 768px) {
     .sidebar {
         display: flex !important;
-        transform: translateX(-100%); /* Default hidden on mobile */
+        transform: translateX(-100%);
         z-index: 1000;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    
-    /* Mobile Open State */
-    body.sidebar-open .sidebar {
+
+    /* Sidebar is open when sidebar-closed class is absent */
+    body:not(.sidebar-closed) .sidebar {
         transform: translateX(0);
-        box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
     }
-    
-    body.sidebar-open .sidebar-overlay {
+
+    body:not(.sidebar-closed) .sidebar-overlay {
         opacity: 1;
         pointer-events: auto;
+    }
+
+    /* Prevent content shift when sidebar overlays on mobile */
+    body:not(.sidebar-closed) .main-content {
+        margin-left: 0 !important;
+    }
+}
+
+/* Extra-small screens (≤ 480px) — phones in portrait */
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 1.6rem;
+        letter-spacing: -0.01em;
+    }
+
+    .hero p {
+        font-size: 0.95rem;
+    }
+
+    .main-header {
+        padding: 2rem 1rem 3rem;
+    }
+
+    .version-badge {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.6rem;
+    }
+
+    .card {
+        padding: 1rem;
+        border-radius: 0.75rem;
+    }
+
+    .card h3 {
+        font-size: 1.2rem;
+    }
+
+    .content-wrapper {
+        padding: 0 0.75rem;
+    }
+
+    .features-grid {
+        padding: 0 0.75rem 2rem;
+        gap: 1rem;
+    }
+
+    .feature-item {
+        padding: 1.25rem;
+    }
+
+    .terminal {
+        font-size: 0.7rem;
+        padding: 0.75rem;
+        min-height: 160px;
+        max-height: 50vh;
+    }
+
+    .terminal-wrapper {
+        padding: 0 0.75rem;
+    }
+
+    .btn {
+        padding: 0.625rem 1.25rem;
+        font-size: 0.9rem;
+    }
+
+    footer {
+        padding: 1.5rem 0.75rem;
+        font-size: 0.8rem;
     }
 }
     
