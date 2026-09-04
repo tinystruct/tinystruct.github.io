@@ -6,7 +6,12 @@ Welcome to the tinystruct framework documentation. This documentation provides c
 
 欢迎查阅 tinystruct 框架文档。本文档为使用和开发 tinystruct 框架提供全面的指导。
 
-## What's New in v1.7.29
+## What's New in v1.7.30
+
+- **PostgreSQL Database Support**: Out-of-the-box PostgreSQL support via `Type.PostgreSQL` in the `Type` enum and `PostgreSQLServer` repository — including a dedicated POJO generator.
+- **Detailed Release Notes**: See [What's New in 1.7.30](en/whats-new-1.7.30.md) ([中文版](zh/whats-new-1.7.30.md))
+
+### Previous: v1.7.29 Highlights
 
 - **Asymmetric RSA & Configurable JWT Security**: RSA public/private key pairs and flexible configuration via `application.properties`
 - **Advanced HTTP Server Security**: Host header filtering (`server.name`), path traversal prevention, and secure cookies
@@ -15,7 +20,7 @@ Welcome to the tinystruct framework documentation. This documentation provides c
 - **ANSI Console Logging**: Modern color-coded console logs with Java 9+ `StackWalker` caller tracing
 - **Configurable HTTP Timeouts**: Custom connect and read timeouts on `URLRequest` and `HTTPHandler`
 - **High Performance**: Handling over 86,000 requests per second with ultra-low latency (~17ms)
-- **Detailed Release Notes**: See [What's New in 1.7.29](en/whats-new-1.7.29.md) ([中文版](zh/whats-new-1.7.29.md))
+- **Full Release Notes**: [What's New in 1.7.29](en/whats-new-1.7.29.md) ([中文版](zh/whats-new-1.7.29.md))
 
 ## Choose Your Language / 选择语言
 
@@ -28,6 +33,7 @@ Welcome to the tinystruct framework documentation. This documentation provides c
 - [Database Integration](en/database.md)
 - [Advanced Features](en/advanced-features.md)
 - [Best Practices](en/best-practices.md)
+- [What's New in 1.7.30](en/whats-new-1.7.30.md)
 - [What's New in 1.7.29](en/whats-new-1.7.29.md)
 - API Reference
   - [Application API](en/api/application.md)
@@ -44,6 +50,7 @@ Welcome to the tinystruct framework documentation. This documentation provides c
 - [数据库集成](zh/database.md)
 - [高级特性](zh/advanced-features.md)
 - [最佳实践](zh/best-practices.md)
+- [1.7.30 新特性](zh/whats-new-1.7.30.md)
 - [1.7.29 新特性](zh/whats-new-1.7.29.md)
 - API参考
   - [应用程序 API](zh/api/application.md)

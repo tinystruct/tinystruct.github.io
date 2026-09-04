@@ -398,6 +398,28 @@ public String getResource(Integer id, Request request, Response response) {
 
 ## Security
 
+### Advanced HTTP Security (New in v1.7.29)
+
+Tinystruct v1.7.29 introduces built-in protections against common web vulnerabilities:
+
+1. **Host Header Filtering**: Prevent DNS rebinding and host header injection by strictly validating the `Host` header against the configured `server.name`.
+2. **Path Traversal Prevention**: The `HttpServer` automatically normalizes and validates URIs to reject directory traversal attempts (e.g., requests containing `/../`).
+3. **Secure Cookies**: Easy configuration for `Secure` and `HttpOnly` flags.
+
+### Asymmetric RSA & JWT Security (New in v1.7.29)
+
+You can now easily secure endpoints using RSA public/private key pairs and JSON Web Tokens (JWT). The configuration is managed directly via `application.properties`:
+
+```properties
+# JWT Configuration
+jwt.issuer=my-app
+jwt.expiration=3600
+
+# RSA Key Paths
+rsa.private.key=classpath:keys/private.pem
+rsa.public.key=classpath:keys/public.pem
+```
+
 ### CSRF Protection
 
 ```java

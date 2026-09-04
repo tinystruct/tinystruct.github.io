@@ -35,6 +35,13 @@ database.connections.max=1
 # database.password=password
 # database.connections.max=10
 
+# PostgreSQL Configuration (New in v1.7.30)
+# driver=org.postgresql.Driver
+# database.url=jdbc:postgresql://localhost:5432/mydb
+# database.user=postgres
+# database.password=password
+# database.connections.max=10
+
 # H2 Configuration
 # driver=org.h2.Driver
 # database.url=jdbc:h2:~/test

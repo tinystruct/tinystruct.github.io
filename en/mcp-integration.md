@@ -43,18 +43,13 @@ public class MyMCPServer extends MCPServer {
 
 ### Creating a Custom Tool
 
-Custom tools can be created by extending `MCPTool` and using the `@Action` annotation to define executable methods:
+You can register plain Java objects (POJOs) directly as tools. No `MCPTool` subclass is required. Simply use the `@Action` annotation to define executable methods:
 
 ```java
-import org.tinystruct.mcp.MCPTool;
 import org.tinystruct.system.annotation.Action;
 import org.tinystruct.system.annotation.Argument;
 
-public class MyCustomTool extends MCPTool {
-    
-    public MyCustomTool() {
-        super("my-tool", "A custom tool for data processing", null, null, true);
-    }
+public class MyCustomTool {
     
     @Action(value = "my-tool/process", 
             description = "Process input data", 
@@ -62,9 +57,12 @@ public class MyCustomTool extends MCPTool {
                 @Argument(key = "input", description = "The data to process", type = "string")
             })
     public String processData(String input) {
-        return "Processed: " + input.toUpperCase();
+        return "Processed: " + (input != null ? input.toUpperCase() : "");
     }
 }
+```
+
+> **Note**: While subclassing `MCPTool` is still supported for backwards compatibility, the recommended approach is to register plain objects directly using `this.registerTool(new MyCustomTool());` in your `MCPServer`'s `init()` method.
 ```
 
 ### Using the MCP Client

@@ -1,0 +1,22 @@
+title: "tinystruct framework"
+description: "A lightweight java framework designed for building efficient and scalable applications. Supports both command-line tools and APIs, enabling developers to create robust solutions with ease."
+
+# Build settings
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+# Apply default layout to all pages
+defaults:
+  - scope:
+      path: "" # an empty string here means all files in the project
+      type: "pages"
+    values:
+      layout: "default"
+
+# Exclude specific files or folders from the build
+exclude:
+  - README.md
+  - .idea/
+  - .git/

@@ -398,6 +398,28 @@ public String getResource(Integer id, Request request, Response response) {
 
 ## 安全性
 
+### 高级 HTTP 安全性 (v1.7.29 新增)
+
+Tinystruct v1.7.29 引入了针对常见 Web 漏洞的内置保护：
+
+1. **主机头过滤**：通过根据配置的 `server.name` 严格验证 `Host` 标头，防止 DNS 重绑定和主机头注入。
+2. **路径遍历防御**：`HttpServer` 会自动规范化和验证 URI，以拒绝目录遍历尝试（例如，包含 `/../` 的请求）。
+3. **安全 Cookie**：轻松配置 `Secure` 和 `HttpOnly` 标志。
+
+### 非对称 RSA 和 JWT 安全性 (v1.7.29 新增)
+
+您现在可以使用 RSA 公钥/私钥对和 JSON Web Tokens (JWT) 轻松保护端点。配置直接通过 `application.properties` 进行管理：
+
+```properties
+# JWT 配置
+jwt.issuer=my-app
+jwt.expiration=3600
+
+# RSA 密钥路径
+rsa.private.key=classpath:keys/private.pem
+rsa.public.key=classpath:keys/public.pem
+```
+
 ### CSRF 保护
 
 ```java

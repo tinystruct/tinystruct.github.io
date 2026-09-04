@@ -200,9 +200,21 @@ Properties props = getConfiguration().getProperties();
 | Property | Description | Default |
 |----------|-------------|---------|
 | server.port | HTTP server port | 8080 |
-| server.host | HTTP server host | localhost |
+| server.host | HTTP server bind address | localhost |
+| server.name | Valid host header for security (v1.7.29+) | - |
 | server.context | Server context path | / |
 | server.threads | Server thread pool size | 10 |
+| server.read.timeout | Socket read timeout in ms (v1.7.29+) | - |
+| server.connect.timeout | Socket connect timeout in ms (v1.7.29+) | - |
+
+### Security Settings
+
+| Property | Description | Default |
+|----------|-------------|---------|
+| jwt.issuer | Issuer string for JWT validation (v1.7.29+) | - |
+| jwt.expiration | JWT expiration time in seconds (v1.7.29+) | 3600 |
+| rsa.private.key | Path to RSA private key (v1.7.29+) | - |
+| rsa.public.key | Path to RSA public key (v1.7.29+) | - |
 
 ### Database Settings
 

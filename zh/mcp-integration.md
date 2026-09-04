@@ -43,18 +43,13 @@ public class MyMCPServer extends MCPServer {
 
 ### 创建自定义工具
 
-可以通过继承 `MCPTool` 并使用 `@Action` 注解定义可执行方法来创建自定义工具：
+您可以将普通的 Java 对象（POJO）直接注册为工具，不再需要继承 `MCPTool` 类。只需使用 `@Action` 注解定义可执行方法：
 
 ```java
-import org.tinystruct.mcp.MCPTool;
 import org.tinystruct.system.annotation.Action;
 import org.tinystruct.system.annotation.Argument;
 
-public class MyCustomTool extends MCPTool {
-    
-    public MyCustomTool() {
-        super("my-tool", "一个用于数据处理的自定义工具", null, null, true);
-    }
+public class MyCustomTool {
     
     @Action(value = "my-tool/process", 
             description = "处理输入数据", 
@@ -62,9 +57,12 @@ public class MyCustomTool extends MCPTool {
                 @Argument(key = "input", description = "待处理的数据", type = "string")
             })
     public String processData(String input) {
-        return "Processed: " + input.toUpperCase();
+        return "Processed: " + (input != null ? input.toUpperCase() : "");
     }
 }
+```
+
+> **注**：尽管为了向后兼容仍支持继承 `MCPTool`，但建议的方法是在 `MCPServer` 的 `init()` 方法中直接注册普通对象，如 `this.registerTool(new MyCustomTool());`。
 ```
 
 ### 使用 MCP 客户端
