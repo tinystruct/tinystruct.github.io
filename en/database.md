@@ -9,6 +9,7 @@ Tinystruct provides built-in support for multiple database systems:
 
 - SQLite
 - MySQL
+- PostgreSQL
 - H2
 - Microsoft SQL Server
 - Redis

@@ -8,6 +8,7 @@ Tinystruct 内置支持以下数据库系统：
 
 - SQLite
 - MySQL
+- PostgreSQL
 - H2
 - Microsoft SQL Server
 - Redis

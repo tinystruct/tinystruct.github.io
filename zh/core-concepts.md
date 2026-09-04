@@ -89,6 +89,7 @@ int port = Integer.parseInt(getConfiguration().get("server.port"));
 ### 仓库类型
 
 - MySQL
+- PostgreSQL
 - SQLite
 - H2
 - Redis

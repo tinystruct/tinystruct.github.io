@@ -2,7 +2,7 @@
 
 ## Repository 接口
 
-`Repository` 接口提供了执行数据库操作的方法。
+`Repository` 接口提供了执行底层数据库操作的方法。
 
 ### 接口定义
 
@@ -32,7 +32,7 @@ public interface Repository {
 
 ## DatabaseOperator
 
-`DatabaseOperator` 类提供了一种方便的方式来执行数据库操作。
+`DatabaseOperator` 类提供了一种方便的方式来执行原始 SQL 数据库操作和管理事务。
 
 ### 类定义
 
@@ -78,61 +78,79 @@ public class DatabaseOperator implements AutoCloseable {
 
 ## AbstractData
 
-`AbstractData` 类为对象关系映射提供了一个基类。
+`AbstractData` 类是 Tinystruct 中对象关系映射 (ORM) 的基础。
 
 ### 类定义
 
 ```java
 public abstract class AbstractData {
+    // 字段注册方法（必须在 setter 中调用）
+    protected String setFieldAsString(String fieldName, String value);
+    protected int setFieldAsInt(String fieldName, int value);
+    protected Date setFieldAsDate(String fieldName, Date value);
+    protected boolean setFieldAsBoolean(String fieldName, boolean value);
+    protected LocalDateTime setFieldAsLocalDateTime(String fieldName, LocalDateTime value);
+
     // CRUD 操作
     public void append() throws ApplicationException;
     public void update() throws ApplicationException;
     public void delete() throws ApplicationException;
-    public void save() throws ApplicationException;
     
     // 查询操作
     public void findOneById() throws ApplicationException;
-    public <T extends AbstractData> List<T> findAll() throws ApplicationException;
-    public <T extends AbstractData> List<T> findWhere(String condition, Object... parameters) throws ApplicationException;
-    public <T extends AbstractData> T findOne(String condition, Object... parameters) throws ApplicationException;
+    public <T extends AbstractData> Table findAll() throws ApplicationException;
+    public <T extends AbstractData> Table findWith(String condition, Object[] parameters) throws ApplicationException;
     
-    // 计数操作
-    public long count() throws ApplicationException;
-    public long countWhere(String condition, Object... parameters) throws ApplicationException;
+    // 聚合与配置
+    public AbstractData setRequestFields(String fields);
+    public void setTableName(String tableName);
     
-    // 实用方法
-    public String getTableName();
-    public String getIdentifierName();
-    public Object getIdentifierValue();
-    public void setIdentifierValue(Object value);
+    // 标识符管理
+    public Object getId();
+    public void setId(Object id);
+    
+    // 数据映射（必须实现）
+    public abstract void setData(Row row);
 }
 ```
 
-## Row 接口
+## Table 和 Row 接口
 
-`Row` 接口提供了从查询结果访问数据的方法。
+使用 `AbstractData` 查询会返回一个 `Table`，它作为一个包含结果数据的 `Row` 对象列表。
 
 ### 接口定义
 
 ```java
-public interface Row {
-    // 获取方法
-    String getString(String columnName);
-    int getInt(String columnName);
-    long getLong(String columnName);
-    double getDouble(String columnName);
-    boolean getBoolean(String columnName);
-    Date getDate(String columnName);
-    Time getTime(String columnName);
-    Timestamp getTimestamp(String columnName);
-    Object getObject(String columnName);
+public interface Table extends Iterable<Row> {
+    int size();
+    boolean isEmpty();
+    Row get(int index);
+    Iterator<Row> iterator();
+}
+
+public interface Row extends Iterable<Field> {
+    // 获取原始字段信息
+    Field getFieldInfo(String columnName);
     
     // 检查方法
-    boolean isNull(String columnName);
     boolean hasColumn(String columnName);
     
     // 列信息
     Set<String> getColumnNames();
+}
+
+public interface Field {
+    String name();
+    Object value();
+    
+    // 类型化获取方法
+    String stringValue();
+    int intValue();
+    long longValue();
+    double doubleValue();
+    boolean booleanValue();
+    Date dateValue();
+    LocalDateTime localDateTimeValue();
 }
 ```
 
@@ -157,48 +175,57 @@ public enum Type {
 
 ## 使用示例
 
-### 基本查询
+### 基本查询 (`DatabaseOperator`)
 
 ```java
 try (DatabaseOperator operator = new DatabaseOperator()) {
-    ResultSet results = operator.query("SELECT * FROM users WHERE id = 1");
+    ResultSet results = operator.query("SELECT * FROM User LIMIT 1");
     
     if (results.next()) {
-        String name = results.getString("name");
+        String username = results.getString("username");
         String email = results.getString("email");
-        System.out.println("用户: " + name + " (" + email + ")");
+        System.out.println("用户: " + username + " (" + email + ")");
     }
 }
 ```
 
-### 参数化查询
+### 参数化查询 (`DatabaseOperator`)
 
 ```java
 try (DatabaseOperator operator = new DatabaseOperator()) {
     PreparedStatement stmt = operator.preparedStatement(
-        "SELECT * FROM users WHERE email = ?", 
-        new Object[]{"zhangsan@example.com"}
+        "SELECT id, username, email FROM User WHERE email = ?", 
+        new Object[]{"james@example.com"}
     );
     
     ResultSet results = operator.executeQuery(stmt);
     
     while (results.next()) {
-        int id = results.getInt("id");
-        String name = results.getString("name");
-        System.out.println("用户 ID: " + id + ", 姓名: " + name);
+        String id = results.getString("id");
+        String name = results.getString("username");
+        System.out.println("用户 ID: " + id + ", 用户名: " + name);
     }
 }
 ```
 
-### 事务
+### 事务 (`DatabaseOperator`)
 
 ```java
 try (DatabaseOperator operator = new DatabaseOperator()) {
     operator.beginTransaction();
     
     try {
-        operator.update("UPDATE accounts SET balance = balance - 100 WHERE id = 1");
-        operator.update("UPDATE accounts SET balance = balance + 100 WHERE id = 2");
+        PreparedStatement s1 = operator.preparedStatement(
+            "UPDATE accounts SET balance = balance - ? WHERE id = ?",
+            new Object[]{100.0, "source-uuid"}
+        );
+        operator.executeUpdate(s1);
+        
+        PreparedStatement s2 = operator.preparedStatement(
+            "UPDATE accounts SET balance = balance + ? WHERE id = ?",
+            new Object[]{100.0, "target-uuid"}
+        );
+        operator.executeUpdate(s2);
         
         operator.commitTransaction();
     } catch (Exception e) {
@@ -208,55 +235,75 @@ try (DatabaseOperator operator = new DatabaseOperator()) {
 }
 ```
 
-### 对象关系映射
+### 对象关系映射 (`AbstractData`)
 
 ```java
-// 定义模型类
+// 1. 定义模型类
 public class User extends AbstractData {
-    private int id;
-    private String name;
+    private String username;
     private String email;
     
-    // Getters 和 setters
-    // ...
+    public String getId() {
+        return String.valueOf(this.Id);
+    }
+    
+    // Setter 必须注册字段
+    public void setUsername(String username) {
+        this.username = this.setFieldAsString("username", username);
+    }
+    
+    public void setEmail(String email) {
+        this.email = this.setFieldAsString("email", email);
+    }
+    
+    @Override
+    public void setData(Row row) {
+        if (row.getFieldInfo("id") != null)
+            this.setId(row.getFieldInfo("id").stringValue());
+        if (row.getFieldInfo("username") != null)
+            this.setUsername(row.getFieldInfo("username").stringValue());
+        if (row.getFieldInfo("email") != null)
+            this.setEmail(row.getFieldInfo("email").stringValue());
+    }
 }
 
-// 创建新用户
+// 2. 创建新用户（通过映射自动生成 UUID）
 User user = new User();
-user.setName("张三");
-user.setEmail("zhangsan@example.com");
+user.setUsername("james");
+user.setEmail("james@example.com");
 user.append();
+System.out.println("新 ID: " + user.getId());
 
-// 通过 ID 查找用户
+// 3. 通过 ID 查找用户
 User foundUser = new User();
-foundUser.setId(1);
+foundUser.setId(user.getId());
 foundUser.findOneById();
 
-// 更新用户
-foundUser.setName("李四");
+// 4. 更新用户
+foundUser.setUsername("james_updated");
 foundUser.update();
 
-// 删除用户
+// 5. 删除用户
 foundUser.delete();
 
-// 查找所有用户
-List<User> allUsers = new User().findAll();
+// 6. 查找所有用户
+Table allUsersTable = new User().findAll();
 
-// 使用条件查找用户
-List<User> filteredUsers = new User().findWhere("name LIKE ?", "%张%");
+// 7. 使用条件查找用户
+Table filteredTable = new User().findWith("WHERE username LIKE ?", new Object[]{"%james%"});
+if (!filteredTable.isEmpty()) {
+    User firstMatch = new User();
+    firstMatch.setData(filteredTable.get(0));
+}
 ```
 
 ## 最佳实践
 
-1. **资源管理**：始终使用 try-with-resources 确保正确关闭数据库资源。
-
-2. **参数化查询**：使用参数化查询防止 SQL 注入。
-
-3. **事务**：对需要原子性的操作使用事务。
-
-4. **错误处理**：为数据库操作实现适当的错误处理。
-
-5. **连接池**：为应用程序需求配置适当的连接池设置。
+1. **资源管理**：使用 `DatabaseOperator` 时始终使用 `try-with-resources`，以确保正确关闭数据库资源和连接池。
+2. **字段注册**：扩展 `AbstractData` 时，始终在 setter 中调用适当的 `setFieldAs*` 方法。
+3. **参数化查询**：通过 `findWith()` 或 `preparedStatement()` 中的 `Object[]` 参数传递值以防止 SQL 注入。
+4. **聚合查询**：在调用 `findWith()` 之前使用 `setRequestFields()` 修改 SELECT 投影。
+5. **事务**：对于跨多个表或需要原子性的操作，请使用事务。
 
 ## 相关 API
 
