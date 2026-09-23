@@ -208,7 +208,7 @@ img, video {
 }
 
 .nav-group.open > .nav-submenu {
-    max-height: 300px;
+    max-height: 500px;
     opacity: 1;
 }
 
@@ -665,6 +665,7 @@ footer {
 }
 
 /* Responsive */
+/* Responsive — tablet/small desktop: icon-only sidebar */
 @media (max-width: 1034px) {
     .content-wrapper {
         grid-template-columns: 1fr;
@@ -695,11 +696,28 @@ footer {
     }
 }
 
+/* Mobile: hide icon-only sidebar behind viewport; show full sidebar when toggled */
 @media (max-width: 768px) {
-    /* Sidebar is controlled by sidebar-closed toggle — keep it flex but off-screen */
     .sidebar {
         display: flex !important;
-        transform: translateX(-100%);
+        width: var(--sidebar-width) !important;
+        padding: 2rem 1.5rem !important;
+    }
+
+    /* Restore hidden labels inside the full-width sidebar on mobile */
+    .sidebar .sidebar-brand span,
+    .sidebar .nav-item span {
+        display: inline !important;
+    }
+
+    .sidebar .nav-link {
+        justify-content: flex-start !important;
+        padding: 0.75rem 1rem !important;
+    }
+
+    .sidebar .nav-link ion-icon,
+    .sidebar .nav-link svg {
+        margin-right: 1.5rem !important;
     }
 
     /* Content always full-width on mobile regardless of sidebar state */
