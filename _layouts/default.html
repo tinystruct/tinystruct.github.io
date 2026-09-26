@@ -124,32 +124,84 @@
             <span>tinystruct</span>
         </a>
 
+        {% assign is_zh = false %}
+        {% if page.url contains '/zh/' %}
+            {% assign is_zh = true %}
+        {% endif %}
+
         <ul class="nav-menu">
             <li class="nav-item">
                 <a href="/" class="nav-link">
                     <ion-icon name="home-outline"></ion-icon>
-                    <span>Home</span>
+                    <span>{% if is_zh %}首页{% else %}Home{% endif %}</span>
                 </a>
             </li>
-            
             <li class="nav-item">
-                <a href="/en/getting-started.html" class="nav-link">
+                <a href="{% if is_zh %}/zh/getting-started.html{% else %}/en/getting-started.html{% endif %}" class="nav-link">
                     <ion-icon name="rocket-outline"></ion-icon>
-                    <span>Getting Started</span>
+                    <span>{% if is_zh %}入门指南{% else %}Getting Started{% endif %}</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="/en/core-concepts.html" class="nav-link">
+                <a href="{% if is_zh %}/zh/core-concepts.html{% else %}/en/core-concepts.html{% endif %}" class="nav-link">
                     <ion-icon name="book-outline"></ion-icon>
-                    <span>Core Concepts</span>
+                    <span>{% if is_zh %}核心概念{% else %}Core Concepts{% endif %}</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="/en/api/" class="nav-link">
+                <a href="{% if is_zh %}/zh/api/{% else %}/en/api/{% endif %}" class="nav-link">
                     <ion-icon name="code-slash-outline"></ion-icon>
-                    <span>API Reference</span>
+                    <span>{% if is_zh %}API 参考{% else %}API Reference{% endif %}</span>
                 </a>
             </li>
+
+            <!-- Release Notes Collapsible Group -->
+            <li class="nav-item nav-group" id="release-notes-group">
+                <button class="nav-link nav-group-toggle" onclick="toggleNavGroup('release-notes-group')" aria-expanded="false">
+                    <ion-icon name="newspaper-outline"></ion-icon>
+                    <span>{% if is_zh %}发行说明{% else %}Release Notes{% endif %}</span>
+                    <ion-icon name="chevron-forward-outline" class="nav-chevron"></ion-icon>
+                </button>
+                <ul class="nav-submenu" id="release-notes-submenu">
+                    <li>
+                        <a href="{% if is_zh %}/zh/whats-new-1.7.34.html{% else %}/en/whats-new-1.7.34.html{% endif %}" class="nav-sublink">
+                            <span class="version-tag latest">v1.7.34</span>
+                            <span>{% if is_zh %}最新版本{% else %}Latest{% endif %}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% if is_zh %}/zh/whats-new-1.7.32.html{% else %}/en/whats-new-1.7.32.html{% endif %}" class="nav-sublink">
+                            <span class="version-tag">v1.7.32</span>
+                            <span>{% if is_zh %}注解与枚举{% else %}Annotations &amp; Enums{% endif %}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% if is_zh %}/zh/whats-new-1.7.31.html{% else %}/en/whats-new-1.7.31.html{% endif %}" class="nav-sublink">
+                            <span class="version-tag">v1.7.31</span>
+                            <span>{% if is_zh %}性能与 SSL{% else %}Performance &amp; SSL{% endif %}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% if is_zh %}/zh/whats-new-1.7.30.html{% else %}/en/whats-new-1.7.30.html{% endif %}" class="nav-sublink">
+                            <span class="version-tag">v1.7.30</span>
+                            <span>PostgreSQL</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% if is_zh %}/zh/whats-new-1.7.29.html{% else %}/en/whats-new-1.7.29.html{% endif %}" class="nav-sublink">
+                            <span class="version-tag">v1.7.29</span>
+                            <span>{% if is_zh %}安全与 AI{% else %}Security &amp; AI{% endif %}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% if is_zh %}/zh/whats-new-1.7.23.html{% else %}/en/whats-new-1.7.23.html{% endif %}" class="nav-sublink">
+                            <span class="version-tag">v1.7.23</span>
+                            <span>POJO Generator</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
             <li class="nav-item">
                 <a href="https://github.com/tinystruct/tinystruct" target="_blank" class="nav-link">
                     <ion-icon name="logo-github"></ion-icon>
@@ -179,6 +231,9 @@
                     <div class="version-badge">v1.7.34</div>
                 </div>
                 <div class="header-actions">
+                    <button class="lang-switch" title="Switch Language" onclick="toggleLanguage()">
+                        <span style="font-size: 0.8rem; font-weight: 700;">{% if is_zh %}EN{% else %}ZH{% endif %}</span>
+                    </button>
                     <button class="theme-toggle" title="Toggle Dark/Light Mode" onclick="toggleTheme()">
                         <ion-icon name="moon-outline"></ion-icon>
                     </button>
@@ -203,6 +258,26 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-properties.min.js"></script>
     
     <script>
+
+        // Language Switcher for documentation pages
+        function toggleLanguage() {
+            const path = window.location.pathname;
+            if (path.includes('/en/')) {
+                window.location.pathname = path.replace('/en/', '/zh/');
+            } else if (path.includes('/zh/')) {
+                window.location.pathname = path.replace('/zh/', '/en/');
+            }
+        }
+
+        // Collapsible nav group toggle
+        function toggleNavGroup(groupId) {
+            const group = document.getElementById(groupId);
+            if (!group) return;
+            const isOpen = group.classList.toggle('open');
+            const btn = group.querySelector('.nav-group-toggle');
+            if (btn) btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        }
+
         // Sidebar Toggle
         function toggleSidebar() {
             document.body.classList.toggle('sidebar-closed');
