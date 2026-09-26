@@ -465,6 +465,10 @@ public class HelloMCPServer extends MCPServer {
                     'Getting Started': '入门指南',
                     'Core Concepts': '核心概念',
                     'API Reference': 'API 参考',
+                    'Release Notes': '发行说明',
+                    'Latest': '最新版本',
+                    'Annotations & Enums': '注解与枚举',
+                    'Performance & SSL': '性能与 SSL',
                     'GitHub': 'GitHub'
                 }
             },
@@ -492,6 +496,10 @@ public class HelloMCPServer extends MCPServer {
                     'Getting Started': 'Getting Started',
                     'Core Concepts': 'Core Concepts',
                     'API Reference': 'API Reference',
+                    'Release Notes': 'Release Notes',
+                    'Latest': 'Latest',
+                    'Annotations & Enums': 'Annotations & Enums',
+                    'Performance & SSL': 'Performance & SSL',
                     'GitHub': 'GitHub'
                 }
             }
@@ -543,10 +551,13 @@ public class HelloMCPServer extends MCPServer {
 
             // Update Sidebar
             const sidebarLinks = document.querySelectorAll('.nav-link');
-            const sidebarKeys = ['Home', 'Getting Started', 'Core Concepts', 'API Reference', 'GitHub'];
+            const sidebarKeys = ['Home', 'Getting Started', 'Core Concepts', 'API Reference', 'Release Notes', 'GitHub'];
 
             sidebarLinks.forEach((link, index) => {
                 const key = sidebarKeys[index];
+                if (!key) return;
+                
+                // For nav-links, the first span is usually the text. 
                 const span = link.querySelector('span');
                 if (span && t['sidebar'][key]) {
                     span.textContent = t['sidebar'][key];
@@ -561,6 +572,30 @@ public class HelloMCPServer extends MCPServer {
                         } else if (currentLang === 'en' && originalHref.startsWith('zh/')) {
                             link.setAttribute('href', originalHref.replace('zh/', 'en/'));
                         }
+                    }
+                }
+            });
+
+            // Update Sublinks
+            const subLinks = document.querySelectorAll('.nav-sublink');
+            const subKeys = ['Latest', 'Annotations & Enums', 'Performance & SSL'];
+            
+            subLinks.forEach((link, index) => {
+                const key = subKeys[index];
+                if (!key) return;
+                
+                // The label is the second span (first is version tag)
+                const spans = link.querySelectorAll('span');
+                if (spans.length > 1 && t['sidebar'][key]) {
+                    spans[1].textContent = t['sidebar'][key];
+                }
+                
+                const originalHref = link.getAttribute('href');
+                if (originalHref) {
+                    if (currentLang === 'zh' && originalHref.startsWith('en/')) {
+                        link.setAttribute('href', originalHref.replace('en/', 'zh/'));
+                    } else if (currentLang === 'en' && originalHref.startsWith('zh/')) {
+                        link.setAttribute('href', originalHref.replace('zh/', 'en/'));
                     }
                 }
             });
