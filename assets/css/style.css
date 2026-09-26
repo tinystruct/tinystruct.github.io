@@ -179,7 +179,14 @@ img, video {
     border: none;
     cursor: pointer;
     text-align: left;
-    /* inherits .nav-link styles */
+    /* Reset browser button defaults so it matches .nav-link <a> elements */
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    color: inherit;
+    -webkit-appearance: none;
+    appearance: none;
     justify-content: flex-start;
 }
 
