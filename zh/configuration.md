@@ -200,9 +200,21 @@ Properties props = getConfiguration().getProperties();
 | 属性 | 描述 | 默认值 |
 |----------|-------------|---------|
 | server.port | HTTP 服务器端口 | 8080 |
-| server.host | HTTP 服务器主机 | localhost |
+| server.host | HTTP 服务器绑定地址 | localhost |
+| server.name | 用于安全验证的主机头 (v1.7.29+) | - |
 | server.context | 服务器上下文路径 | / |
 | server.threads | 服务器线程池大小 | 10 |
+| server.read.timeout | Socket 读取超时时间 (毫秒) (v1.7.29+) | - |
+| server.connect.timeout | Socket 连接超时时间 (毫秒) (v1.7.29+) | - |
+
+### 安全设置
+
+| 属性 | 描述 | 默认值 |
+|----------|-------------|---------|
+| jwt.issuer | 用于 JWT 验证的签发者字符串 (v1.7.29+) | - |
+| jwt.expiration | JWT 过期时间 (秒) (v1.7.29+) | 3600 |
+| rsa.private.key | RSA 私钥路径 (v1.7.29+) | - |
+| rsa.public.key | RSA 公钥路径 (v1.7.29+) | - |
 
 ### 数据库设置
 
