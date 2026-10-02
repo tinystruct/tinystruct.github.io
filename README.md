@@ -6,10 +6,21 @@ Welcome to the tinystruct framework documentation. This documentation provides c
 
 欢迎查阅 tinystruct 框架文档。本文档为使用和开发 tinystruct 框架提供全面的指导。
 
-## What's New in v1.7.30
+## What's New in v1.7.35
 
-- **PostgreSQL Database Support**: Out-of-the-box PostgreSQL support via `Type.PostgreSQL` in the `Type` enum and `PostgreSQLServer` repository — including a dedicated POJO generator.
-- **Detailed Release Notes**: See [What's New in 1.7.30](en/whats-new-1.7.30.md) ([中文版](zh/whats-new-1.7.30.md))
+- **Dependency Upgrades**: Lettuce 7.8.0, H2 2.5.252, Mockito 5.24.0, and Netty BOM 4.2.18.Final
+- **CVE Patches**: Patched versions of vulnerable transitive dependencies (Netty, zstd-jni, lz4-java, snappy-java, Reactor)
+- **Reliable Interrupt Handling**: `DistributedMessageQueue` and `AlarmClock` now restore the thread interrupt flag
+- **Detailed Release Notes**: See [What's New in 1.7.35](en/whats-new-1.7.35.md) ([中文版](zh/whats-new-1.7.35.md))
+
+### Previous: v1.7.34 Highlights
+
+- **Annotation-Driven ORM**: `@Table`, `@Id` and `@Column` for code-first POJO mapping, with opt-in table auto-creation
+- **Enum-Collection Arguments**: `@Action` methods accept `List<EnumType>` from comma-separated input
+
+### Previous: v1.7.30 Highlights
+
+- **PostgreSQL Database Support**: `Type.PostgreSQL` and `PostgreSQLServer`, including a dedicated POJO generator
 
 ### Previous: v1.7.29 Highlights
 
@@ -77,7 +88,7 @@ Add the dependency to your `pom.xml`:
 <dependency>
     <groupId>org.tinystruct</groupId>
     <artifactId>tinystruct</artifactId>
-    <version>1.7.30</version>
+    <version>1.7.35</version>
     <classifier>jar-with-dependencies</classifier>
 </dependency>
 ```

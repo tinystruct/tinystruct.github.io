@@ -9,6 +9,7 @@
 * [数据库集成](database.md)
 * [高级特性](advanced-features.md)
 * [最佳实践](best-practices.md)
+* [1.7.35 新特性](whats-new-1.7.35.md)
 * [1.7.34 新特性](whats-new-1.7.34.md)
 * [1.7.32 新特性](whats-new-1.7.32.md)
 * [1.7.31 新特性](whats-new-1.7.31.md)
