@@ -172,6 +172,11 @@ tinystruct follows a modular, action-oriented architecture that enables:
 
 ![Architecture](architecture.gif)
 
+## Support / 赞助
+
+If tinystruct is useful to you, please consider supporting the project: [opencollective.com/tinystruct](https://opencollective.com/tinystruct)
+如果 tinystruct 对您有帮助，欢迎通过 [Open Collective](https://opencollective.com/tinystruct) 赞助本项目。
+
 ## Contributing / 贡献
 
 If you'd like to contribute to this documentation, please:
