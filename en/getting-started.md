@@ -10,7 +10,15 @@ This guide will help you set up your first tinystruct application and understand
 
 ## Installation
 
-### Option 1: Using the tinystruct Archetype (Recommended)
+### Option 0: One-command installer (Linux/macOS)
+
+```bash
+curl -fsSL https://tinystruct.org/create | sh
+```
+
+The script checks for Java 17+ and Maven, asks for a project name, package and type (`basic`, `web`, `mcp`, `workflow`, `agent`), then generates and builds the project.
+
+### Option 1: Using the tinystruct Archetype
 
 The fastest way to create a tinystruct project is using the official archetype:
 
