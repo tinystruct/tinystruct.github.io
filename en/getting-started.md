@@ -10,10 +10,16 @@ This guide will help you set up your first tinystruct application and understand
 
 ## Installation
 
-### Option 0: One-command installer (Linux/macOS)
+### Option 0: One-command installer
 
 ```bash
 curl -fsSL https://tinystruct.org/create | sh
+```
+
+On Windows (requires Git for Windows or WSL), use PowerShell:
+
+```powershell
+irm https://tinystruct.org/create.ps1 | iex
 ```
 
 The script checks for Java 17+ and Maven, asks for a project name, package and type (`basic`, `web`, `mcp`, `workflow`, `agent`), then generates and builds the project.

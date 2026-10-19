@@ -10,7 +10,21 @@
 
 ## 安装
 
-### 使用 tinystruct Archetype (最快方式)
+### 一条命令创建项目
+
+```bash
+curl -fsSL https://tinystruct.org/create | sh
+```
+
+Windows 用户（需要安装 Git for Windows 或 WSL）请在 PowerShell 中运行：
+
+```powershell
+irm https://tinystruct.org/create.ps1 | iex
+```
+
+脚本会检查 Java 17+ 和 Maven，询问项目名称、包名和项目类型（`basic`、`web`、`mcp`、`workflow`、`agent`），然后生成并构建项目。
+
+### 使用 tinystruct Archetype
 
 最简单的入门方式是使用 tinystruct archetype 创建项目：
 

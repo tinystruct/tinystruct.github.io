@@ -1,0 +1,2 @@
+# Shell script served via `curl | sh` must keep LF endings.
+create text eol=lf

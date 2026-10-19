@@ -178,7 +178,7 @@
         <section class="quickstart" id="quickstart" style="max-width: 800px; margin: 0 auto 3rem; padding: 0 1rem;">
             <h2 style="text-align: center; margin-bottom: 0.5rem;">Quick Start</h2>
             <p style="text-align: center; color: var(--text-secondary); margin-bottom: 1.5rem;">
-                Create a project with one command. Requires Java 17+ and Maven on Linux or macOS.
+                Create a project with one command. Requires Java 17+ and Maven.
                 Choose <code>basic</code>, <code>web</code>, <code>mcp</code>, <code>workflow</code> or <code>agent</code>.
             </p>
             <div class="code-block">
@@ -197,6 +197,25 @@
                 </div>
                 <pre><code class="language-bash">curl -fsSL https://tinystruct.org/create | sh</code></pre>
             </div>
+            <div class="code-block" style="margin-top: 1rem;">
+                <div class="code-header">
+                    <div class="dots">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                    </div>
+                    <div class="code-actions">
+                        <span class="language">POWERSHELL</span>
+                        <button class="copy-btn" title="Copy code" aria-label="Copy code">
+                            <ion-icon name="copy-outline"></ion-icon>
+                        </button>
+                    </div>
+                </div>
+                <pre><code class="language-powershell">irm https://tinystruct.org/create.ps1 | iex</code></pre>
+            </div>
+            <p style="text-align: center; color: var(--text-secondary); margin-top: 0.75rem; font-size: 0.85rem;">
+                Windows: requires Git for Windows or WSL (the script runs the same installer through Git Bash or WSL).
+            </p>
         </section>
 
         <!-- Content Grid -->

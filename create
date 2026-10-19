@@ -242,6 +242,19 @@ exec java -cp "$DIR/target/classes:$DIR/target/dependency/*" \
 EOF
   chmod +x bin/dispatcher
 
+  # Windows (cmd / PowerShell) equivalent of bin/dispatcher, with CRLF endings.
+  emit bin/dispatcher.cmd <<'EOF2'
+@echo off
+setlocal
+set "DIR=%~dp0.."
+if not exist "%DIR%\target\dependency" (
+  echo Project not built yet. Run: mvn -q package -DskipTests 1>&2
+  exit /b 1
+)
+java -cp "%DIR%\target\classes;%DIR%\target\dependency\*" org.tinystruct.system.Dispatcher %*
+EOF2
+  awk '{ printf "%s\r\n", $0 }' bin/dispatcher.cmd > bin/dispatcher.cmd.tmp && mv bin/dispatcher.cmd.tmp bin/dispatcher.cmd
+
   emit .gitignore <<'EOF'
 target/
 .idea/
@@ -589,6 +602,8 @@ A tinystruct (@@VERSION@@) \`@@TYPE@@\` project.
 ## Run
 
     ${RUN_HINT}
+
+On Windows (cmd/PowerShell) use \`bin\dispatcher.cmd\` in place of \`bin/dispatcher\`.
 
 ## Test
 
