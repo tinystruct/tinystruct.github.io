@@ -1330,7 +1330,7 @@ footer {
     left: 0;
     right: 0; 
     bottom: 0;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.35);
     z-index: 999;
     opacity: 0;
     pointer-events: none;
@@ -1451,3 +1451,52 @@ body.sidebar-closed .main-content {
     
     
     
+
+/* ===== Homepage enhancements ===== */
+.hero-actions { flex-wrap: wrap; }
+
+.hero-install { margin-top: 2.5rem; max-width: 560px; }
+.install-tabs { display: flex; gap: 0.25rem; margin-bottom: 0.5rem; }
+.install-tab {
+    background: transparent; color: rgba(255, 255, 255, 0.75);
+    border: 1px solid transparent; border-radius: 0.5rem;
+    padding: 0.3rem 0.8rem; font: 600 0.85rem var(--font-primary); cursor: pointer;
+}
+.install-tab:hover { color: #fff; }
+.install-tab.active { background: rgba(255, 255, 255, 0.2); color: #fff; border-color: rgba(255, 255, 255, 0.3); }
+.install-block { padding: 1rem 3.5rem 1rem 1.25rem; display: block; }
+.install-block[hidden] { display: none; }
+.install-block .copy-btn { position: absolute; top: 50%; right: 0.75rem; transform: translateY(-50%); opacity: 1; }
+.install-note { font-size: 0.85rem !important; color: rgba(255, 255, 255, 0.8) !important; margin: 0.75rem 0 0 !important; line-height: 1.6 !important; }
+.install-note code { background: rgba(255, 255, 255, 0.15); padding: 0.1rem 0.4rem; border-radius: 0.3rem; font-size: 0.8rem; }
+
+.stats-strip {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+    max-width: 1400px; margin: -3rem 3rem 2rem; position: relative; z-index: 3;
+    background: var(--border-color); border: 1px solid var(--border-color);
+    border-radius: 1rem; overflow: hidden;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+.stat { background: var(--feature-bg); padding: 1.25rem 1rem; text-align: center; }
+.stat strong { display: block; font: 700 1.6rem var(--font-heading); color: var(--primary-color); }
+.stat span { font-size: 0.85rem; color: var(--text-secondary); }
+.stats-strip + .content-wrapper { margin-top: 0; }
+
+.docs-section { max-width: 1400px; padding: 3rem 3rem 1rem; }
+.docs-section h2 { font: 700 1.75rem var(--font-heading); margin: 0 0 1.5rem; }
+.docs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.25rem; }
+.doc-card {
+    display: block; background: var(--feature-bg); border: 1px solid var(--border-color);
+    border-radius: 1rem; padding: 1.5rem; text-decoration: none; color: inherit;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.doc-card:hover { transform: translateY(-3px); border-color: var(--primary-color); box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.2); }
+.doc-card ion-icon { font-size: 1.6rem; color: var(--primary-color); }
+.doc-card h4 { font: 600 1.1rem var(--font-heading); margin: 0.75rem 0 0.4rem; }
+.doc-card p { margin: 0; font-size: 0.9rem; line-height: 1.5; color: var(--text-secondary); }
+
+@media (max-width: 768px) {
+    .stats-strip { grid-template-columns: repeat(2, 1fr); margin: -2rem 1rem 1.5rem; }
+    .docs-section { padding: 2rem 1rem 0.5rem; }
+    .hero-install { max-width: 100%; }
+}

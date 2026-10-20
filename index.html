@@ -8,6 +8,11 @@
         content="A lightweight java framework designed for building efficient and scalable applications. Supports both command-line tools and APIs, enabling developers to create robust solutions with ease.">
     <meta name="keywords" content="java, framework, lightweight, command-line, web, applications, tinystruct">
     <meta name="author" content="James ZHOU">
+    <meta property="og:title" content="tinystruct - a lightweight Java framework">
+    <meta property="og:description" content="One codebase, two interfaces: expose the same logic as a CLI and a Web API. Zero boilerplate, 86,000+ req/s.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tinystruct.org/">
+    <meta name="theme-color" content="#4f46e5">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <title>tinystruct framework - v1.7.35</title>
 
@@ -171,51 +176,35 @@
                         View on GitHub
                     </a>
                 </div>
+
+                <!-- One-command install -->
+                <div class="hero-install" id="quickstart">
+                    <div class="install-tabs" role="tablist">
+                        <button class="install-tab active" role="tab" aria-selected="true" data-target="install-sh">macOS / Linux</button>
+                        <button class="install-tab" role="tab" aria-selected="false" data-target="install-ps">Windows</button>
+                    </div>
+                    <div class="code-block install-block" id="install-sh">
+                        <pre><code class="language-bash">curl -fsSL https://tinystruct.org/create | sh</code></pre>
+                        <button class="copy-btn" title="Copy code" aria-label="Copy code"><ion-icon name="copy-outline"></ion-icon></button>
+                    </div>
+                    <div class="code-block install-block" id="install-ps" hidden>
+                        <pre><code class="language-powershell">irm https://tinystruct.org/create.ps1 | iex</code></pre>
+                        <button class="copy-btn" title="Copy code" aria-label="Copy code"><ion-icon name="copy-outline"></ion-icon></button>
+                    </div>
+                    <p class="install-note">
+                        Needs Java 17+ and Maven. Pick a template: <code>basic</code> <code>web</code> <code>mcp</code>
+                        <code>workflow</code> <code>agent</code>. On Windows, Git for Windows or WSL is required.
+                    </p>
+                </div>
             </section>
         </header>
 
-        <!-- Quick Start -->
-        <section class="quickstart" id="quickstart" style="max-width: 800px; margin: 0 auto 3rem; padding: 0 1rem;">
-            <h2 style="text-align: center; margin-bottom: 0.5rem;">Quick Start</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 1.5rem;">
-                Create a project with one command. Requires Java 17+ and Maven.
-                Choose <code>basic</code>, <code>web</code>, <code>mcp</code>, <code>workflow</code> or <code>agent</code>.
-            </p>
-            <div class="code-block">
-                <div class="code-header">
-                    <div class="dots">
-                        <span class="dot red"></span>
-                        <span class="dot yellow"></span>
-                        <span class="dot green"></span>
-                    </div>
-                    <div class="code-actions">
-                        <span class="language">SHELL</span>
-                        <button class="copy-btn" title="Copy code" aria-label="Copy code">
-                            <ion-icon name="copy-outline"></ion-icon>
-                        </button>
-                    </div>
-                </div>
-                <pre><code class="language-bash">curl -fsSL https://tinystruct.org/create | sh</code></pre>
-            </div>
-            <div class="code-block" style="margin-top: 1rem;">
-                <div class="code-header">
-                    <div class="dots">
-                        <span class="dot red"></span>
-                        <span class="dot yellow"></span>
-                        <span class="dot green"></span>
-                    </div>
-                    <div class="code-actions">
-                        <span class="language">POWERSHELL</span>
-                        <button class="copy-btn" title="Copy code" aria-label="Copy code">
-                            <ion-icon name="copy-outline"></ion-icon>
-                        </button>
-                    </div>
-                </div>
-                <pre><code class="language-powershell">irm https://tinystruct.org/create.ps1 | iex</code></pre>
-            </div>
-            <p style="text-align: center; color: var(--text-secondary); margin-top: 0.75rem; font-size: 0.85rem;">
-                Windows: requires Git for Windows or WSL (the script runs the same installer through Git Bash or WSL).
-            </p>
+        <!-- Stats strip -->
+        <section class="stats-strip" aria-label="Highlights">
+            <div class="stat"><strong>86,000+</strong><span>requests / second</span></div>
+            <div class="stat"><strong>CLI + Web</strong><span>from one codebase</span></div>
+            <div class="stat"><strong>17+</strong><span>Java version</span></div>
+            <div class="stat"><strong>Apache 2.0</strong><span>open source</span></div>
         </section>
 
         <!-- Content Grid -->
@@ -424,6 +413,43 @@ public class HelloMCPServer extends MCPServer {
             </div>
         </section>
 
+        <!-- Explore the docs -->
+        <section class="docs-section">
+            <h2>Explore the docs</h2>
+            <div class="docs-grid">
+                <a class="doc-card" href="en/getting-started.html">
+                    <ion-icon name="rocket-outline"></ion-icon>
+                    <h4>Getting Started</h4>
+                    <p>Install, create your first app and run it as a CLI and a web server.</p>
+                </a>
+                <a class="doc-card" href="en/core-concepts.html">
+                    <ion-icon name="book-outline"></ion-icon>
+                    <h4>Core Concepts</h4>
+                    <p>Applications, actions, the context and the request lifecycle.</p>
+                </a>
+                <a class="doc-card" href="en/web-applications.html">
+                    <ion-icon name="globe-outline"></ion-icon>
+                    <h4>Web Applications</h4>
+                    <p>Routing, templates, SSE and file uploads.</p>
+                </a>
+                <a class="doc-card" href="en/database.html">
+                    <ion-icon name="server-outline"></ion-icon>
+                    <h4>Database</h4>
+                    <p>Annotation-based ORM, POJO generation and PostgreSQL.</p>
+                </a>
+                <a class="doc-card" href="en/mcp-integration.html">
+                    <ion-icon name="hardware-chip-outline"></ion-icon>
+                    <h4>MCP Integration</h4>
+                    <p>Expose your tools to AI models over the Model Context Protocol.</p>
+                </a>
+                <a class="doc-card" href="en/whats-new-1.7.35.html">
+                    <ion-icon name="newspaper-outline"></ion-icon>
+                    <h4>What's New in 1.7.35</h4>
+                    <p>Latest release notes and upgrade guidance.</p>
+                </a>
+            </div>
+        </section>
+
         <footer>
             <div class="footer-content">
                 <p>Released under the Apache License 2.0</p>
@@ -465,27 +491,10 @@ public class HelloMCPServer extends MCPServer {
         document.documentElement.setAttribute('data-theme', savedTheme);
         updateThemeIcon(savedTheme);
 
-        // Sidebar Toggle Logic
+        // Sidebar Toggle Logic (closed by default at every width, same as the doc pages)
         function toggleSidebar() {
-            if (window.innerWidth < 768) {
-                document.body.classList.toggle('sidebar-open');
-                document.body.classList.remove('sidebar-closed'); // Reset desktop state just in case
-            } else {
-                document.body.classList.toggle('sidebar-closed');
-                document.body.classList.remove('sidebar-open'); // Reset mobile state just in case
-            }
+            document.body.classList.toggle('sidebar-closed');
         }
-
-        // Sidebar is hidden by default (sidebar-closed on body) on desktop.
-        // On mobile, the CSS already hides it via transform; ensure no leftover class.
-        if (window.innerWidth < 768) {
-            document.body.classList.remove('sidebar-closed');
-        }
-
-        // Close sidebar when clicking overlay (Mobile only)
-        document.querySelector('.sidebar-overlay').addEventListener('click', function () {
-            document.body.classList.remove('sidebar-open');
-        });
 
         // Collapsible nav group toggle
         function toggleNavGroup(groupId) {
@@ -737,6 +746,19 @@ public class HelloMCPServer extends MCPServer {
 
         // Start typing after a short delay
         setTimeout(typeCommands, 1000);
+
+        // Install tabs
+        document.querySelectorAll('.install-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.install-tab').forEach(t => {
+                    t.classList.toggle('active', t === tab);
+                    t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
+                });
+                document.querySelectorAll('.install-block').forEach(b => {
+                    b.hidden = b.id !== tab.dataset.target;
+                });
+            });
+        });
 
         // Copy Button Handler for Code Blocks
         function initCopyButtons() {
