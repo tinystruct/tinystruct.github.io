@@ -191,7 +191,7 @@
                         <pre><code class="language-powershell">irm https://tinystruct.org/create.ps1 | iex</code></pre>
                         <button class="copy-btn" title="Copy code" aria-label="Copy code"><ion-icon name="copy-outline"></ion-icon></button>
                     </div>
-                    <p class="install-note">
+                    <p class="install-note" data-zh="需要 Java 17+ 和 Maven。可选模板：<code>basic</code> <code>web</code> <code>mcp</code> <code>workflow</code> <code>agent</code>。Windows 需要安装 Git for Windows 或 WSL。">
                         Needs Java 17+ and Maven. Pick a template: <code>basic</code> <code>web</code> <code>mcp</code>
                         <code>workflow</code> <code>agent</code>. On Windows, Git for Windows or WSL is required.
                     </p>
@@ -201,10 +201,10 @@
 
         <!-- Stats strip -->
         <section class="stats-strip" aria-label="Highlights">
-            <div class="stat"><strong>86,000+</strong><span>requests / second</span></div>
-            <div class="stat"><strong>CLI + Web</strong><span>from one codebase</span></div>
-            <div class="stat"><strong>17+</strong><span>Java version</span></div>
-            <div class="stat"><strong>Apache 2.0</strong><span>open source</span></div>
+            <div class="stat"><strong>86,000+</strong><span data-zh="请求 / 秒">requests / second</span></div>
+            <div class="stat"><strong>CLI + Web</strong><span data-zh="同一套代码">from one codebase</span></div>
+            <div class="stat"><strong>17+</strong><span data-zh="Java 版本">Java version</span></div>
+            <div class="stat"><strong>Apache 2.0</strong><span data-zh="开源">open source</span></div>
         </section>
 
         <!-- Content Grid -->
@@ -415,46 +415,46 @@ public class HelloMCPServer extends MCPServer {
 
         <!-- Explore the docs -->
         <section class="docs-section">
-            <h2>Explore the docs</h2>
+            <h2 data-zh="浏览文档">Explore the docs</h2>
             <div class="docs-grid">
                 <a class="doc-card" href="en/getting-started.html">
                     <ion-icon name="rocket-outline"></ion-icon>
-                    <h4>Getting Started</h4>
-                    <p>Install, create your first app and run it as a CLI and a web server.</p>
+                    <h4 data-zh="入门指南">Getting Started</h4>
+                    <p data-zh="安装、创建第一个应用，并分别以 CLI 和 Web 服务器方式运行。">Install, create your first app and run it as a CLI and a web server.</p>
                 </a>
                 <a class="doc-card" href="en/core-concepts.html">
                     <ion-icon name="book-outline"></ion-icon>
-                    <h4>Core Concepts</h4>
-                    <p>Applications, actions, the context and the request lifecycle.</p>
+                    <h4 data-zh="核心概念">Core Concepts</h4>
+                    <p data-zh="应用、Action、上下文以及请求生命周期。">Applications, actions, the context and the request lifecycle.</p>
                 </a>
                 <a class="doc-card" href="en/web-applications.html">
                     <ion-icon name="globe-outline"></ion-icon>
-                    <h4>Web Applications</h4>
-                    <p>Routing, templates, SSE and file uploads.</p>
+                    <h4 data-zh="Web 应用">Web Applications</h4>
+                    <p data-zh="路由、模板、SSE 和文件上传。">Routing, templates, SSE and file uploads.</p>
                 </a>
                 <a class="doc-card" href="en/database.html">
                     <ion-icon name="server-outline"></ion-icon>
-                    <h4>Database</h4>
-                    <p>Annotation-based ORM, POJO generation and PostgreSQL.</p>
+                    <h4 data-zh="数据库">Database</h4>
+                    <p data-zh="基于注解的 ORM、POJO 生成与 PostgreSQL。">Annotation-based ORM, POJO generation and PostgreSQL.</p>
                 </a>
                 <a class="doc-card" href="en/mcp-integration.html">
                     <ion-icon name="hardware-chip-outline"></ion-icon>
-                    <h4>MCP Integration</h4>
-                    <p>Expose your tools to AI models over the Model Context Protocol.</p>
+                    <h4 data-zh="MCP 集成">MCP Integration</h4>
+                    <p data-zh="通过模型上下文协议 (MCP) 向 AI 模型暴露你的工具。">Expose your tools to AI models over the Model Context Protocol.</p>
                 </a>
                 <a class="doc-card" href="en/whats-new-1.7.35.html">
                     <ion-icon name="newspaper-outline"></ion-icon>
-                    <h4>What's New in 1.7.35</h4>
-                    <p>Latest release notes and upgrade guidance.</p>
+                    <h4 data-zh="1.7.35 新特性">What's New in 1.7.35</h4>
+                    <p data-zh="最新发行说明与升级指引。">Latest release notes and upgrade guidance.</p>
                 </a>
             </div>
         </section>
 
         <footer>
             <div class="footer-content">
-                <p>Released under the Apache License 2.0</p>
-                <p>Like tinystruct? <a href="https://opencollective.com/tinystruct" target="_blank" rel="noopener">Support the project on Open Collective</a></p>
-                <p>&copy; 2026 tinystruct.org. All rights reserved.</p>
+                <p data-zh="基于 Apache License 2.0 发布">Released under the Apache License 2.0</p>
+                <p data-zh="喜欢 tinystruct？<a href=&quot;https://opencollective.com/tinystruct&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;>在 Open Collective 上支持本项目</a>">Like tinystruct? <a href="https://opencollective.com/tinystruct" target="_blank" rel="noopener">Support the project on Open Collective</a></p>
+                <p data-zh="&copy; 2026 tinystruct.org. 保留所有权利。">&copy; 2026 tinystruct.org. All rights reserved.</p>
             </div>
         </footer>
 
@@ -665,6 +665,17 @@ public class HelloMCPServer extends MCPServer {
                     }
                 }
             });
+
+            // Update static strings marked with data-zh (original English is cached on first use)
+            document.querySelectorAll('[data-zh]').forEach(el => {
+                if (el.dataset.en === undefined) el.dataset.en = el.innerHTML;
+                el.innerHTML = currentLang === 'zh' ? el.dataset.zh : el.dataset.en;
+            });
+            document.querySelectorAll('.doc-card').forEach(card => {
+                const href = card.getAttribute('href');
+                card.setAttribute('href', currentLang === 'zh' ? href.replace(/^en\//, 'zh/') : href.replace(/^zh\//, 'en/'));
+            });
+            document.documentElement.lang = currentLang === 'zh' ? 'zh-CN' : 'en';
 
             // Update Hero Button Link
             const heroBtn = document.querySelector('.btn-primary');
