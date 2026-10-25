@@ -6,7 +6,14 @@ Welcome to the tinystruct framework documentation. This documentation provides c
 
 欢迎查阅 tinystruct 框架文档。本文档为使用和开发 tinystruct 框架提供全面的指导。
 
-## What's New in v1.7.35
+## What's New in v1.7.36
+
+- **Configurable Logging Handlers**: `handlers` property with `FileHandler` support (rotation, size limit)
+- **Hardened MCP Server**: Initialization enforced, active sessions kept alive, auth token no longer logged
+- **Kafka Client Removed**: `KafkaClient` and Kafka dependencies dropped from the framework
+- **Detailed Release Notes**: See [What's New in 1.7.36](en/whats-new-1.7.36.md) ([中文版](zh/whats-new-1.7.36.md))
+
+### Previous: v1.7.35 Highlights
 
 - **Dependency Upgrades**: Lettuce 7.8.0, H2 2.5.252, Mockito 5.24.0, and Netty BOM 4.2.18.Final
 - **CVE Patches**: Patched versions of vulnerable transitive dependencies (Netty, zstd-jni, lz4-java, snappy-java, Reactor)
@@ -44,6 +51,8 @@ Welcome to the tinystruct framework documentation. This documentation provides c
 - [Database Integration](en/database.md)
 - [Advanced Features](en/advanced-features.md)
 - [Best Practices](en/best-practices.md)
+- [What's New in 1.7.36](en/whats-new-1.7.36.md)
+- [What's New in 1.7.35](en/whats-new-1.7.35.md)
 - [What's New in 1.7.30](en/whats-new-1.7.30.md)
 - [What's New in 1.7.29](en/whats-new-1.7.29.md)
 - API Reference
@@ -61,6 +70,8 @@ Welcome to the tinystruct framework documentation. This documentation provides c
 - [数据库集成](zh/database.md)
 - [高级特性](zh/advanced-features.md)
 - [最佳实践](zh/best-practices.md)
+- [1.7.36 新特性](zh/whats-new-1.7.36.md)
+- [1.7.35 新特性](zh/whats-new-1.7.35.md)
 - [1.7.30 新特性](zh/whats-new-1.7.30.md)
 - [1.7.29 新特性](zh/whats-new-1.7.29.md)
 - API参考
