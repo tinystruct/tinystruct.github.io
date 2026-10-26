@@ -6,7 +6,15 @@ Welcome to the tinystruct framework documentation. This documentation provides c
 
 欢迎查阅 tinystruct 框架文档。本文档为使用和开发 tinystruct 框架提供全面的指导。
 
-## What's New in v1.7.36
+## What's New in v1.7.37
+
+- **Static File Serving Protection**: Strict static directory whitelisting (`server.static.dirs` / `server.static.dir`); project root files, configs, and sources cannot be downloaded
+- **Path Traversal & Alias Mitigation**: Rejection of traversal sequences, null bytes, Windows NTFS alternate data streams (`::$DATA`), and trailing dot/space aliases
+- **HTTP Caching & Conditional Requests**: Full support for `If-Modified-Since` (304 Not Modified), `Cache-Control`, and `Expires` headers
+- **Server Modules Updated**: `tinystruct-netty-http-server` (1.1.11), `tinystruct-tomcat-server` (1.1.11), and `tinystruct-undertow-server` (1.1.2)
+- **Detailed Release Notes**: See [What's New in 1.7.37](en/whats-new-1.7.37.md) ([中文版](zh/whats-new-1.7.37.md))
+
+### Previous: v1.7.36 Highlights
 
 - **Configurable Logging Handlers**: `handlers` property with `FileHandler` support (rotation, size limit)
 - **Hardened MCP Server**: Initialization enforced, active sessions kept alive, auth token no longer logged
@@ -51,6 +59,7 @@ Welcome to the tinystruct framework documentation. This documentation provides c
 - [Database Integration](en/database.md)
 - [Advanced Features](en/advanced-features.md)
 - [Best Practices](en/best-practices.md)
+- [What's New in 1.7.37](en/whats-new-1.7.37.md)
 - [What's New in 1.7.36](en/whats-new-1.7.36.md)
 - [What's New in 1.7.35](en/whats-new-1.7.35.md)
 - [What's New in 1.7.30](en/whats-new-1.7.30.md)
@@ -70,6 +79,7 @@ Welcome to the tinystruct framework documentation. This documentation provides c
 - [数据库集成](zh/database.md)
 - [高级特性](zh/advanced-features.md)
 - [最佳实践](zh/best-practices.md)
+- [1.7.37 新特性](zh/whats-new-1.7.37.md)
 - [1.7.36 新特性](zh/whats-new-1.7.36.md)
 - [1.7.35 新特性](zh/whats-new-1.7.35.md)
 - [1.7.30 新特性](zh/whats-new-1.7.30.md)
@@ -99,7 +109,7 @@ Add the dependency to your `pom.xml`:
 <dependency>
     <groupId>org.tinystruct</groupId>
     <artifactId>tinystruct</artifactId>
-    <version>1.7.36</version>
+    <version>1.7.37</version>
     <classifier>jar-with-dependencies</classifier>
 </dependency>
 ```

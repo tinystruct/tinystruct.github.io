@@ -9,6 +9,7 @@
 * [Database Integration](database.md)
 * [Advanced Features](advanced-features.md)
 * [Best Practices](best-practices.md)
+* [What's New in 1.7.37](whats-new-1.7.37.md)
 * [What's New in 1.7.36](whats-new-1.7.36.md)
 * [What's New in 1.7.35](whats-new-1.7.35.md)
 * [What's New in 1.7.34](whats-new-1.7.34.md)
