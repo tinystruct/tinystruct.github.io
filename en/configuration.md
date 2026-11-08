@@ -238,15 +238,28 @@ Properties props = getConfiguration().getProperties();
 | default.error.page | Default error page | error |
 | default.http.max_content_length | Maximum HTTP content length | 4194304 |
 
+### Distributed Lock Settings
+
+| Property | Description | Default |
+|----------|-------------|---------|
+| distributed.lock.timeout | Lock acquisition wait timeout in ms for `DistributedHashMap` (v1.7.38+) | 5000 |
+| distributed.lock.file.timeout | Whole-file lock wait timeout in ms for `Watcher` on `.lock` (v1.7.38+) | 5000 |
+
 ### Logging Settings
 
 | Property | Description | Default |
 |----------|-------------|---------|
 | logging.override | Override logging configuration | false |
-| handlers | Log handlers | java.util.logging.ConsoleHandler |
+| handlers | Log handlers | java.util.logging.ConsoleHandler, java.util.logging.FileHandler (v1.7.38+) |
 | java.util.logging.ConsoleHandler.level | Console handler log level | FINE |
-| java.util.logging.ConsoleHandler.formatter | Console handler formatter | org.apache.juli.OneLineFormatter |
+| java.util.logging.ConsoleHandler.formatter | Console handler formatter | org.tinystruct.system.logging.LogFormatter |
 | java.util.logging.ConsoleHandler.encoding | Console handler encoding | UTF-8 |
+| java.util.logging.FileHandler.pattern | File handler output pattern (v1.7.36+) | logs/tinystruct-%g.log |
+| java.util.logging.FileHandler.limit | Max bytes per log file before rotating (v1.7.36+) | 10485760 |
+| java.util.logging.FileHandler.count | Number of rotated log files to keep (v1.7.36+) | 5 |
+| java.util.logging.FileHandler.level | File handler log level (v1.7.36+) | INFO |
+| java.util.logging.FileHandler.formatter | File handler formatter (v1.7.36+) | org.tinystruct.system.logging.LogFormatter |
+| java.util.logging.FileHandler.encoding | File handler encoding (v1.7.36+) | UTF-8 |
 
 ### AI/MCP Settings
 

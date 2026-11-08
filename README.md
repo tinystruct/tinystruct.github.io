@@ -6,7 +6,16 @@ Welcome to the tinystruct framework documentation. This documentation provides c
 
 欢迎查阅 tinystruct 框架文档。本文档为使用和开发 tinystruct 框架提供全面的指导。
 
-## What's New in v1.7.37
+## What's New in v1.7.38
+
+- **Security & Dependency Upgrades**: Pinned `org.ow2.asm` (`9.11.1`) to resolve CVEs pulled transitively via `nashorn-core`, and upgraded `reactor-core` (`3.8.8`) and `sqlite-jdbc` (`3.54.1.0`)
+- **JSON Round-Trip & Escaping Fixes**: Escaped object keys and quoted lookalike strings in `Builder`; preserved `Boolean`/`null` array literals and unescaped array strings in `Builders`
+- **Faster Lock-File I/O & Configurable Timeouts**: Single-read `.lock` scanning in `Watcher` plus `distributed.lock.timeout` and `distributed.lock.file.timeout` settings (`5000` ms default)
+- **Concurrency, Logging & App Lifecycle**: Eliminated `DistributedMessageQueue.take()` lock starvation, switched `LogFormatter` to thread-safe `DateTimeFormatter`, enabled `FileHandler` logging by default, cleaned up `ApplicationManager.uninstall()`, and undeprecated `Application.setAction(String, String)`
+- **Ecosystem & Server Modules Updated**: `tinystruct-netty-http-server` (`1.1.12`), `tinystruct-tomcat-server` (`1.1.12`), `tinystruct-undertow-server` (`1.1.3`), `tinystruct-workflow` (`1.0.3`), and `tinystruct-typesafe` (`1.0.1`)
+- **Detailed Release Notes**: See [What's New in 1.7.38](en/whats-new-1.7.38.md) ([中文版](zh/whats-new-1.7.38.md))
+
+### Previous: v1.7.37 Highlights
 
 - **Static File Serving Protection**: Strict static directory whitelisting (`server.static.dirs` / `server.static.dir`); project root files, configs, and sources cannot be downloaded
 - **Path Traversal & Alias Mitigation**: Rejection of traversal sequences, null bytes, Windows NTFS alternate data streams (`::$DATA`), and trailing dot/space aliases
@@ -59,6 +68,7 @@ Welcome to the tinystruct framework documentation. This documentation provides c
 - [Database Integration](en/database.md)
 - [Advanced Features](en/advanced-features.md)
 - [Best Practices](en/best-practices.md)
+- [What's New in 1.7.38](en/whats-new-1.7.38.md)
 - [What's New in 1.7.37](en/whats-new-1.7.37.md)
 - [What's New in 1.7.36](en/whats-new-1.7.36.md)
 - [What's New in 1.7.35](en/whats-new-1.7.35.md)
@@ -79,6 +89,7 @@ Welcome to the tinystruct framework documentation. This documentation provides c
 - [数据库集成](zh/database.md)
 - [高级特性](zh/advanced-features.md)
 - [最佳实践](zh/best-practices.md)
+- [1.7.38 新特性](zh/whats-new-1.7.38.md)
 - [1.7.37 新特性](zh/whats-new-1.7.37.md)
 - [1.7.36 新特性](zh/whats-new-1.7.36.md)
 - [1.7.35 新特性](zh/whats-new-1.7.35.md)
@@ -109,7 +120,7 @@ Add the dependency to your `pom.xml`:
 <dependency>
     <groupId>org.tinystruct</groupId>
     <artifactId>tinystruct</artifactId>
-    <version>1.7.37</version>
+    <version>1.7.38</version>
     <classifier>jar-with-dependencies</classifier>
 </dependency>
 ```

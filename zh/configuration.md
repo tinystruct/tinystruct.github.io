@@ -238,15 +238,28 @@ Properties props = getConfiguration().getProperties();
 | default.error.page | 默认错误页面 | error |
 | default.http.max_content_length | 最大 HTTP 内容长度 | 4194304 |
 
+### 分布式锁设置
+
+| 属性 | 描述 | 默认值 |
+|----------|-------------|---------|
+| distributed.lock.timeout | `DistributedHashMap` 获取锁的等待超时时间 (毫秒) (v1.7.38+) | 5000 |
+| distributed.lock.file.timeout | `Watcher` 等待 `.lock` 全文件锁的超时时间 (毫秒) (v1.7.38+) | 5000 |
+
 ### 日志设置
 
 | 属性 | 描述 | 默认值 |
 |----------|-------------|---------|
 | logging.override | 覆盖日志配置 | false |
-| handlers | 日志处理器 | java.util.logging.ConsoleHandler |
+| handlers | 日志处理器 | java.util.logging.ConsoleHandler, java.util.logging.FileHandler (v1.7.38+) |
 | java.util.logging.ConsoleHandler.level | 控制台处理器日志级别 | FINE |
-| java.util.logging.ConsoleHandler.formatter | 控制台处理器格式化程序 | org.apache.juli.OneLineFormatter |
+| java.util.logging.ConsoleHandler.formatter | 控制台处理器格式化程序 | org.tinystruct.system.logging.LogFormatter |
 | java.util.logging.ConsoleHandler.encoding | 控制台处理器编码 | UTF-8 |
+| java.util.logging.FileHandler.pattern | 文件处理器输出路径模式 (v1.7.36+) | logs/tinystruct-%g.log |
+| java.util.logging.FileHandler.limit | 单个日志文件轮转大小上限，单位字节 (v1.7.36+) | 10485760 |
+| java.util.logging.FileHandler.count | 保留的轮转日志文件数量 (v1.7.36+) | 5 |
+| java.util.logging.FileHandler.level | 文件处理器日志级别 (v1.7.36+) | INFO |
+| java.util.logging.FileHandler.formatter | 文件处理器格式化程序 (v1.7.36+) | org.tinystruct.system.logging.LogFormatter |
+| java.util.logging.FileHandler.encoding | 文件处理器编码 (v1.7.36+) | UTF-8 |
 
 ### AI/MCP 设置
 

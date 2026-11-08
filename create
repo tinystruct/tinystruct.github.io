@@ -18,7 +18,7 @@
 
 set -eu
 
-TS_VERSION="${TS_VERSION:-1.7.37}"
+TS_VERSION="${TS_VERSION:-1.7.38}"
 MIN_JAVA=17
 
 # ---------------------------------------------------------------- output ----
