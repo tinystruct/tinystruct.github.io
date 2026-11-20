@@ -215,6 +215,11 @@ Properties props = getConfiguration().getProperties();
 | jwt.expiration | JWT expiration time in seconds (v1.7.29+) | 3600 |
 | rsa.private.key | Path to RSA private key (v1.7.29+) | - |
 | rsa.public.key | Path to RSA public key (v1.7.29+) | - |
+| security.token.guard.enabled | Enable pre-authentication token validation (`TokenGuard`) (v1.7.39+) | true |
+| security.token.guard.max-length | Maximum allowed token character length (v1.7.39+) | 4096 |
+| security.token.guard.reject-malformed | Reject invalid Base64 padding, control chars, and malformed JWT structures (v1.7.39+) | true |
+| security.token.guard.pattern-detection | Enable regex deny-pattern evaluation (v1.7.39+) | false |
+| security.token.guard.block-patterns | Comma-separated list of regex patterns to block (v1.7.39+) | - |
 
 ### Database Settings
 

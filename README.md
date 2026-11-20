@@ -6,7 +6,16 @@ Welcome to the tinystruct framework documentation. This documentation provides c
 
 欢迎查阅 tinystruct 框架文档。本文档为使用和开发 tinystruct 框架提供全面的指导。
 
-## What's New in v1.7.38
+## What's New in v1.7.39
+
+- **TokenGuard Pre-Authentication Defense**: Added configurable `TokenGuard` defending against malformed, oversized, or malicious token inputs (length enforcement, whitespace/control char rejection, Base64 padding semantics, and compact JWT RFC 7515/7519 structure verification)
+- **Catastrophic Backtracking Mitigation**: Configurable token block patterns with a bounded evaluation step budget (`50,000` steps) to prevent Regular Expression Denial of Service (ReDoS)
+- **HTTP & MCP Security Status Mapping**: `HttpServer` and `AuthorizationHandler` integrate `TokenGuard`, returning `400 Bad Request` for malformed/oversized tokens, `401 Unauthorized` for failed auth, and `403 Forbidden` for policy-blocked tokens
+- **Template Engine & ClassLoader Portability**: Standardized on cross-platform `'/'` template path separators in `AbstractApplication`, removed hardcoded `Locale.CHINA` comparison, added hierarchical ClassLoader resolution fallbacks, and prevented stream leaks with try-with-resources
+- **DOM & Core Stability Fixes**: Fixed infinite loop in `Element.removeElement(String)`, preserved original `IOException` causes in `Document.load(...)`, and safely parsed URI user info in `ConnectionManager`
+- **Detailed Release Notes**: See [What's New in 1.7.39](en/whats-new-1.7.39.md) ([中文版](zh/whats-new-1.7.39.md))
+
+### Previous: v1.7.38 Highlights
 
 - **Security & Dependency Upgrades**: Pinned `org.ow2.asm` (`9.11.1`) to resolve CVEs pulled transitively via `nashorn-core`, and upgraded `reactor-core` (`3.8.8`) and `sqlite-jdbc` (`3.54.1.0`)
 - **JSON Round-Trip & Escaping Fixes**: Escaped object keys and quoted lookalike strings in `Builder`; preserved `Boolean`/`null` array literals and unescaped array strings in `Builders`
@@ -68,6 +77,7 @@ Welcome to the tinystruct framework documentation. This documentation provides c
 - [Database Integration](en/database.md)
 - [Advanced Features](en/advanced-features.md)
 - [Best Practices](en/best-practices.md)
+- [What's New in 1.7.39](en/whats-new-1.7.39.md)
 - [What's New in 1.7.38](en/whats-new-1.7.38.md)
 - [What's New in 1.7.37](en/whats-new-1.7.37.md)
 - [What's New in 1.7.36](en/whats-new-1.7.36.md)
@@ -89,6 +99,7 @@ Welcome to the tinystruct framework documentation. This documentation provides c
 - [数据库集成](zh/database.md)
 - [高级特性](zh/advanced-features.md)
 - [最佳实践](zh/best-practices.md)
+- [1.7.39 新特性](zh/whats-new-1.7.39.md)
 - [1.7.38 新特性](zh/whats-new-1.7.38.md)
 - [1.7.37 新特性](zh/whats-new-1.7.37.md)
 - [1.7.36 新特性](zh/whats-new-1.7.36.md)
@@ -120,7 +131,7 @@ Add the dependency to your `pom.xml`:
 <dependency>
     <groupId>org.tinystruct</groupId>
     <artifactId>tinystruct</artifactId>
-    <version>1.7.38</version>
+    <version>1.7.39</version>
     <classifier>jar-with-dependencies</classifier>
 </dependency>
 ```

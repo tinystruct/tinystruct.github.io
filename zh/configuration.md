@@ -215,6 +215,11 @@ Properties props = getConfiguration().getProperties();
 | jwt.expiration | JWT 过期时间 (秒) (v1.7.29+) | 3600 |
 | rsa.private.key | RSA 私钥路径 (v1.7.29+) | - |
 | rsa.public.key | RSA 公钥路径 (v1.7.29+) | - |
+| security.token.guard.enabled | 启用预认证 Token 校验防护 (`TokenGuard`) (v1.7.39+) | true |
+| security.token.guard.max-length | Token 允许的最大字符长度 (v1.7.39+) | 4096 |
+| security.token.guard.reject-malformed | 拒绝非法 Base64 填充、控制字符及畸形 JWT 结构 (v1.7.39+) | true |
+| security.token.guard.pattern-detection | 启用正则黑名单匹配 (v1.7.39+) | false |
+| security.token.guard.block-patterns | 逗号分隔的 Token 拦截正则列表 (v1.7.39+) | - |
 
 ### 数据库设置
 
