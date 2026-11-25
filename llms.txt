@@ -1,0 +1,47 @@
+# tinystruct
+
+> tinystruct is a lightweight Java 17+ framework in which CLI and HTTP are equal citizens: a public method annotated with `@Action` runs both from the terminal (`bin/dispatcher <action>`) and over HTTP, with no `main()` method and minimal configuration. It ships its own HTTP server, JSON (`Builder`/`Builders`), database persistence (`AbstractData`), SSE, events and MCP server support. Maven coordinates: `org.tinystruct:tinystruct`, latest documented release 1.7.39.
+
+Rules for generating tinystruct code:
+
+- Applications extend `org.tinystruct.AbstractApplication`; set up in `init()`, not the constructor. API-only apps call `setTemplateRequired(false)`.
+- Routes are `public` methods with `@Action("path")`. Without a `mode` an action works from CLI and HTTP; `mode = Mode.HTTP_POST`, `Mode.CLI`, etc. restrict it.
+- Never write `main(String[] args)`. Run and test through `bin/dispatcher` (Windows: `bin\dispatcher.cmd`), which the framework generates.
+- Use `org.tinystruct.data.component.Builder`/`Builders` for JSON, not Jackson or Gson.
+- Configuration is `src/main/resources/application.properties`, read with `getConfiguration("key")`.
+
+## Agent skill
+
+- [tinystruct-patterns SKILL.md](https://raw.githubusercontent.com/tinystruct/tinystruct/master/.agents/skills/tinystruct-patterns/SKILL.md): Condensed patterns, examples and anti-patterns for coding agents; start here
+- [Architecture & configuration](https://raw.githubusercontent.com/tinystruct/tinystruct/master/.agents/skills/tinystruct-patterns/references/architecture.md): Core abstractions, package map, properties
+- [Routing & @Action](https://raw.githubusercontent.com/tinystruct/tinystruct/master/.agents/skills/tinystruct-patterns/references/routing.md): Annotation details, modes, parameter binding
+- [Data handling](https://raw.githubusercontent.com/tinystruct/tinystruct/master/.agents/skills/tinystruct-patterns/references/data-handling.md): Builder, Builders, JSON serialization and parsing
+- [Database persistence](https://raw.githubusercontent.com/tinystruct/tinystruct/master/.agents/skills/tinystruct-patterns/references/database.md): AbstractData POJOs, CRUD, mapping, POJO generation
+- [System & usage](https://raw.githubusercontent.com/tinystruct/tinystruct/master/.agents/skills/tinystruct-patterns/references/system-usage.md): Context, sessions, SSE, file uploads, events, networking
+- [Testing](https://raw.githubusercontent.com/tinystruct/tinystruct/master/.agents/skills/tinystruct-patterns/references/testing.md): JUnit 5 unit and HTTP integration tests
+
+## Docs
+
+- [Getting started](https://raw.githubusercontent.com/tinystruct/tinystruct.github.io/main/en/getting-started.md): Install, create a first application, basic workflow
+- [Core concepts](https://raw.githubusercontent.com/tinystruct/tinystruct.github.io/main/en/core-concepts.md): Framework philosophy, applications, actions, context
+- [Web applications](https://raw.githubusercontent.com/tinystruct/tinystruct.github.io/main/en/web-applications.md): Building HTTP applications
+- [CLI applications](https://raw.githubusercontent.com/tinystruct/tinystruct.github.io/main/en/cli-applications.md): Building command-line tools
+- [Configuration](https://raw.githubusercontent.com/tinystruct/tinystruct.github.io/main/en/configuration.md): Properties files and the Configuration API
+- [Database integration](https://raw.githubusercontent.com/tinystruct/tinystruct.github.io/main/en/database.md): Connecting to and working with databases
+- [AI & MCP integration](https://raw.githubusercontent.com/tinystruct/tinystruct.github.io/main/en/mcp-integration.md): MCP servers, tools, resources and prompts
+- [Advanced features](https://raw.githubusercontent.com/tinystruct/tinystruct.github.io/main/en/advanced-features.md): Advanced techniques
+- [Best practices](https://raw.githubusercontent.com/tinystruct/tinystruct.github.io/main/en/best-practices.md): Recommended practices
+
+## API reference
+
+- [Action API](https://raw.githubusercontent.com/tinystruct/tinystruct.github.io/main/en/api/action.md): The @Action annotation
+- [Application API](https://raw.githubusercontent.com/tinystruct/tinystruct.github.io/main/en/api/application.md): AbstractApplication
+- [Configuration API](https://raw.githubusercontent.com/tinystruct/tinystruct.github.io/main/en/api/configuration.md): The Configuration interface
+- [Database API](https://raw.githubusercontent.com/tinystruct/tinystruct.github.io/main/en/api/database.md): Repository interface and persistence
+
+## Optional
+
+- [What's new in 1.7.39](https://raw.githubusercontent.com/tinystruct/tinystruct.github.io/main/en/whats-new-1.7.39.md): TokenGuard input validation, HTTP/MCP status mapping, portability fixes
+- [What's new in 1.7.38](https://raw.githubusercontent.com/tinystruct/tinystruct.github.io/main/en/whats-new-1.7.38.md): ASM CVE patches, Builder/Builders fixes, lock timeouts, file logging
+- [Chinese documentation](https://tinystruct.org/zh/getting-started.html): 中文文档
+- [Source code](https://github.com/tinystruct/tinystruct): Framework repository
